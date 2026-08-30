@@ -1,39 +1,40 @@
-import html2canvas from 'html2canvas';
+import { toCanvas } from 'html-to-image';
 import jsPDF from 'jspdf';
 import { ResumeData } from '../types';
 
+export interface SlicedResumePage {
+  pageNumber: number;
+  dataUrl: string;
+  widthMm: number;
+  heightMm: number;
+}
+
 /**
- * High-precision canvas snapshot slicing into standard A4 pages (210mm x 297mm).
- * - Page 1 captures the top section with original layout and padding.
- * - Multi-page splits clean slices, adding the page 1 top margin to page 2+ so content never touches the top border.
+ * High-precision snapshot engine with html-to-image:
+ * 1. Takes an exact high-resolution snapshot (2.5x pixel ratio) of the A4 preview canvas.
+ * 2. If single page, fits into 1 standard A4 page (210mm x 297mm).
+ * 3. If multi-page:
+ *    - Page 1 takes the top segment up to 297mm.
+ *    - Page 2+ splits remaining content and adds the top margin matching Page 1.
  */
 export const sliceResumeCanvasToPages = async (
   elementId: string = 'resume-canvas'
-): Promise<string[]> => {
+): Promise<SlicedResumePage[]> => {
   const element = document.getElementById(elementId);
   if (!element) {
-    throw new Error('未找到简历渲染节点');
+    throw new Error('未找到简历渲染节点 (resume-canvas)');
   }
 
-  // 1. Capture the element at high resolution
-  const canvas = await html2canvas(element, {
-    scale: 2.8, // Ultra-sharp print quality
-    useCORS: true,
-    allowTaint: true,
-    logging: false,
+  // Generate high-resolution canvas snapshot using html-to-image
+  const canvas = await toCanvas(element, {
+    pixelRatio: 2.6, // High DPI for crystal clear text & avatars
     backgroundColor: '#ffffff',
-    scrollX: 0,
-    scrollY: 0,
-    onclone: (clonedDoc) => {
-      const clonedEl = clonedDoc.getElementById(elementId);
-      if (clonedEl) {
-        clonedEl.style.transform = 'none';
-        clonedEl.style.boxShadow = 'none';
-        clonedEl.style.margin = '0';
-        clonedEl.style.width = '210mm';
+    cacheBust: true,
+    filter: (node) => {
+      if (node instanceof HTMLElement && node.classList.contains('no-print')) {
+        return false;
       }
-      const noPrints = clonedDoc.querySelectorAll('.no-print');
-      noPrints.forEach((el) => ((el as HTMLElement).style.display = 'none'));
+      return true;
     },
   });
 
@@ -43,185 +44,227 @@ export const sliceResumeCanvasToPages = async (
   // Standard A4 aspect ratio height in canvas pixels: (width * 297) / 210
   const pageA4Height = Math.round((fullWidth * 297) / 210);
 
-  // Top margin for subsequent pages (approx 20mm in canvas pixels, matching standard page 1 top padding)
-  const topMarginPx = Math.round((fullWidth * 20) / 210);
-  const bottomMarginPx = Math.round((fullWidth * 12) / 210);
+  // Top margin for subsequent pages (approx 22mm in canvas pixels, matching standard page 1 top padding)
+  const topMarginPx = Math.round((fullWidth * 22) / 210);
+  const bottomMarginPx = Math.round((fullWidth * 16) / 210);
 
-  const pageDataUrls: string[] = [];
+  const pages: SlicedResumePage[] = [];
 
-  // Single page case (fits in 1 A4 page with small tolerance)
-  if (fullHeight <= pageA4Height + 20) {
+  // 1. Single Page Case (fits within 1 A4 page + slight tolerance)
+  if (fullHeight <= pageA4Height + 15) {
     const pageCanvas = document.createElement('canvas');
     pageCanvas.width = fullWidth;
     pageCanvas.height = pageA4Height;
     const ctx = pageCanvas.getContext('2d');
-    if (ctx) {
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, fullWidth, pageA4Height);
-      ctx.drawImage(
-        canvas,
-        0,
-        0,
-        fullWidth,
-        Math.min(fullHeight, pageA4Height),
-        0,
-        0,
-        fullWidth,
-        Math.min(fullHeight, pageA4Height)
-      );
-      pageDataUrls.push(pageCanvas.toDataURL('image/jpeg', 0.98));
-    }
-    return pageDataUrls;
+    if (!ctx) throw new Error('无法创建 Canvas 2D 上下文');
+
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, fullWidth, pageA4Height);
+    ctx.drawImage(
+      canvas,
+      0,
+      0,
+      fullWidth,
+      Math.min(fullHeight, pageA4Height),
+      0,
+      0,
+      fullWidth,
+      Math.min(fullHeight, pageA4Height)
+    );
+
+    pages.push({
+      pageNumber: 1,
+      dataUrl: pageCanvas.toDataURL('image/jpeg', 0.98),
+      widthMm: 210,
+      heightMm: 297,
+    });
+    return pages;
   }
 
-  // Multi-page case
-  // Page 1: from y=0 to y=pageA4Height
+  // 2. Multi-Page Case
+  // --- Page 1 ---
   const page1Canvas = document.createElement('canvas');
   page1Canvas.width = fullWidth;
   page1Canvas.height = pageA4Height;
   const ctx1 = page1Canvas.getContext('2d');
-  if (ctx1) {
-    ctx1.fillStyle = '#ffffff';
-    ctx1.fillRect(0, 0, fullWidth, pageA4Height);
-    ctx1.drawImage(canvas, 0, 0, fullWidth, pageA4Height, 0, 0, fullWidth, pageA4Height);
-    pageDataUrls.push(page1Canvas.toDataURL('image/jpeg', 0.98));
-  }
+  if (!ctx1) throw new Error('无法创建 Canvas 2D 上下文');
 
-  // Subsequent pages (Page 2, Page 3, ...)
-  // Effective content slice height per subsequent page
+  ctx1.fillStyle = '#ffffff';
+  ctx1.fillRect(0, 0, fullWidth, pageA4Height);
+  ctx1.drawImage(canvas, 0, 0, fullWidth, pageA4Height, 0, 0, fullWidth, pageA4Height);
+
+  pages.push({
+    pageNumber: 1,
+    dataUrl: page1Canvas.toDataURL('image/jpeg', 0.98),
+    widthMm: 210,
+    heightMm: 297,
+  });
+
+  // --- Page 2 and subsequent pages ---
+  // Effective content slice height per subsequent page (leaving room for top & bottom margins)
   const usableHeightPerSubsequentPage = pageA4Height - topMarginPx - bottomMarginPx;
   let currentSourceY = pageA4Height;
+  let pageNum = 2;
 
   while (currentSourceY < fullHeight - 10) {
     const pageCanvas = document.createElement('canvas');
     pageCanvas.width = fullWidth;
     pageCanvas.height = pageA4Height;
     const ctx = pageCanvas.getContext('2d');
-    if (ctx) {
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, fullWidth, pageA4Height);
+    if (!ctx) break;
 
-      const sliceHeight = Math.min(usableHeightPerSubsequentPage, fullHeight - currentSourceY);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, fullWidth, pageA4Height);
 
-      // Draw with topMarginPx offset from top of page
-      ctx.drawImage(
-        canvas,
-        0,
-        currentSourceY,
-        fullWidth,
-        sliceHeight,
-        0,
-        topMarginPx,
-        fullWidth,
-        sliceHeight
-      );
+    const sliceHeight = Math.min(usableHeightPerSubsequentPage, fullHeight - currentSourceY);
 
-      pageDataUrls.push(pageCanvas.toDataURL('image/jpeg', 0.98));
-    }
+    // Draw slice with topMarginPx offset from top of page
+    ctx.drawImage(
+      canvas,
+      0,
+      currentSourceY,
+      fullWidth,
+      sliceHeight,
+      0,
+      topMarginPx,
+      fullWidth,
+      sliceHeight
+    );
+
+    pages.push({
+      pageNumber: pageNum,
+      dataUrl: pageCanvas.toDataURL('image/jpeg', 0.98),
+      widthMm: 210,
+      heightMm: 297,
+    });
 
     currentSourceY += usableHeightPerSubsequentPage;
+    pageNum++;
   }
 
-  return pageDataUrls;
+  return pages;
 };
 
 /**
- * Direct print by capturing exact preview snapshot and printing via clean A4 iframe
+ * Generate full standalone HTML for sliced pages printing
+ */
+export const generatePrintHtml = (pages: SlicedResumePage[], docTitle: string = '个人简历'): string => {
+  const pagesHtml = pages
+    .map(
+      (page, index) => `
+      <div class="page-container" style="page-break-after: ${index === pages.length - 1 ? 'avoid' : 'always'}; break-after: ${index === pages.length - 1 ? 'avoid' : 'page'};">
+        <img class="page-img" src="${page.dataUrl}" alt="Page ${page.pageNumber}" />
+      </div>
+    `
+    )
+    .join('');
+
+  return `
+    <!DOCTYPE html>
+    <html lang="zh-CN">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>${docTitle}</title>
+      <style>
+        @page {
+          size: A4 portrait;
+          margin: 0mm !important;
+        }
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+          color-adjust: exact !important;
+        }
+        html, body {
+          width: 210mm;
+          margin: 0 auto;
+          padding: 0;
+          background: #ffffff;
+        }
+        .page-container {
+          width: 210mm;
+          height: 297mm;
+          max-height: 297mm;
+          overflow: hidden;
+          margin: 0;
+          padding: 0;
+          background: #ffffff;
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+        .page-img {
+          width: 210mm;
+          height: 297mm;
+          display: block;
+          object-fit: fill;
+          image-rendering: -webkit-optimize-contrast;
+        }
+        @media screen {
+          body {
+            background: #e2e8f0;
+            padding: 20px 0;
+          }
+          .page-container {
+            margin: 0 auto 20px auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+          }
+        }
+      </style>
+    </head>
+    <body>
+      ${pagesHtml}
+      <script>
+        window.addEventListener('load', () => {
+          setTimeout(() => {
+            window.focus();
+            window.print();
+          }, 300);
+        });
+      </script>
+    </body>
+    </html>
+  `;
+};
+
+/**
+ * Direct print by capturing exact preview snapshot and printing via clean A4 iframe / popup
  */
 export const printResumeCanvas = async (
   elementId: string = 'resume-canvas',
   docTitle: string = '个人简历'
 ): Promise<void> => {
-  try {
-    const pages = await sliceResumeCanvasToPages(elementId);
-    if (!pages || pages.length === 0) {
-      window.print();
-      return;
-    }
+  const pages = await sliceResumeCanvasToPages(elementId);
+  if (!pages || pages.length === 0) {
+    throw new Error('未生成打印页面');
+  }
 
-    // Create or get print iframe
-    let printIframe = document.getElementById('resume-print-iframe') as HTMLIFrameElement;
-    if (!printIframe) {
-      printIframe = document.createElement('iframe');
-      printIframe.id = 'resume-print-iframe';
-      printIframe.style.position = 'fixed';
-      printIframe.style.right = '0';
-      printIframe.style.bottom = '0';
-      printIframe.style.width = '0';
-      printIframe.style.height = '0';
-      printIframe.style.border = 'none';
-      printIframe.style.zIndex = '-9999';
-      document.body.appendChild(printIframe);
-    }
+  const printHtml = generatePrintHtml(pages, docTitle);
 
-    const iframeDoc = printIframe.contentDocument || printIframe.contentWindow?.document;
-    if (!iframeDoc) {
-      window.print();
-      return;
-    }
+  // Strategy 1: Hidden clean iframe inside current document
+  let printIframe = document.getElementById('resume-print-iframe') as HTMLIFrameElement;
+  if (!printIframe) {
+    printIframe = document.createElement('iframe');
+    printIframe.id = 'resume-print-iframe';
+    printIframe.style.position = 'fixed';
+    printIframe.style.right = '0';
+    printIframe.style.bottom = '0';
+    printIframe.style.width = '0';
+    printIframe.style.height = '0';
+    printIframe.style.border = 'none';
+    printIframe.style.zIndex = '-9999';
+    document.body.appendChild(printIframe);
+  }
 
-    const pagesHtml = pages
-      .map(
-        (dataUrl, index) => `
-        <div class="page-container" style="page-break-after: ${index === pages.length - 1 ? 'avoid' : 'always'}; break-after: ${index === pages.length - 1 ? 'avoid' : 'page'};">
-          <img class="page-img" src="${dataUrl}" alt="Page ${index + 1}" />
-        </div>
-      `
-      )
-      .join('');
-
+  const iframeDoc = printIframe.contentDocument || printIframe.contentWindow?.document;
+  if (iframeDoc) {
     iframeDoc.open();
-    iframeDoc.write(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <title>${docTitle}</title>
-        <style>
-          @page {
-            size: A4 portrait;
-            margin: 0mm !important;
-          }
-          * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-          html, body {
-            width: 210mm;
-            margin: 0;
-            padding: 0;
-            background: #ffffff;
-          }
-          .page-container {
-            width: 210mm;
-            height: 297mm;
-            max-height: 297mm;
-            overflow: hidden;
-            margin: 0;
-            padding: 0;
-            background: #ffffff;
-            page-break-inside: avoid;
-            break-inside: avoid;
-          }
-          .page-img {
-            width: 210mm;
-            height: 297mm;
-            display: block;
-            object-fit: fill;
-          }
-        </style>
-      </head>
-      <body>
-        ${pagesHtml}
-      </body>
-      </html>
-    `);
+    iframeDoc.write(printHtml);
     iframeDoc.close();
 
-    // Wait for all images in iframe to load
     await new Promise<void>((resolve) => {
       const images = iframeDoc.querySelectorAll('img');
       let loadedCount = 0;
@@ -232,7 +275,7 @@ export const printResumeCanvas = async (
       const checkAllLoaded = () => {
         loadedCount++;
         if (loadedCount >= images.length) {
-          setTimeout(resolve, 150);
+          setTimeout(resolve, 200);
         }
       };
       images.forEach((img) => {
@@ -245,19 +288,34 @@ export const printResumeCanvas = async (
       });
     });
 
-    // Invoke print
     setTimeout(() => {
       try {
         printIframe.contentWindow?.focus();
         printIframe.contentWindow?.print();
-      } catch (e) {
-        console.error('Iframe print error, falling back to window.print()', e);
-        window.print();
+      } catch (err) {
+        console.warn('Iframe print blocked, opening new window fallback', err);
+        openPrintWindow(pages, docTitle);
       }
-    }, 200);
-  } catch (error) {
-    console.error('Snapshot print failed, falling back to window.print()', error);
-    window.print();
+    }, 250);
+  } else {
+    openPrintWindow(pages, docTitle);
+  }
+};
+
+/**
+ * Open standalone clean print tab/window
+ */
+export const openPrintWindow = (pages: SlicedResumePage[], docTitle: string = '个人简历') => {
+  const printHtml = generatePrintHtml(pages, docTitle);
+  const blob = new Blob([printHtml], { type: 'text/html;charset=utf-8' });
+  const blobUrl = URL.createObjectURL(blob);
+  const printWindow = window.open(blobUrl, '_blank');
+  if (!printWindow) {
+    // If popups blocked, redirect or notify
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.target = '_blank';
+    a.click();
   }
 };
 
@@ -268,32 +326,26 @@ export const exportToPdf = async (
   elementId: string = 'resume-canvas',
   filename: string = '我的个人简历.pdf'
 ) => {
-  try {
-    const pages = await sliceResumeCanvasToPages(elementId);
-    if (!pages || pages.length === 0) {
-      alert('生成 PDF 失败，未获取到页面');
-      return;
-    }
-
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4',
-      compress: true,
-    });
-
-    pages.forEach((pageDataUrl, index) => {
-      if (index > 0) {
-        pdf.addPage('a4', 'portrait');
-      }
-      pdf.addImage(pageDataUrl, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
-    });
-
-    pdf.save(filename.endsWith('.pdf') ? filename : `${filename}.pdf`);
-  } catch (error) {
-    console.error('PDF export error:', error);
-    alert('导出 PDF 失败，请检查浏览器设置或使用打印功能另存为 PDF');
+  const pages = await sliceResumeCanvasToPages(elementId);
+  if (!pages || pages.length === 0) {
+    throw new Error('未获取到页面');
   }
+
+  const pdf = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+    compress: true,
+  });
+
+  pages.forEach((page, index) => {
+    if (index > 0) {
+      pdf.addPage('a4', 'portrait');
+    }
+    pdf.addImage(page.dataUrl, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+  });
+
+  pdf.save(filename.endsWith('.pdf') ? filename : `${filename}.pdf`);
 };
 
 export const exportToJson = (data: ResumeData, filename: string = '简历数据备份.json') => {
@@ -318,9 +370,8 @@ export const exportToImage = async (elementId: string, filename: string = '我�
   const element = document.getElementById(elementId);
   if (!element) return;
   try {
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
+    const canvas = await toCanvas(element, {
+      pixelRatio: 2.5,
       backgroundColor: '#ffffff',
     });
     const link = document.createElement('a');
@@ -331,4 +382,5 @@ export const exportToImage = async (elementId: string, filename: string = '我�
     console.error(err);
   }
 };
+
 

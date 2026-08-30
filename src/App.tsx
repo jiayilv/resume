@@ -19,7 +19,15 @@ import { CertificatesLanguagesEditor } from './components/editor/CertificatesLan
 import { SummaryEditor } from './components/editor/SummaryEditor';
 import { ResumePreview } from './components/ResumePreview';
 import { ThemeSelector } from './components/ThemeSelector';
-import { exportToPdf, exportToJson, printResumeCanvas } from './utils/exportUtils';
+import {
+  exportToPdf,
+  exportToJson,
+  printResumeCanvas,
+  sliceResumeCanvasToPages,
+  openPrintWindow,
+  SlicedResumePage,
+} from './utils/exportUtils';
+import { PrintPreviewModal } from './components/PrintPreviewModal';
 import {
   Printer,
   Download,
@@ -40,6 +48,7 @@ import {
   Eye,
   Sparkles,
   Loader2,
+  ExternalLink,
 } from 'lucide-react';
 
 const STORAGE_KEY = 'jianliben_resume_data_v1';
@@ -98,6 +107,11 @@ export function App() {
   const [previewScale, setPreviewScale] = useState<number>(0.85);
   const [isPrinting, setIsPrinting] = useState<boolean>(false);
   const [isExporting, setIsExporting] = useState<boolean>(false);
+
+  // Print Slicing Modal state
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState<boolean>(false);
+  const [slicedPages, setSlicedPages] = useState<SlicedResumePage[]>([]);
+  const [isSlicing, setIsSlicing] = useState<boolean>(false);
 
   const previewRef = useRef<HTMLDivElement>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
@@ -168,12 +182,29 @@ export function App() {
     }
   };
 
-  // Export handlers with High-precision Sliced Snapshot Printing
-  const handlePrint = async () => {
+  const docTitle = `${resumeData.profile.name || '个人简历'}_${resumeData.profile.title || '求职'}`;
+
+  // Open Print and Slicing Preview Modal with instant snapshot
+  const handleOpenPrintModal = async () => {
+    if (isSlicing) return;
+    setIsSlicing(true);
+    try {
+      const pages = await sliceResumeCanvasToPages('resume-canvas');
+      setSlicedPages(pages);
+      setIsPrintModalOpen(true);
+    } catch (error) {
+      console.error('截图分片渲染异常:', error);
+      alert('生成打印切片失败，请重试');
+    } finally {
+      setIsSlicing(false);
+    }
+  };
+
+  // Direct print action
+  const handlePrintDirect = async () => {
     if (isPrinting) return;
     setIsPrinting(true);
     try {
-      const docTitle = `${resumeData.profile.name || '个人简历'}_${resumeData.profile.title || '求职'}`;
       await printResumeCanvas('resume-canvas', docTitle);
     } catch (error) {
       console.error('打印执行异常:', error);
@@ -189,10 +220,11 @@ export function App() {
     try {
       await exportToPdf(
         'resume-canvas',
-        `${resumeData.profile.name || '个人简历'}_${resumeData.profile.title || '求职'}.pdf`
+        `${docTitle}.pdf`
       );
     } catch (error) {
       console.error('PDF导出异常:', error);
+      alert('导出 PDF 失败，请使用打印窗口另存为 PDF');
     } finally {
       setIsExporting(false);
     }
@@ -316,21 +348,21 @@ export function App() {
               </button>
             </div>
 
-            {/* Print & PDF Button */}
+            {/* Print & PDF Button (Opens A4 Sliced Snapshot Modal) */}
             <button
-              onClick={handlePrint}
-              disabled={isPrinting}
+              onClick={handleOpenPrintModal}
+              disabled={isSlicing || isPrinting}
               className={`px-3.5 py-1.5 font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs text-xs transition-all ${
-                isPrinting
+                isSlicing
                   ? 'bg-blue-400 text-white cursor-wait'
                   : 'bg-blue-600 hover:bg-blue-700 text-white hover:shadow-md'
               }`}
-              title="根据当前 A4 预览生成像素级高保真打印或存为 PDF（支持多页自动分页与上边距保留）"
+              title="生成 A4 高清截图切片预览，智能分页并保留上边距"
             >
-              {isPrinting ? (
+              {isSlicing ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin text-white" />
-                  <span>生成打印中...</span>
+                  <span>截图切片中...</span>
                 </>
               ) : (
                 <>
@@ -357,6 +389,14 @@ export function App() {
                 ) : (
                   <Download className="w-4 h-4" />
                 )}
+              </button>
+
+              <button
+                onClick={handleOpenPrintModal}
+                className="p-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl cursor-pointer shadow-2xs hidden md:flex"
+                title="在新标签页纯净打印 / 预览"
+              >
+                <ExternalLink className="w-4 h-4" />
               </button>
 
               <button
@@ -577,6 +617,15 @@ export function App() {
           </div>
         </section>
       </main>
+
+      {/* A4 Snapshot & Sliced Pages Print Preview Modal */}
+      <PrintPreviewModal
+        isOpen={isPrintModalOpen}
+        onClose={() => setIsPrintModalOpen(false)}
+        pages={slicedPages}
+        isLoading={isSlicing}
+        docTitle={docTitle}
+      />
     </div>
   );
 }
