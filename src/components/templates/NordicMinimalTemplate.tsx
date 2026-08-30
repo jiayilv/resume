@@ -223,7 +223,7 @@ export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) 
 
   return (
     <div 
-      className="bg-white text-slate-800 max-w-[800px] mx-auto transition-all"
+      className="bg-white text-slate-800 w-full box-border transition-all"
       style={density.containerStyle}
     >
       {/* Minimal Header */}

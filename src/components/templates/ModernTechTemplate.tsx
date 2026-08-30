@@ -292,7 +292,7 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ data, theme }) => 
 
   return (
     <div 
-      className="bg-white text-slate-800 leading-relaxed max-w-[800px] mx-auto transition-all"
+      className="bg-white text-slate-800 leading-relaxed w-full box-border transition-all"
       style={density.containerStyle}
     >
       {/* Modern Tech Header */}

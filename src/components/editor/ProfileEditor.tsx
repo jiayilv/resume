@@ -22,8 +22,12 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ profile, onChange 
   const [tempUrl, setTempUrl] = useState('');
   const [uploadError, setUploadError] = useState<string | null>(null);
 
+  const updateProfile = (updates: Partial<UserProfile>) => {
+    onChange({ ...profile, ...updates });
+  };
+
   const handleFieldChange = (key: keyof UserProfile, value: any) => {
-    onChange({ ...profile, [key]: value });
+    updateProfile({ [key]: value });
   };
 
   // Compress image to high-quality lightweight base64 to avoid localStorage quota issues
@@ -36,43 +40,62 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ profile, onChange 
 
     const reader = new FileReader();
     reader.onload = (event) => {
+      const resultStr = event.target?.result as string;
+      if (!resultStr) {
+        setUploadError('图片读取失败，请重试');
+        return;
+      }
+
       const img = new Image();
       img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const MAX_WIDTH = 480;
-        const MAX_HEIGHT = 640;
-        let width = img.width;
-        let height = img.height;
+        try {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 480;
+          const MAX_HEIGHT = 640;
+          let width = img.width;
+          let height = img.height;
 
-        if (width > height) {
-          if (width > MAX_WIDTH) {
-            height = Math.round((height * MAX_WIDTH) / width);
-            width = MAX_WIDTH;
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height = Math.round((height * MAX_WIDTH) / width);
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width = Math.round((width * MAX_HEIGHT) / height);
+              width = MAX_HEIGHT;
+            }
           }
-        } else {
-          if (height > MAX_HEIGHT) {
-            width = Math.round((width * MAX_HEIGHT) / height);
-            width = MAX_HEIGHT;
-          }
-        }
 
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.drawImage(img, 0, 0, width, height);
-          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.88);
-          handleFieldChange('avatar', compressedBase64);
-          handleFieldChange('showAvatar', true);
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.9);
+            updateProfile({ avatar: compressedBase64, showAvatar: true });
+          } else {
+            // Fallback to raw data url
+            updateProfile({ avatar: resultStr, showAvatar: true });
+          }
+        } catch (err) {
+          // If canvas compression fails, fallback to direct data URL
+          updateProfile({ avatar: resultStr, showAvatar: true });
         }
       };
+
       img.onerror = () => {
-        setUploadError('图片解析失败，请尝试其他图片');
+        // Fallback directly to raw data URL
+        updateProfile({ avatar: resultStr, showAvatar: true });
       };
-      if (typeof event.target?.result === 'string') {
-        img.src = event.target.result;
-      }
+
+      img.src = resultStr;
     };
+
+    reader.onerror = () => {
+      setUploadError('图片读取失败，请检查文件权限');
+    };
+
     reader.readAsDataURL(file);
   };
 
@@ -94,8 +117,7 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ profile, onChange 
 
   const handleApplyUrl = () => {
     if (tempUrl.trim()) {
-      handleFieldChange('avatar', tempUrl.trim());
-      handleFieldChange('showAvatar', true);
+      updateProfile({ avatar: tempUrl.trim(), showAvatar: true });
       setShowUrlInput(false);
       setTempUrl('');
     }
@@ -231,8 +253,7 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ profile, onChange 
                     key={idx}
                     type="button"
                     onClick={() => {
-                      handleFieldChange('avatar', url);
-                      handleFieldChange('showAvatar', true);
+                      updateProfile({ avatar: url, showAvatar: true });
                     }}
                     className={`w-6 h-6 rounded-full overflow-hidden border cursor-pointer transition-transform ${
                       profile.avatar === url ? 'ring-2 ring-blue-600 border-white scale-110' : 'border-slate-300 hover:scale-105'

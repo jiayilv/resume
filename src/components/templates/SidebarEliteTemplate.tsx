@@ -129,7 +129,7 @@ export const SidebarEliteTemplate: React.FC<TemplateProps> = ({ data, theme }) =
 
   return (
     <div 
-      className="bg-white text-slate-800 max-w-[800px] mx-auto transition-all flex flex-col sm:flex-row min-h-[297mm]"
+      className="bg-white text-slate-800 w-full box-border transition-all flex flex-row min-h-[297mm]"
       style={{
         fontFamily: density.fontFamily,
         fontSize: density.fontSize,
@@ -138,8 +138,8 @@ export const SidebarEliteTemplate: React.FC<TemplateProps> = ({ data, theme }) =
     >
       {/* Left Sidebar (Preserved in print) */}
       <div 
-        className="w-full sm:w-[240px] text-white shrink-0 space-y-5"
-        style={{ backgroundColor: primaryColor, padding: '24px 20px' }}
+        className="w-[230px] text-white shrink-0 space-y-5"
+        style={{ backgroundColor: primaryColor, padding: '24px 18px' }}
       >
         {/* Avatar */}
         {profile.showAvatar && profile.avatar && (

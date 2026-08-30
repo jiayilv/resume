@@ -11,17 +11,33 @@ export const exportToPdf = async (elementId: string, filename: string = '我的�
 
   try {
     const canvas = await html2canvas(element, {
-      scale: 2, // 2x high-resolution
+      scale: 2.5, // Crisp high-DPI output
       useCORS: true,
+      allowTaint: true,
       logging: false,
       backgroundColor: '#ffffff',
+      scrollX: 0,
+      scrollY: 0,
+      onclone: (clonedDoc) => {
+        const clonedEl = clonedDoc.getElementById(elementId);
+        if (clonedEl) {
+          clonedEl.style.transform = 'none';
+          clonedEl.style.boxShadow = 'none';
+          clonedEl.style.margin = '0';
+          clonedEl.style.width = '210mm';
+        }
+        // Remove no-print elements in cloned document
+        const noPrints = clonedDoc.querySelectorAll('.no-print');
+        noPrints.forEach((el) => ((el as HTMLElement).style.display = 'none'));
+      },
     });
 
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    const imgData = canvas.toDataURL('image/jpeg', 0.98);
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
       format: 'a4',
+      compress: true,
     });
 
     const imgWidth = 210; // A4 width mm
@@ -30,13 +46,13 @@ export const exportToPdf = async (elementId: string, filename: string = '我的�
     let heightLeft = imgHeight;
     let position = 0;
 
-    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
     heightLeft -= pageHeight;
 
-    while (heightLeft > 0) {
+    while (heightLeft > 6) { // Avoid generating accidental blank overflow page
       position = heightLeft - imgHeight;
       pdf.addPage();
-      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
       heightLeft -= pageHeight;
     }
 

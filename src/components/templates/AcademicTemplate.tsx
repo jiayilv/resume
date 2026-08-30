@@ -207,7 +207,7 @@ export const AcademicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
 
   return (
     <div 
-      className="bg-white text-slate-900 max-w-[800px] mx-auto font-serif transition-all"
+      className="bg-white text-slate-900 w-full box-border font-serif transition-all"
       style={density.containerStyle}
     >
       {/* Centered Academic Heading */}
