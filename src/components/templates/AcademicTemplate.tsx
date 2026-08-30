@@ -2,6 +2,8 @@ import React from 'react';
 import { ResumeData, ThemeConfig } from '../../types';
 import { Mail, Phone, MapPin, Globe, Github, Tag } from 'lucide-react';
 import { getDensityStyles, getSectionTitle, DEFAULT_SECTION_ORDER } from '../../utils/templateHelpers';
+import { SectionHeader } from './SectionHeader';
+import { ResumeAvatar } from '../ResumeAvatar';
 
 interface TemplateProps {
   data: ResumeData;
@@ -33,9 +35,11 @@ export const AcademicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
         if (!summary) return null;
         return (
           <section key="summary" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <h2 className="font-serif font-bold text-sm tracking-wide text-slate-900 border-b border-slate-900 pb-0.5 mb-2 uppercase">
-              {getSectionTitle(data, 'summary')}
-            </h2>
+            <SectionHeader
+              title={getSectionTitle(data, 'summary')}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle || 'academic'}
+            />
             <p className="text-slate-700 leading-relaxed font-serif text-justify" style={{ fontSize: density.bodySize }}>
               {summary}
             </p>
@@ -46,9 +50,11 @@ export const AcademicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
         if (educations.length === 0) return null;
         return (
           <section key="education" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <h2 className="font-serif font-bold text-sm tracking-wide text-slate-900 border-b border-slate-900 pb-0.5 mb-2 uppercase">
-              {getSectionTitle(data, 'education')}
-            </h2>
+            <SectionHeader
+              title={getSectionTitle(data, 'education')}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle || 'academic'}
+            />
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {educations.map((edu) => (
                 <div key={edu.id} className="font-serif">
@@ -83,9 +89,11 @@ export const AcademicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
         if (workExperiences.length === 0) return null;
         return (
           <section key="work" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <h2 className="font-serif font-bold text-sm tracking-wide text-slate-900 border-b border-slate-900 pb-0.5 mb-2 uppercase">
-              {getSectionTitle(data, 'work')}
-            </h2>
+            <SectionHeader
+              title={getSectionTitle(data, 'work')}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle || 'academic'}
+            />
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {workExperiences.map((w) => (
                 <div key={w.id} className="font-serif">
@@ -110,9 +118,11 @@ export const AcademicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
         if (projectExperiences.length === 0) return null;
         return (
           <section key="project" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <h2 className="font-serif font-bold text-sm tracking-wide text-slate-900 border-b border-slate-900 pb-0.5 mb-2 uppercase">
-              {getSectionTitle(data, 'project')}
-            </h2>
+            <SectionHeader
+              title={getSectionTitle(data, 'project')}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle || 'academic'}
+            />
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {projectExperiences.map((p) => (
                 <div key={p.id} className="font-serif">
@@ -120,9 +130,15 @@ export const AcademicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
                     <span>{p.projectName}</span>
                     <span className="font-normal font-mono text-xs">{p.startDate} – {p.current ? 'Present' : p.endDate}</span>
                   </div>
-                  <div className="italic text-slate-700 mb-0.5" style={{ fontSize: density.bodySize }}>Role: {p.role} {p.techStack && `| Stack: ${p.techStack}`}</div>
-                  {p.description && <p className="text-slate-700 font-sans mb-1" style={{ fontSize: density.bodySize }}>{p.description}</p>}
-                  {p.results && <p className="text-slate-700 font-sans pl-2 border-l border-slate-300" style={{ fontSize: density.bodySize }}>{p.results}</p>}
+                  <div className="italic text-slate-700 mb-1" style={{ fontSize: density.bodySize }}>
+                    {p.role} {p.techStack && <span className="font-sans text-slate-600 text-xs">| {p.techStack}</span>}
+                  </div>
+                  {p.description && <p className="text-slate-700 mb-1 leading-relaxed font-sans" style={{ fontSize: density.bodySize }}>{p.description}</p>}
+                  {p.results && (
+                    <div className="text-slate-700 whitespace-pre-line leading-relaxed font-sans pl-2 border-l border-slate-300" style={{ fontSize: density.bodySize }}>
+                      {p.results}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -133,15 +149,19 @@ export const AcademicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
         if (skills.length === 0) return null;
         return (
           <section key="skills" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <h2 className="font-serif font-bold text-sm tracking-wide text-slate-900 border-b border-slate-900 pb-0.5 mb-2 uppercase">
-              {getSectionTitle(data, 'skills')}
-            </h2>
-            <div className="flex flex-wrap gap-2 text-xs font-serif text-slate-800">
-              {skills.map((s) => (
-                <span key={s.id} className="bg-slate-100 px-2 py-0.5 rounded">
-                  {s.name}
-                </span>
-              ))}
+            <SectionHeader
+              title={getSectionTitle(data, 'skills')}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle || 'academic'}
+            />
+            <div className="text-xs text-slate-800 font-sans space-y-1">
+              <div className="flex flex-wrap gap-x-4 gap-y-1">
+                {skills.map((s) => (
+                  <span key={s.id}>
+                    <strong>{s.name}</strong> ({s.level === 5 ? 'Expert' : s.level >= 4 ? 'Advanced' : 'Proficient'})
+                  </span>
+                ))}
+              </div>
             </div>
           </section>
         );
@@ -151,24 +171,41 @@ export const AcademicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
       case 'languages':
         if (certificates.length === 0 && languages.length === 0) return null;
         return (
-          <div key="certs_group" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <h2 className="font-serif font-bold text-sm tracking-wide text-slate-900 border-b border-slate-900 pb-0.5 mb-2 uppercase">
-              Honors, Certifications & Languages
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-serif text-slate-700">
-              {certificates.map((c) => (
-                <div key={c.id} className="flex justify-between">
-                  <span>• {c.name}</span>
-                  <span className="text-slate-500 font-mono">{c.date}</span>
+          <div key="certs_group" className="grid grid-cols-1 sm:grid-cols-2 gap-4 avoid-break" style={{ marginBottom: density.sectionGap }}>
+            {certificates.length > 0 && (
+              <div>
+                <SectionHeader
+                  title={getSectionTitle(data, 'certificates')}
+                  primaryColor={primaryColor}
+                  headerStyle={theme.headerStyle || 'academic'}
+                />
+                <div className="space-y-1 text-xs font-serif text-slate-700">
+                  {certificates.map((c) => (
+                    <div key={c.id} className="flex justify-between">
+                      <span>{c.name}</span>
+                      <span className="font-mono text-slate-500">{c.date}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-              {languages.map((l) => (
-                <div key={l.id} className="flex justify-between">
-                  <span>• {l.language}</span>
-                  <span className="italic">{l.proficiency}</span>
+              </div>
+            )}
+            {languages.length > 0 && (
+              <div>
+                <SectionHeader
+                  title={getSectionTitle(data, 'languages')}
+                  primaryColor={primaryColor}
+                  headerStyle={theme.headerStyle || 'academic'}
+                />
+                <div className="space-y-1 text-xs font-serif text-slate-700">
+                  {languages.map((l) => (
+                    <div key={l.id} className="flex justify-between">
+                      <span>{l.language}</span>
+                      <span className="italic text-slate-600">{l.proficiency}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
           </div>
         );
 
@@ -179,9 +216,11 @@ export const AcademicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
             {customSections.map((sec) => (
               !data.hiddenSections.includes(sec.id) && (
                 <section key={sec.id} className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-                  <h2 className="font-serif font-bold text-sm tracking-wide text-slate-900 border-b border-slate-900 pb-0.5 mb-2 uppercase">
-                    {sec.title}
-                  </h2>
+                  <SectionHeader
+                    title={sec.title}
+                    primaryColor={primaryColor}
+                    headerStyle={theme.headerStyle || 'academic'}
+                  />
                   <div className="space-y-2 font-serif">
                     {sec.items.map((item) => (
                       <div key={item.id} className="text-xs">
@@ -233,22 +272,7 @@ export const AcademicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
 
         {/* Profile Avatar - Standard 1-inch 25mm x 35mm */}
         {profile.showAvatar && (
-          <div className="shrink-0" style={{ width: '25mm', height: '35mm' }}>
-            {profile.avatar ? (
-              <img 
-                src={profile.avatar} 
-                alt={profile.name} 
-                className="w-full h-full object-cover border border-slate-900 shadow-2xs"
-              />
-            ) : (
-              <div 
-                className="w-full h-full border border-dashed border-slate-400 bg-slate-50 flex flex-col items-center justify-center text-slate-500 p-1 text-center select-none"
-              >
-                <span className="text-[9px] font-serif font-medium">PHOTO</span>
-                <span className="text-[7.5px] font-serif text-slate-400">25×35mm</span>
-              </div>
-            )}
-          </div>
+          <ResumeAvatar profile={profile} theme={theme} />
         )}
       </header>
 

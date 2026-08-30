@@ -2,6 +2,8 @@ import React from 'react';
 import { ResumeData, ThemeConfig } from '../../types';
 import { Mail, Phone, MapPin, Globe, Github, Tag } from 'lucide-react';
 import { getDensityStyles, getSectionTitle, DEFAULT_SECTION_ORDER } from '../../utils/templateHelpers';
+import { SectionHeader } from './SectionHeader';
+import { ResumeAvatar } from '../ResumeAvatar';
 
 interface TemplateProps {
   data: ResumeData;
@@ -33,9 +35,11 @@ export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) 
         if (!summary) return null;
         return (
           <section key="summary" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <h2 className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-2">
-              {getSectionTitle(data, 'summary')}
-            </h2>
+            <SectionHeader
+              title={getSectionTitle(data, 'summary')}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle || 'minimal'}
+            />
             <p className="text-slate-700 leading-relaxed text-justify" style={{ fontSize: density.bodySize }}>
               {summary}
             </p>
@@ -46,9 +50,11 @@ export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) 
         if (workExperiences.length === 0) return null;
         return (
           <section key="work" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <h2 className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-3 border-b border-slate-100 pb-1">
-              {getSectionTitle(data, 'work')}
-            </h2>
+            <SectionHeader
+              title={getSectionTitle(data, 'work')}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle || 'minimal'}
+            />
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {workExperiences.map((w) => (
                 <div key={w.id}>
@@ -76,9 +82,11 @@ export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) 
         if (projectExperiences.length === 0) return null;
         return (
           <section key="project" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <h2 className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-3 border-b border-slate-100 pb-1">
-              {getSectionTitle(data, 'project')}
-            </h2>
+            <SectionHeader
+              title={getSectionTitle(data, 'project')}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle || 'minimal'}
+            />
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {projectExperiences.map((p) => (
                 <div key={p.id}>
@@ -105,22 +113,30 @@ export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) 
         if (educations.length === 0) return null;
         return (
           <section key="education" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <h2 className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-2 border-b border-slate-100 pb-1">
-              {getSectionTitle(data, 'education')}
-            </h2>
+            <SectionHeader
+              title={getSectionTitle(data, 'education')}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle || 'minimal'}
+            />
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {educations.map((edu) => (
                 <div key={edu.id}>
-                  <div className="flex justify-between font-semibold text-slate-900" style={{ fontSize: density.subTitleSize }}>
-                    <span>{edu.school}</span>
-                    <span className="text-slate-400 font-mono text-xs">{edu.startDate} - {edu.endDate}</span>
+                  <div className="flex justify-between items-baseline">
+                    <span className="font-semibold text-slate-900" style={{ fontSize: density.subTitleSize }}>{edu.school}</span>
+                    <span className="text-slate-400 text-xs font-mono">{edu.startDate} — {edu.endDate}</span>
                   </div>
-                  <div className="text-slate-600" style={{ fontSize: density.bodySize }}>{edu.major} · {edu.degree}</div>
-                  {edu.gpa && <div className="text-slate-500 text-xs">GPA: {edu.gpa}</div>}
+                  <div className="text-slate-600 text-xs">{edu.major} · {edu.degree}</div>
+                  {(edu.gpa || edu.honors || edu.courses) && (
+                    <div className="text-slate-500 text-[11px] mt-0.5" style={{ fontSize: density.metaSize }}>
+                      {edu.gpa && `GPA: ${edu.gpa} `}
+                      {edu.honors && `荣誉: ${edu.honors} `}
+                      {edu.courses && `主修: ${edu.courses}`}
+                    </div>
+                  )}
                   {edu.customPoints && edu.customPoints.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mt-1">
-                      {edu.customPoints.map((pt, pIdx) => (
-                        <span key={pIdx} className="border border-slate-200 px-2 py-0.5 rounded text-slate-600 text-[11px]">
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {edu.customPoints.map((pt, idx) => (
+                        <span key={idx} className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[10px]">
                           {pt}
                         </span>
                       ))}
@@ -136,14 +152,21 @@ export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) 
         if (skills.length === 0) return null;
         return (
           <section key="skills" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <h2 className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-2 border-b border-slate-100 pb-1">
-              {getSectionTitle(data, 'skills')}
-            </h2>
-            <div className="flex flex-wrap gap-1.5 text-xs">
+            <SectionHeader
+              title={getSectionTitle(data, 'skills')}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle || 'minimal'}
+            />
+            <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs">
               {skills.map((s) => (
-                <span key={s.id} className="border border-slate-200 px-2 py-0.5 rounded text-slate-700 text-[11px]">
-                  {s.name}
-                </span>
+                <div key={s.id} className="flex items-center gap-2">
+                  <span className="text-slate-800">{s.name}</span>
+                  <div className="flex gap-0.5">
+                    {[1, 2, 3, 4, 5].map((dot) => (
+                      <span key={dot} className={`w-1.5 h-1.5 rounded-full ${dot <= s.level ? 'bg-slate-800' : 'bg-slate-200'}`} />
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           </section>
@@ -157,14 +180,16 @@ export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) 
           <div key="certs_group" className="grid grid-cols-1 sm:grid-cols-2 gap-4 avoid-break" style={{ marginBottom: density.sectionGap }}>
             {certificates.length > 0 && (
               <div>
-                <h2 className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-1 border-b border-slate-100 pb-1">
-                  {getSectionTitle(data, 'certificates')}
-                </h2>
+                <SectionHeader
+                  title={getSectionTitle(data, 'certificates')}
+                  primaryColor={primaryColor}
+                  headerStyle={theme.headerStyle || 'minimal'}
+                />
                 <div className="space-y-1 text-xs text-slate-600">
                   {certificates.map((c) => (
                     <div key={c.id} className="flex justify-between">
                       <span>{c.name}</span>
-                      <span className="text-slate-400 font-mono">{c.date}</span>
+                      <span className="text-slate-400">{c.date}</span>
                     </div>
                   ))}
                 </div>
@@ -172,14 +197,16 @@ export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) 
             )}
             {languages.length > 0 && (
               <div>
-                <h2 className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-1 border-b border-slate-100 pb-1">
-                  {getSectionTitle(data, 'languages')}
-                </h2>
+                <SectionHeader
+                  title={getSectionTitle(data, 'languages')}
+                  primaryColor={primaryColor}
+                  headerStyle={theme.headerStyle || 'minimal'}
+                />
                 <div className="space-y-1 text-xs text-slate-600">
                   {languages.map((l) => (
                     <div key={l.id} className="flex justify-between">
                       <span>{l.language}</span>
-                      <span>{l.proficiency}</span>
+                      <span className="text-slate-400">{l.proficiency}</span>
                     </div>
                   ))}
                 </div>
@@ -195,18 +222,20 @@ export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) 
             {customSections.map((sec) => (
               !data.hiddenSections.includes(sec.id) && (
                 <section key={sec.id} className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-                  <h2 className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-2 border-b border-slate-100 pb-1">
-                    {sec.title}
-                  </h2>
+                  <SectionHeader
+                    title={sec.title}
+                    primaryColor={primaryColor}
+                    headerStyle={theme.headerStyle || 'minimal'}
+                  />
                   <div className="space-y-2">
                     {sec.items.map((item) => (
                       <div key={item.id} className="text-xs">
-                        <div className="flex justify-between font-semibold text-slate-900">
+                        <div className="flex justify-between font-medium text-slate-900">
                           <span>{item.title}</span>
-                          {item.date && <span className="text-slate-400 font-mono">{item.date}</span>}
+                          {item.date && <span className="text-slate-400">{item.date}</span>}
                         </div>
-                        {item.subtitle && <div className="text-slate-600">{item.subtitle}</div>}
-                        <p className="text-slate-600 mt-0.5">{item.description}</p>
+                        {item.subtitle && <div className="text-slate-600 text-xs">{item.subtitle}</div>}
+                        <p className="text-slate-700 whitespace-pre-line mt-0.5">{item.description}</p>
                       </div>
                     ))}
                   </div>
@@ -250,22 +279,7 @@ export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) 
 
           {/* Profile Avatar - Standard 1-inch 25mm x 35mm */}
           {profile.showAvatar && (
-            <div className="shrink-0" style={{ width: '25mm', height: '35mm' }}>
-              {profile.avatar ? (
-                <img 
-                  src={profile.avatar} 
-                  alt={profile.name} 
-                  className="w-full h-full object-cover grayscale contrast-125 border border-slate-300 shadow-2xs"
-                />
-              ) : (
-                <div 
-                  className="w-full h-full border border-dashed border-slate-300 bg-slate-50 flex flex-col items-center justify-center text-slate-400 p-1 text-center select-none"
-                >
-                  <span className="text-[9px] font-medium text-slate-500">1寸照片</span>
-                  <span className="text-[7.5px] text-slate-400">25×35mm</span>
-                </div>
-              )}
-            </div>
+            <ResumeAvatar profile={profile} theme={theme} />
           )}
         </div>
       </header>

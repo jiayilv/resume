@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { WorkExperience } from '../../types';
-import { Plus, Trash2, ChevronDown, ChevronUp, Tag, X } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, ChevronUp, Tag, X, Briefcase } from 'lucide-react';
+import { SectionTitleBar } from './SectionTitleBar';
 
 interface WorkExperienceEditorProps {
   workExperiences: WorkExperience[];
   onChange: (updated: WorkExperience[]) => void;
+  sectionTitle?: string;
+  onUpdateSectionTitle?: (newTitle: string) => void;
   onOpenPolishModal?: (text: string, onApply: (newText: string) => void, contextRole?: string) => void;
 }
 
@@ -13,6 +16,8 @@ const QUICK_TAGS = ['主导重构', '团队管理', '核心骨干', '从0到1搭
 export const WorkExperienceEditor: React.FC<WorkExperienceEditorProps> = ({
   workExperiences,
   onChange,
+  sectionTitle,
+  onUpdateSectionTitle,
 }) => {
   const [expandedId, setExpandedId] = useState<string | null>(workExperiences[0]?.id || null);
   const [newTagInputs, setNewTagInputs] = useState<Record<string, string>>({});
@@ -57,8 +62,18 @@ export const WorkExperienceEditor: React.FC<WorkExperienceEditorProps> = ({
 
   return (
     <div className="space-y-3 text-xs">
+      {onUpdateSectionTitle && (
+        <SectionTitleBar
+          sectionKey="work"
+          currentTitle={sectionTitle}
+          onUpdateTitle={onUpdateSectionTitle}
+          icon={<Briefcase className="w-4 h-4" />}
+          subtitle="可一键修改为：实践经历、工作/实习经历、社会实践、科研经历等"
+        />
+      )}
+
       <div className="flex justify-between items-center mb-1">
-        <span className="text-slate-500 font-medium">已添加 {workExperiences.length} 段工作/实习经历</span>
+        <span className="text-slate-500 font-medium">已添加 {workExperiences.length} 段经历</span>
         <button
           type="button"
           onClick={handleAdd}

@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { CertificateItem, LanguageItem } from '../../types';
 import { Plus, Trash2, Award, Languages } from 'lucide-react';
+import { SectionTitleBar } from './SectionTitleBar';
 
 interface CertificatesLanguagesEditorProps {
   certificates: CertificateItem[];
   languages: LanguageItem[];
   onChangeCertificates: (updated: CertificateItem[]) => void;
   onChangeLanguages: (updated: LanguageItem[]) => void;
+  sectionTitle?: string;
+  onUpdateSectionTitle?: (newTitle: string) => void;
 }
 
 export const CertificatesLanguagesEditor: React.FC<CertificatesLanguagesEditorProps> = ({
@@ -14,6 +17,8 @@ export const CertificatesLanguagesEditor: React.FC<CertificatesLanguagesEditorPr
   languages,
   onChangeCertificates,
   onChangeLanguages,
+  sectionTitle,
+  onUpdateSectionTitle,
 }) => {
   const [newCertName, setNewCertName] = useState('');
   const [newCertDate, setNewCertDate] = useState('2023.06');
@@ -48,6 +53,16 @@ export const CertificatesLanguagesEditor: React.FC<CertificatesLanguagesEditorPr
 
   return (
     <div className="space-y-6 text-xs">
+      {onUpdateSectionTitle && (
+        <SectionTitleBar
+          sectionKey="certs"
+          currentTitle={sectionTitle}
+          onUpdateTitle={onUpdateSectionTitle}
+          icon={<Award className="w-4 h-4" />}
+          subtitle="可自由修改为：荣誉证书与语言、荣誉资质、资质与语言水平等"
+        />
+      )}
+
       {/* Certificates */}
       <div className="space-y-3">
         <div className="flex items-center gap-1.5 font-bold text-slate-900 border-b border-slate-200 pb-1.5">

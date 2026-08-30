@@ -50,8 +50,9 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ profile, onChange 
       img.onload = () => {
         try {
           const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 480;
-          const MAX_HEIGHT = 640;
+          // Support high resolution 1000x1400 without loss
+          const MAX_WIDTH = 1200;
+          const MAX_HEIGHT = 1680;
           let width = img.width;
           let height = img.height;
 
@@ -72,8 +73,14 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ profile, onChange 
           const ctx = canvas.getContext('2d');
           if (ctx) {
             ctx.drawImage(img, 0, 0, width, height);
-            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.9);
-            updateProfile({ avatar: compressedBase64, showAvatar: true });
+            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.92);
+            updateProfile({
+              avatar: compressedBase64,
+              showAvatar: true,
+              avatarFit: profile.avatarFit || 'contain', // Default contain for crisp 1000x1400 without zoom
+              avatarScale: profile.avatarScale ?? 100,
+              avatarPosition: profile.avatarPosition || 'center',
+            });
           } else {
             // Fallback to raw data url
             updateProfile({ avatar: resultStr, showAvatar: true });
@@ -123,6 +130,10 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ profile, onChange 
     }
   };
 
+  const avatarFit = profile.avatarFit || 'contain';
+  const avatarScale = profile.avatarScale ?? 100;
+  const avatarPosition = profile.avatarPosition || 'center';
+
   return (
     <div className="space-y-4 text-xs">
       {/* Avatar Section */}
@@ -130,7 +141,7 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ profile, onChange 
         <div className="flex items-center justify-between">
           <span className="font-bold text-slate-800 flex items-center gap-1.5 text-xs">
             <Camera className="w-3.5 h-3.5 text-blue-600" />
-            简历求职照片
+            简历求职照片 (1寸 25×35mm)
           </span>
           <label className="flex items-center gap-1.5 cursor-pointer text-slate-700 font-medium">
             <input 
@@ -151,23 +162,31 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ profile, onChange 
               onDragLeave={() => setIsDragging(false)}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
-              className={`relative group w-[75px] h-[105px] rounded-lg border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all overflow-hidden ${
+              className={`relative group w-[80px] h-[112px] rounded-lg border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all overflow-hidden bg-white ${
                 isDragging
                   ? 'border-blue-600 bg-blue-50/80 ring-2 ring-blue-400/40 scale-102'
                   : profile.avatar
-                  ? 'border-slate-300 bg-white shadow-xs'
+                  ? 'border-slate-300 shadow-xs'
                   : 'border-slate-300 hover:border-blue-400 bg-slate-100/70 hover:bg-blue-50/40'
               }`}
               title="点击或拖拽上传 1 寸证件照 (25mm × 35mm)"
             >
               {profile.avatar ? (
                 <>
-                  <img 
-                    src={profile.avatar} 
-                    alt="头像" 
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/40 text-white opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity text-[10px] font-medium gap-0.5">
+                  <div className="w-full h-full overflow-hidden flex items-center justify-center bg-white relative">
+                    <img 
+                      src={profile.avatar} 
+                      alt="头像" 
+                      style={{
+                        objectFit: avatarFit,
+                        objectPosition: avatarPosition,
+                        transform: `scale(${avatarScale / 100})`,
+                        transformOrigin: avatarPosition === 'top' ? 'top center' : avatarPosition === 'bottom' ? 'bottom center' : 'center center',
+                      }}
+                      className="w-full h-full select-none pointer-events-none transition-transform"
+                    />
+                  </div>
+                  <div className="absolute inset-0 bg-black/40 text-white opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity text-[10px] font-medium gap-0.5 z-10">
                     <Upload className="w-3.5 h-3.5" />
                     <span>更换照片</span>
                   </div>
@@ -199,7 +218,7 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ profile, onChange 
                 className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs text-xs"
               >
                 <Upload className="w-3.5 h-3.5" />
-                本地选择1寸照片
+                本地选择照片 (支持1000×1400)
               </button>
 
               <button
@@ -208,7 +227,7 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ profile, onChange 
                 className="px-2.5 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-medium rounded-lg flex items-center gap-1 cursor-pointer transition-colors shadow-2xs text-[11px]"
               >
                 <Link className="w-3 h-3 text-slate-500" />
-                网络图片链接
+                图片链接
               </button>
 
               {profile.avatar && (
@@ -246,6 +265,92 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ profile, onChange 
 
             {uploadError && (
               <p className="text-red-500 text-[11px]">{uploadError}</p>
+            )}
+
+            {/* Photo Fit & Zoom Adjustment (Fixes 1000x1400 photo enlargement) */}
+            {profile.avatar && (
+              <div className="p-2.5 bg-white border border-blue-200/80 rounded-xl space-y-2 shadow-2xs">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-slate-700 text-[11px] flex items-center gap-1">
+                    <ImageIcon className="w-3 h-3 text-blue-600" />
+                    照片缩放与适配模式：
+                  </span>
+                  <div className="flex gap-1">
+                    <button
+                      type="button"
+                      onClick={() => handleFieldChange('avatarFit', 'contain')}
+                      className={`px-2 py-0.5 rounded text-[10.5px] font-medium cursor-pointer transition-all ${
+                        avatarFit === 'contain'
+                          ? 'bg-blue-600 text-white font-bold'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      }`}
+                      title="完整显示整张照片，不裁剪边缘，不放大"
+                    >
+                      📐 完整居中 (不裁切/不放大)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleFieldChange('avatarFit', 'cover')}
+                      className={`px-2 py-0.5 rounded text-[10.5px] font-medium cursor-pointer transition-all ${
+                        avatarFit === 'cover'
+                          ? 'bg-blue-600 text-white font-bold'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      }`}
+                      title="裁切填满1寸框"
+                    >
+                      🔲 填满裁切
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 border-t border-slate-100 items-center">
+                  {/* Zoom Slider */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10.5px] text-slate-500 shrink-0">自由缩放:</span>
+                    <input
+                      type="range"
+                      min={50}
+                      max={150}
+                      step={2}
+                      value={avatarScale}
+                      onChange={(e) => handleFieldChange('avatarScale', Number(e.target.value))}
+                      className="w-full accent-blue-600 h-1.5 bg-slate-200 rounded-lg cursor-pointer"
+                    />
+                    <span className="text-[10px] font-mono text-slate-700 w-8 text-right font-semibold">
+                      {avatarScale}%
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleFieldChange('avatarScale', 100)}
+                      className="text-[9px] text-slate-400 hover:text-slate-600 px-1 py-0.5 bg-slate-100 rounded cursor-pointer"
+                      title="重置缩放为 100%"
+                    >
+                      重置
+                    </button>
+                  </div>
+
+                  {/* Position */}
+                  <div className="flex items-center gap-1.5 justify-end">
+                    <span className="text-[10.5px] text-slate-500 shrink-0">对齐位置:</span>
+                    <div className="flex gap-1">
+                      {(['top', 'center', 'bottom'] as const).map((pos) => (
+                        <button
+                          key={pos}
+                          type="button"
+                          onClick={() => handleFieldChange('avatarPosition', pos)}
+                          className={`px-1.5 py-0.5 rounded text-[10px] cursor-pointer ${
+                            avatarPosition === pos
+                              ? 'bg-slate-800 text-white font-semibold'
+                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          }`}
+                        >
+                          {pos === 'top' ? '顶部' : pos === 'center' ? '居中' : '底部'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
 
             {/* Quick Presets */}

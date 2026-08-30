@@ -2,7 +2,7 @@ import { ResumeData, ThemeConfig } from '../types';
 
 export const DEFAULT_SECTION_TITLES: Record<string, string> = {
   jobIntent: '求职意向',
-  summary: '自我评价', // user preferred 自我评价
+  summary: '自我评价',
   work: '工作经历',
   project: '项目经验',
   education: '教育背景',
@@ -11,6 +11,19 @@ export const DEFAULT_SECTION_TITLES: Record<string, string> = {
   certificates: '荣誉证书',
   languages: '语言能力',
   custom: '其他项目/亮点',
+};
+
+export const SECTION_TITLE_PRESETS: Record<string, string[]> = {
+  work: ['工作经历', '实践经历', '工作/实习经历', '社会实践', '教学经历', '科研经历', '专业经历', '任职经历'],
+  jobIntent: ['求职意向', '求职目标', '期望职位', '职业意向', '应聘意向', '意向岗位', '求职方向'],
+  project: ['项目经验', '项目经历', '科研成果', '研发项目', '作品集/代表作', '实践项目', '课题研究'],
+  education: ['教育背景', '教育经历', '学历学位', '求学经历', '学习履历', '学术背景'],
+  summary: ['自我评价', '个人总结', '关于我', '个人优势', '职业素养', '核心亮点', '个人简介'],
+  skills: ['专业技能', '核心技能', '技术栈', '专业特长', '技能清单', '专业能力', '技术能力'],
+  certs: ['荣誉证书与语言', '资质与语言', '证书及技能', '荣誉及外语', '资质认证'],
+  certificates: ['荣誉证书', '资质证书', '获奖荣誉', '资格认证', '荣誉奖项', '专业证书'],
+  languages: ['语言能力', '外语水平', '语言技能', '语言与沟通', '外语专长'],
+  custom: ['其他项目/亮点', '社团经历', '志愿活动', '代表成果', '个人作品', '发表论文'],
 };
 
 export const DEFAULT_SECTION_ORDER = [
@@ -25,8 +38,8 @@ export const DEFAULT_SECTION_ORDER = [
 ];
 
 export function getSectionTitle(data: ResumeData, sectionKey: string): string {
-  if (data.sectionTitles && data.sectionTitles[sectionKey]) {
-    return data.sectionTitles[sectionKey];
+  if (data.sectionTitles && data.sectionTitles[sectionKey]?.trim()) {
+    return data.sectionTitles[sectionKey].trim();
   }
   return DEFAULT_SECTION_TITLES[sectionKey] || sectionKey;
 }

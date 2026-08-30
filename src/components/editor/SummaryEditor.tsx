@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Sparkles, Wand2, Loader2, Check, Edit3 } from 'lucide-react';
+import { Sparkles, Wand2, Loader2, Check, FileCheck2 } from 'lucide-react';
 import { ResumeData } from '../../types';
+import { SectionTitleBar } from './SectionTitleBar';
 
 interface SummaryEditorProps {
   summary: string;
@@ -10,8 +11,6 @@ interface SummaryEditorProps {
   onChangeTitle?: (newTitle: string) => void;
 }
 
-const TITLE_PRESETS = ['自我评价', '个人总结', '核心亮点', '个人优势', '职业概述'];
-
 export const SummaryEditor: React.FC<SummaryEditorProps> = ({
   summary,
   sectionTitle = '自我评价',
@@ -20,17 +19,11 @@ export const SummaryEditor: React.FC<SummaryEditorProps> = ({
   onChangeTitle,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [customTitle, setCustomTitle] = useState(sectionTitle);
   const [aiSuggestions, setAiSuggestions] = useState<{
     primarySummary: string;
     alternativeSummary: string;
     coreKeywords: string[];
   } | null>(null);
-
-  const handleTitleChange = (val: string) => {
-    setCustomTitle(val);
-    if (onChangeTitle) onChangeTitle(val);
-  };
 
   const handleGenerateSummary = async () => {
     setLoading(true);
@@ -54,46 +47,21 @@ export const SummaryEditor: React.FC<SummaryEditorProps> = ({
   return (
     <div className="space-y-4 text-xs">
       {/* Title Customization Bar */}
-      <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-        <div className="flex items-center justify-between">
-          <label className="font-semibold text-slate-800 flex items-center gap-1.5">
-            <Edit3 className="w-3.5 h-3.5 text-blue-600" />
-            模块标题设置（自定义名称）：
-          </label>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <input
-            type="text"
-            value={customTitle}
-            onChange={(e) => handleTitleChange(e.target.value)}
-            placeholder="自定义模块名称 (如: 自我评价)"
-            className="w-40 px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          />
-          <div className="flex items-center gap-1 flex-wrap">
-            <span className="text-[11px] text-slate-500">常用预设:</span>
-            {TITLE_PRESETS.map((p) => (
-              <button
-                key={p}
-                type="button"
-                onClick={() => handleTitleChange(p)}
-                className={`px-2 py-1 rounded-md text-[11px] font-medium transition-all cursor-pointer ${
-                  customTitle === p
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white border border-slate-200 hover:border-blue-400 text-slate-700'
-                }`}
-              >
-                {p}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
+      {onChangeTitle && (
+        <SectionTitleBar
+          sectionKey="summary"
+          currentTitle={sectionTitle}
+          onUpdateTitle={onChangeTitle}
+          icon={<FileCheck2 className="w-4 h-4" />}
+          subtitle="可自由修改为：自我评价、个人总结、个人优势、关于我、职业素养等"
+        />
+      )}
 
       {/* Main Content Area */}
       <div className="space-y-2">
         <div className="flex justify-between items-center">
           <label className="block text-slate-700 font-semibold">
-            {customTitle || '自我评价'} 正文内容（建议 150-300 字，突显核心竞争力）
+            {sectionTitle || '自我评价'} 正文内容（建议 150-300 字，突显核心竞争力）
           </label>
           <button
             type="button"
@@ -179,3 +147,4 @@ export const SummaryEditor: React.FC<SummaryEditorProps> = ({
     </div>
   );
 };
+

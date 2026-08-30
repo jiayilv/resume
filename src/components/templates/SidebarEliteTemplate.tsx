@@ -5,6 +5,8 @@ import {
   Briefcase, FolderGit2, Wrench, Languages, Sparkles, Tag 
 } from 'lucide-react';
 import { getDensityStyles, getSectionTitle, DEFAULT_SECTION_ORDER } from '../../utils/templateHelpers';
+import { SectionHeader } from './SectionHeader';
+import { ResumeAvatar } from '../ResumeAvatar';
 
 interface TemplateProps {
   data: ResumeData;
@@ -27,9 +29,11 @@ export const SidebarEliteTemplate: React.FC<TemplateProps> = ({ data, theme }) =
         if (!summary) return null;
         return (
           <section key="summary" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <h2 className="font-bold text-sm tracking-wide uppercase text-slate-900 border-b pb-1 mb-2" style={{ borderColor: `${primaryColor}40` }}>
-              {getSectionTitle(data, 'summary')}
-            </h2>
+            <SectionHeader
+              title={getSectionTitle(data, 'summary')}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle || 'underline'}
+            />
             <p className="text-slate-700 leading-relaxed whitespace-pre-line text-justify" style={{ fontSize: density.bodySize }}>
               {summary}
             </p>
@@ -40,9 +44,11 @@ export const SidebarEliteTemplate: React.FC<TemplateProps> = ({ data, theme }) =
         if (workExperiences.length === 0) return null;
         return (
           <section key="work" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <h2 className="font-bold text-sm tracking-wide uppercase text-slate-900 border-b pb-1 mb-2.5" style={{ borderColor: `${primaryColor}40` }}>
-              {getSectionTitle(data, 'work')}
-            </h2>
+            <SectionHeader
+              title={getSectionTitle(data, 'work')}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle || 'underline'}
+            />
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {workExperiences.map((item) => (
                 <div key={item.id}>
@@ -69,9 +75,11 @@ export const SidebarEliteTemplate: React.FC<TemplateProps> = ({ data, theme }) =
         if (projectExperiences.length === 0) return null;
         return (
           <section key="project" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <h2 className="font-bold text-sm tracking-wide uppercase text-slate-900 border-b pb-1 mb-2.5" style={{ borderColor: `${primaryColor}40` }}>
-              {getSectionTitle(data, 'project')}
-            </h2>
+            <SectionHeader
+              title={getSectionTitle(data, 'project')}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle || 'underline'}
+            />
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {projectExperiences.map((proj) => (
                 <div key={proj.id}>
@@ -101,9 +109,11 @@ export const SidebarEliteTemplate: React.FC<TemplateProps> = ({ data, theme }) =
             {customSections.map((sec) => (
               !data.hiddenSections.includes(sec.id) && (
                 <section key={sec.id} className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-                  <h2 className="font-bold text-sm tracking-wide uppercase text-slate-900 border-b pb-1 mb-2" style={{ borderColor: `${primaryColor}40` }}>
-                    {sec.title}
-                  </h2>
+                  <SectionHeader
+                    title={sec.title}
+                    primaryColor={primaryColor}
+                    headerStyle={theme.headerStyle || 'underline'}
+                  />
                   <div className="space-y-2">
                     {sec.items.map((item) => (
                       <div key={item.id} className="text-xs">
@@ -136,30 +146,15 @@ export const SidebarEliteTemplate: React.FC<TemplateProps> = ({ data, theme }) =
         lineHeight: density.lineHeight,
       }}
     >
-      {/* Left Sidebar (Preserved in print) */}
+      {/* Left Sidebar */}
       <div 
         className="w-[230px] text-white shrink-0 space-y-5"
         style={{ backgroundColor: primaryColor, padding: '24px 18px' }}
       >
-        {/* Avatar - Standard 1-inch 25mm x 35mm */}
+        {/* Avatar */}
         {profile.showAvatar && (
           <div className="flex justify-center">
-            <div className="shrink-0" style={{ width: '25mm', height: '35mm' }}>
-              {profile.avatar ? (
-                <img 
-                  src={profile.avatar} 
-                  alt={profile.name} 
-                  className="w-full h-full object-cover rounded-lg border-2 border-white/50 shadow-md"
-                />
-              ) : (
-                <div 
-                  className="w-full h-full border border-dashed border-white/50 bg-white/10 rounded-lg flex flex-col items-center justify-center text-white/80 p-1 text-center select-none"
-                >
-                  <span className="text-[9px] font-medium">1寸照片</span>
-                  <span className="text-[7.5px] text-white/60">25×35mm</span>
-                </div>
-              )}
-            </div>
+            <ResumeAvatar profile={profile} theme={theme} />
           </div>
         )}
 

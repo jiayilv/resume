@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { ProjectExperience } from '../../types';
-import { Plus, Trash2, ChevronDown, ChevronUp, Tag } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, ChevronUp, Tag, FolderGit2 } from 'lucide-react';
+import { SectionTitleBar } from './SectionTitleBar';
 
 interface ProjectExperienceEditorProps {
   projectExperiences: ProjectExperience[];
   onChange: (updated: ProjectExperience[]) => void;
+  sectionTitle?: string;
+  onUpdateSectionTitle?: (newTitle: string) => void;
   onOpenPolishModal?: (text: string, onApply: (newText: string) => void, contextRole?: string) => void;
 }
 
@@ -13,6 +16,8 @@ const QUICK_PROJECT_TAGS = ['从0到1架构', '千万级流量', '高并发低�
 export const ProjectExperienceEditor: React.FC<ProjectExperienceEditorProps> = ({
   projectExperiences,
   onChange,
+  sectionTitle,
+  onUpdateSectionTitle,
 }) => {
   const [expandedId, setExpandedId] = useState<string | null>(projectExperiences[0]?.id || null);
   const [newTagInputs, setNewTagInputs] = useState<Record<string, string>>({});
@@ -55,8 +60,18 @@ export const ProjectExperienceEditor: React.FC<ProjectExperienceEditorProps> = (
 
   return (
     <div className="space-y-3 text-xs">
+      {onUpdateSectionTitle && (
+        <SectionTitleBar
+          sectionKey="project"
+          currentTitle={sectionTitle}
+          onUpdateTitle={onUpdateSectionTitle}
+          icon={<FolderGit2 className="w-4 h-4" />}
+          subtitle="可自由修改为：项目经历、科研成果、研发项目、作品集等"
+        />
+      )}
+
       <div className="flex justify-between items-center mb-1">
-        <span className="text-slate-500 font-medium">已添加 {projectExperiences.length} 个重点项目</span>
+        <span className="text-slate-500 font-medium">已添加 {projectExperiences.length} 个项目</span>
         <button
           type="button"
           onClick={handleAdd}

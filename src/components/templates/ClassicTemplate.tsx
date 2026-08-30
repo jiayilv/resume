@@ -5,6 +5,8 @@ import {
   Award, BookOpen, Briefcase, FolderGit2, Wrench, Languages, Sparkles, Tag
 } from 'lucide-react';
 import { getDensityStyles, getSectionTitle, DEFAULT_SECTION_ORDER } from '../../utils/templateHelpers';
+import { SectionHeader } from './SectionHeader';
+import { ResumeAvatar } from '../ResumeAvatar';
 
 interface TemplateProps {
   data: ResumeData;
@@ -15,10 +17,6 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
   const { profile, jobIntent, summary, workExperiences, projectExperiences, educations, skills, certificates, languages, customSections } = data;
   const primaryColor = theme.primaryColor || '#1e40af';
   const density = getDensityStyles(theme);
-
-  const avatarRadiusClass = 
-    theme.avatarShape === 'circle' ? 'rounded-full' :
-    theme.avatarShape === 'rounded' ? 'rounded-xl' : 'rounded-none';
 
   const order = data.sectionOrder && data.sectionOrder.length > 0 ? data.sectionOrder : DEFAULT_SECTION_ORDER;
 
@@ -35,7 +33,7 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
             className="bg-slate-50 border border-slate-200/80 rounded-md p-2 px-3 flex flex-wrap items-center justify-between text-xs avoid-break"
             style={{ marginBottom: density.sectionGap }}
           >
-            <span className="font-semibold text-slate-700">求职意向：</span>
+            <span className="font-semibold text-slate-700">{getSectionTitle(data, 'jobIntent')}：</span>
             <span className="font-bold text-slate-900">{jobIntent.targetPosition}</span>
             {jobIntent.targetCity && <span className="text-slate-600">期望城市: {jobIntent.targetCity}</span>}
             {jobIntent.targetSalary && <span className="text-slate-600">期望薪资: {jobIntent.targetSalary}</span>}
@@ -47,12 +45,12 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
         if (!summary) return null;
         return (
           <section key="summary" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <div className="flex items-center gap-2 border-b pb-1 mb-2" style={{ borderColor: `${primaryColor}40` }}>
-              <Sparkles className="w-4 h-4" style={{ color: primaryColor }} />
-              <h2 className="font-bold text-sm tracking-wide uppercase" style={{ color: primaryColor }}>
-                {getSectionTitle(data, 'summary')}
-              </h2>
-            </div>
+            <SectionHeader
+              title={getSectionTitle(data, 'summary')}
+              icon={<Sparkles className="w-4 h-4" />}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle}
+            />
             <p className="text-slate-700 leading-relaxed whitespace-pre-line text-justify" style={{ fontSize: density.bodySize }}>
               {summary}
             </p>
@@ -63,12 +61,12 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
         if (workExperiences.length === 0) return null;
         return (
           <section key="work" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <div className="flex items-center gap-2 border-b pb-1 mb-2.5" style={{ borderColor: `${primaryColor}40` }}>
-              <Briefcase className="w-4 h-4" style={{ color: primaryColor }} />
-              <h2 className="font-bold text-sm tracking-wide uppercase" style={{ color: primaryColor }}>
-                {getSectionTitle(data, 'work')}
-              </h2>
-            </div>
+            <SectionHeader
+              title={getSectionTitle(data, 'work')}
+              icon={<Briefcase className="w-4 h-4" />}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle}
+            />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {workExperiences.map((item) => (
@@ -103,12 +101,12 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
         if (projectExperiences.length === 0) return null;
         return (
           <section key="project" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <div className="flex items-center gap-2 border-b pb-1 mb-2.5" style={{ borderColor: `${primaryColor}40` }}>
-              <FolderGit2 className="w-4 h-4" style={{ color: primaryColor }} />
-              <h2 className="font-bold text-sm tracking-wide uppercase" style={{ color: primaryColor }}>
-                {getSectionTitle(data, 'project')}
-              </h2>
-            </div>
+            <SectionHeader
+              title={getSectionTitle(data, 'project')}
+              icon={<FolderGit2 className="w-4 h-4" />}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle}
+            />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {projectExperiences.map((proj) => (
@@ -147,12 +145,12 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
         if (educations.length === 0) return null;
         return (
           <section key="education" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <div className="flex items-center gap-2 border-b pb-1 mb-2.5" style={{ borderColor: `${primaryColor}40` }}>
-              <BookOpen className="w-4 h-4" style={{ color: primaryColor }} />
-              <h2 className="font-bold text-sm tracking-wide uppercase" style={{ color: primaryColor }}>
-                {getSectionTitle(data, 'education')}
-              </h2>
-            </div>
+            <SectionHeader
+              title={getSectionTitle(data, 'education')}
+              icon={<BookOpen className="w-4 h-4" />}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle}
+            />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {educations.map((edu) => (
@@ -200,12 +198,12 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
         if (skills.length === 0) return null;
         return (
           <section key="skills" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <div className="flex items-center gap-2 border-b pb-1 mb-2.5" style={{ borderColor: `${primaryColor}40` }}>
-              <Wrench className="w-4 h-4" style={{ color: primaryColor }} />
-              <h2 className="font-bold text-sm tracking-wide uppercase" style={{ color: primaryColor }}>
-                {getSectionTitle(data, 'skills')}
-              </h2>
-            </div>
+            <SectionHeader
+              title={getSectionTitle(data, 'skills')}
+              icon={<Wrench className="w-4 h-4" />}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle}
+            />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
               {skills.map((skill) => (
@@ -234,12 +232,12 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
           <div key="certs_group" className="grid grid-cols-1 sm:grid-cols-2 gap-4 avoid-break" style={{ marginBottom: density.sectionGap }}>
             {certificates.length > 0 && !data.hiddenSections.includes('certificates') && (
               <section>
-                <div className="flex items-center gap-2 border-b pb-1 mb-2" style={{ borderColor: `${primaryColor}40` }}>
-                  <Award className="w-4 h-4" style={{ color: primaryColor }} />
-                  <h2 className="font-bold text-xs tracking-wide uppercase" style={{ color: primaryColor }}>
-                    {getSectionTitle(data, 'certificates')}
-                  </h2>
-                </div>
+                <SectionHeader
+                  title={getSectionTitle(data, 'certificates')}
+                  icon={<Award className="w-4 h-4" />}
+                  primaryColor={primaryColor}
+                  headerStyle={theme.headerStyle}
+                />
                 <div className="space-y-1.5 text-xs text-slate-700">
                   {certificates.map((c) => (
                     <div key={c.id} className="flex justify-between">
@@ -253,12 +251,12 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
 
             {languages.length > 0 && !data.hiddenSections.includes('languages') && (
               <section>
-                <div className="flex items-center gap-2 border-b pb-1 mb-2" style={{ borderColor: `${primaryColor}40` }}>
-                  <Languages className="w-4 h-4" style={{ color: primaryColor }} />
-                  <h2 className="font-bold text-xs tracking-wide uppercase" style={{ color: primaryColor }}>
-                    {getSectionTitle(data, 'languages')}
-                  </h2>
-                </div>
+                <SectionHeader
+                  title={getSectionTitle(data, 'languages')}
+                  icon={<Languages className="w-4 h-4" />}
+                  primaryColor={primaryColor}
+                  headerStyle={theme.headerStyle}
+                />
                 <div className="space-y-1.5 text-xs text-slate-700">
                   {languages.map((lang) => (
                     <div key={lang.id} className="flex justify-between">
@@ -279,11 +277,11 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
             {customSections.map((sec) => (
               !data.hiddenSections.includes(sec.id) && (
                 <section key={sec.id} className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-                  <div className="flex items-center gap-2 border-b pb-1 mb-2" style={{ borderColor: `${primaryColor}40` }}>
-                    <h2 className="font-bold text-sm tracking-wide uppercase" style={{ color: primaryColor }}>
-                      {sec.title}
-                    </h2>
-                  </div>
+                  <SectionHeader
+                    title={sec.title}
+                    primaryColor={primaryColor}
+                    headerStyle={theme.headerStyle}
+                  />
                   <div className="space-y-2">
                     {sec.items.map((item) => (
                       <div key={item.id} className="text-xs">
@@ -312,7 +310,7 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
       className="bg-white text-slate-800 leading-relaxed w-full box-border transition-all"
       style={density.containerStyle}
     >
-      {/* Header Profile - Protected from print hiding */}
+      {/* Header Profile */}
       <header className="border-b-2 pb-5 mb-5 flex items-center justify-between gap-6" style={{ borderColor: primaryColor }}>
         <div className="flex-1">
           <div className="flex items-baseline gap-3 mb-1.5">
@@ -374,25 +372,9 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
           </div>
         </div>
 
-        {/* Profile Avatar - Standard 1-inch 25mm x 35mm */}
+        {/* Profile Avatar - Standard 1-inch 25mm x 35mm with fit/zoom/position */}
         {profile.showAvatar && (
-          <div className="shrink-0" style={{ width: '25mm', height: '35mm' }}>
-            {profile.avatar ? (
-              <img 
-                src={profile.avatar} 
-                alt={profile.name} 
-                className={`w-full h-full object-cover border shadow-2xs ${avatarRadiusClass}`}
-                style={{ borderColor: primaryColor }}
-              />
-            ) : (
-              <div 
-                className={`w-full h-full border border-dashed border-slate-300 bg-slate-50 flex flex-col items-center justify-center text-slate-400 p-1 text-center select-none ${avatarRadiusClass}`}
-              >
-                <span className="text-[9px] font-medium text-slate-500">1寸照片</span>
-                <span className="text-[7.5px] text-slate-400">25×35mm</span>
-              </div>
-            )}
-          </div>
+          <ResumeAvatar profile={profile} theme={theme} />
         )}
       </header>
 

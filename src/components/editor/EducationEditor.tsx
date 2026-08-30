@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { Education } from '../../types';
-import { Plus, Trash2, BookOpen, ChevronDown, ChevronUp, Tag, X } from 'lucide-react';
+import { Plus, Trash2, BookOpen, ChevronDown, ChevronUp, Tag, X, GraduationCap } from 'lucide-react';
+import { SectionTitleBar } from './SectionTitleBar';
 
 interface EducationEditorProps {
   educations: Education[];
   onChange: (updated: Education[]) => void;
+  sectionTitle?: string;
+  onUpdateSectionTitle?: (newTitle: string) => void;
 }
 
 const COMMON_EDU_TAGS = [
@@ -12,7 +15,12 @@ const COMMON_EDU_TAGS = [
   '全国计算机二级', '国家奖学金', '校一等奖学金', '优秀毕业生', '三好学生', '院系前 5%', '竞赛一等奖'
 ];
 
-export const EducationEditor: React.FC<EducationEditorProps> = ({ educations, onChange }) => {
+export const EducationEditor: React.FC<EducationEditorProps> = ({
+  educations,
+  onChange,
+  sectionTitle,
+  onUpdateSectionTitle,
+}) => {
   const [expandedId, setExpandedId] = useState<string | null>(educations[0]?.id || null);
   const [newPointInput, setNewPointInput] = useState<{ [id: string]: string }>({});
 
@@ -66,6 +74,16 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ educations, on
 
   return (
     <div className="space-y-3 text-xs">
+      {onUpdateSectionTitle && (
+        <SectionTitleBar
+          sectionKey="education"
+          currentTitle={sectionTitle}
+          onUpdateTitle={onUpdateSectionTitle}
+          icon={<GraduationCap className="w-4 h-4" />}
+          subtitle="可自由修改为：教育经历、学历学位、求学经历、学习履历等"
+        />
+      )}
+
       <div className="flex justify-between items-center mb-1">
         <span className="text-slate-500 font-medium">已添加 {educations.length} 条教育背景</span>
         <button

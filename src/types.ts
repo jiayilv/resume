@@ -85,6 +85,10 @@ export interface UserProfile {
   title: string;
   avatar: string;
   showAvatar: boolean;
+  avatarFit?: 'cover' | 'contain'; // 'cover' or 'contain' (完整显示不裁剪不放大)
+  avatarScale?: number; // 50 - 150%, default 100
+  avatarPosition?: 'center' | 'top' | 'bottom';
+  avatarBorder?: boolean;
   phone: string;
   email: string;
   wechat?: string;
@@ -112,14 +116,15 @@ export interface ResumeData {
   customSections: CustomSection[];
   sectionOrder: string[]; // ['jobIntent', 'summary', 'work', 'project', 'education', 'skills', 'certs', 'custom']
   hiddenSections: string[];
-  sectionTitles?: Record<string, string>; // e.g. { summary: '自我评价', work: '工作经历', ... }
+  sectionTitles?: Record<string, string>; // e.g. { jobIntent: '求职意向', summary: '自我评价', work: '实践经历', ... }
 }
 
-export type TemplateId = 'classic' | 'modern' | 'sidebar' | 'minimal' | 'executive' | 'academic';
+export type TemplateId = 'classic' | 'modern' | 'sidebar' | 'minimal' | 'executive' | 'academic' | 'diy';
 
 export type FontFamily = 'sans' | 'serif' | 'mono';
 export type SpacingLevel = 'compact' | 'normal' | 'relaxed' | 'fill-a4';
 export type AvatarShape = 'square' | 'rounded' | 'circle';
+export type HeaderStyle = 'underline' | 'left-bar' | 'pill' | 'minimal' | 'double-line' | 'academic';
 
 export interface ThemeConfig {
   templateId: TemplateId;
@@ -130,9 +135,10 @@ export interface ThemeConfig {
   lineHeight: SpacingLevel;
   sectionSpacing: SpacingLevel;
   pagePadding: SpacingLevel;
-  avatarShape: AvatarShape;
-  showIcons: boolean;
-  showDividers: boolean;
+  avatarShape?: AvatarShape;
+  headerStyle?: HeaderStyle;
+  showIcons?: boolean;
+  showDividers?: boolean;
   autoFitA4?: boolean; // whether to auto-spread content to fill 1 full A4 page
 }
 

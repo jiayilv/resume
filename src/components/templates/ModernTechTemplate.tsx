@@ -5,6 +5,8 @@ import {
   Award, BookOpen, Briefcase, FolderGit2, Wrench, Languages, Sparkles, Tag, Terminal
 } from 'lucide-react';
 import { getDensityStyles, getSectionTitle, DEFAULT_SECTION_ORDER } from '../../utils/templateHelpers';
+import { SectionHeader } from './SectionHeader';
+import { ResumeAvatar } from '../ResumeAvatar';
 
 interface TemplateProps {
   data: ResumeData;
@@ -15,10 +17,6 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ data, theme }) => 
   const { profile, jobIntent, summary, workExperiences, projectExperiences, educations, skills, certificates, languages, customSections } = data;
   const primaryColor = theme.primaryColor || '#0e7490';
   const density = getDensityStyles(theme);
-
-  const avatarRadiusClass = 
-    theme.avatarShape === 'circle' ? 'rounded-full' :
-    theme.avatarShape === 'rounded' ? 'rounded-xl' : 'rounded-none';
 
   const order = data.sectionOrder && data.sectionOrder.length > 0 ? data.sectionOrder : DEFAULT_SECTION_ORDER;
 
@@ -38,7 +36,7 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ data, theme }) => 
               marginBottom: density.sectionGap 
             }}
           >
-            <span><strong style={{ color: primaryColor }}>TARGET_ROLE:</strong> {jobIntent.targetPosition}</span>
+            <span><strong style={{ color: primaryColor }}>{getSectionTitle(data, 'jobIntent').toUpperCase()}:</strong> {jobIntent.targetPosition}</span>
             {jobIntent.targetCity && <span>CITY: {jobIntent.targetCity}</span>}
             {jobIntent.targetSalary && <span>SALARY: {jobIntent.targetSalary}</span>}
             {jobIntent.availableTime && <span>STATUS: {jobIntent.availableTime}</span>}
@@ -49,12 +47,12 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ data, theme }) => 
         if (!summary) return null;
         return (
           <section key="summary" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <div className="flex items-center gap-2 mb-2 pb-1 border-b border-slate-100">
-              <span className="w-2.5 h-2.5 rounded-xs" style={{ backgroundColor: primaryColor }} />
-              <h2 className="font-bold text-sm tracking-wide uppercase text-slate-900">
-                {getSectionTitle(data, 'summary')}
-              </h2>
-            </div>
+            <SectionHeader
+              title={getSectionTitle(data, 'summary')}
+              icon={<Sparkles className="w-4 h-4" />}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle || 'left-bar'}
+            />
             <p className="text-slate-700 leading-relaxed whitespace-pre-line text-justify" style={{ fontSize: density.bodySize }}>
               {summary}
             </p>
@@ -65,12 +63,12 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ data, theme }) => 
         if (workExperiences.length === 0) return null;
         return (
           <section key="work" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <div className="flex items-center gap-2 mb-2.5 pb-1 border-b border-slate-100">
-              <span className="w-2.5 h-2.5 rounded-xs" style={{ backgroundColor: primaryColor }} />
-              <h2 className="font-bold text-sm tracking-wide uppercase text-slate-900">
-                {getSectionTitle(data, 'work')}
-              </h2>
-            </div>
+            <SectionHeader
+              title={getSectionTitle(data, 'work')}
+              icon={<Briefcase className="w-4 h-4" />}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle || 'left-bar'}
+            />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {workExperiences.map((w) => (
@@ -98,24 +96,24 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ data, theme }) => 
         if (projectExperiences.length === 0) return null;
         return (
           <section key="project" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <div className="flex items-center gap-2 mb-2.5 pb-1 border-b border-slate-100">
-              <span className="w-2.5 h-2.5 rounded-xs" style={{ backgroundColor: primaryColor }} />
-              <h2 className="font-bold text-sm tracking-wide uppercase text-slate-900">
-                {getSectionTitle(data, 'project')}
-              </h2>
-            </div>
+            <SectionHeader
+              title={getSectionTitle(data, 'project')}
+              icon={<FolderGit2 className="w-4 h-4" />}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle || 'left-bar'}
+            />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {projectExperiences.map((p) => (
                 <div key={p.id} className="relative pl-3 border-l-2" style={{ borderColor: `${primaryColor}40` }}>
                   <div className="flex flex-wrap justify-between items-baseline gap-2 mb-1">
                     <span className="font-bold text-slate-900" style={{ fontSize: density.subTitleSize }}>{p.projectName}</span>
-                    <span className="font-medium text-slate-700" style={{ fontSize: density.bodySize }}>{p.role}</span>
+                    <span className="font-medium" style={{ color: primaryColor, fontSize: density.bodySize }}>{p.role}</span>
                     <span className="text-slate-400 font-mono text-xs">{p.startDate} - {p.current ? 'PRESENT' : p.endDate}</span>
                   </div>
                   {p.techStack && (
-                    <div className="text-xs font-mono mb-1" style={{ color: primaryColor }}>
-                      STACK: {p.techStack}
+                    <div className="mb-1 text-xs text-slate-500 font-mono">
+                      <span className="text-slate-700 font-bold">STACK:</span> {p.techStack}
                     </div>
                   )}
                   {p.description && <p className="text-slate-700 mb-1 leading-relaxed" style={{ fontSize: density.bodySize }}>{p.description}</p>}
@@ -134,47 +132,36 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ data, theme }) => 
         if (educations.length === 0) return null;
         return (
           <section key="education" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <div className="flex items-center gap-2 mb-2.5 pb-1 border-b border-slate-100">
-              <span className="w-2.5 h-2.5 rounded-xs" style={{ backgroundColor: primaryColor }} />
-              <h2 className="font-bold text-sm tracking-wide uppercase text-slate-900">
-                {getSectionTitle(data, 'education')}
-              </h2>
-            </div>
+            <SectionHeader
+              title={getSectionTitle(data, 'education')}
+              icon={<BookOpen className="w-4 h-4" />}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle || 'left-bar'}
+            />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {educations.map((edu) => (
-                <div key={edu.id} className="relative pl-3 border-l-2" style={{ borderColor: `${primaryColor}40` }}>
-                  <div className="flex flex-wrap justify-between items-baseline gap-2">
+                <div key={edu.id}>
+                  <div className="flex justify-between items-baseline">
                     <span className="font-bold text-slate-900" style={{ fontSize: density.subTitleSize }}>{edu.school}</span>
-                    <span className="font-medium text-slate-700" style={{ fontSize: density.bodySize }}>{edu.major} · {edu.degree}</span>
                     <span className="text-slate-400 font-mono text-xs">{edu.startDate} - {edu.endDate}</span>
                   </div>
+                  <div className="text-slate-700 text-xs">{edu.major} · {edu.degree}</div>
                   {(edu.gpa || edu.honors || edu.courses) && (
-                    <div className="text-slate-500 mt-0.5 flex flex-wrap gap-x-4" style={{ fontSize: density.metaSize }}>
-                      {edu.gpa && <span>GPA: {edu.gpa}</span>}
-                      {edu.honors && <span>HONOR: {edu.honors}</span>}
-                      {edu.courses && <span>COURSES: {edu.courses}</span>}
+                    <div className="text-slate-500 font-mono mt-0.5" style={{ fontSize: density.metaSize }}>
+                      {edu.gpa && `GPA: ${edu.gpa} `}
+                      {edu.honors && `HONORS: ${edu.honors} `}
+                      {edu.courses && `COURSES: ${edu.courses}`}
                     </div>
                   )}
-
-                  {/* Custom points like CET-4 */}
                   {edu.customPoints && edu.customPoints.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mt-1.5">
-                      {edu.customPoints.map((pt, pIdx) => (
-                        <span 
-                          key={pIdx}
-                          className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded text-[11px] font-mono border"
-                          style={{ backgroundColor: `${primaryColor}0a`, borderColor: `${primaryColor}30`, color: primaryColor }}
-                        >
-                          <Tag className="w-2.5 h-2.5" />
-                          {pt}
+                    <div className="flex flex-wrap gap-1.5 mt-1">
+                      {edu.customPoints.map((pt, idx) => (
+                        <span key={idx} className="bg-slate-100 px-1.5 py-0.5 rounded text-[10px] font-mono text-slate-700">
+                          #{pt}
                         </span>
                       ))}
                     </div>
-                  )}
-
-                  {edu.additionalInfo && (
-                    <p className="text-slate-600 text-xs mt-1 leading-relaxed">{edu.additionalInfo}</p>
                   )}
                 </div>
               ))}
@@ -186,22 +173,22 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ data, theme }) => 
         if (skills.length === 0) return null;
         return (
           <section key="skills" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <div className="flex items-center gap-2 mb-2.5 pb-1 border-b border-slate-100">
-              <span className="w-2.5 h-2.5 rounded-xs" style={{ backgroundColor: primaryColor }} />
-              <h2 className="font-bold text-sm tracking-wide uppercase text-slate-900">
-                {getSectionTitle(data, 'skills')}
-              </h2>
-            </div>
+            <SectionHeader
+              title={getSectionTitle(data, 'skills')}
+              icon={<Wrench className="w-4 h-4" />}
+              primaryColor={primaryColor}
+              headerStyle={theme.headerStyle || 'left-bar'}
+            />
 
-            <div className="flex flex-wrap gap-2 text-xs font-mono">
+            <div className="flex flex-wrap gap-1.5">
               {skills.map((s) => (
                 <span 
                   key={s.id}
-                  className="px-2.5 py-1 rounded-md border font-medium flex items-center gap-1.5"
-                  style={{ backgroundColor: `${primaryColor}08`, borderColor: `${primaryColor}25`, color: '#0f172a' }}
+                  className="px-2.5 py-1 rounded text-xs font-mono font-medium border"
+                  style={{ backgroundColor: `${primaryColor}08`, borderColor: `${primaryColor}30`, color: primaryColor }}
                 >
-                  <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: primaryColor }} />
                   {s.name}
+                  <span className="text-slate-400 ml-1">★{s.level}</span>
                 </span>
               ))}
             </div>
@@ -214,15 +201,15 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ data, theme }) => 
         if (certificates.length === 0 && languages.length === 0) return null;
         return (
           <div key="certs_group" className="grid grid-cols-1 sm:grid-cols-2 gap-4 avoid-break" style={{ marginBottom: density.sectionGap }}>
-            {certificates.length > 0 && !data.hiddenSections.includes('certificates') && (
-              <section>
-                <div className="flex items-center gap-2 mb-2 pb-1 border-b border-slate-100">
-                  <span className="w-2 h-2 rounded-xs" style={{ backgroundColor: primaryColor }} />
-                  <h2 className="font-bold text-xs tracking-wide uppercase text-slate-900">
-                    {getSectionTitle(data, 'certificates')}
-                  </h2>
-                </div>
-                <div className="space-y-1 text-xs font-mono">
+            {certificates.length > 0 && (
+              <div>
+                <SectionHeader
+                  title={getSectionTitle(data, 'certificates')}
+                  icon={<Award className="w-4 h-4" />}
+                  primaryColor={primaryColor}
+                  headerStyle={theme.headerStyle || 'left-bar'}
+                />
+                <div className="space-y-1 text-xs font-mono text-slate-700">
                   {certificates.map((c) => (
                     <div key={c.id} className="flex justify-between">
                       <span>{c.name}</span>
@@ -230,18 +217,17 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ data, theme }) => 
                     </div>
                   ))}
                 </div>
-              </section>
+              </div>
             )}
-
-            {languages.length > 0 && !data.hiddenSections.includes('languages') && (
-              <section>
-                <div className="flex items-center gap-2 mb-2 pb-1 border-b border-slate-100">
-                  <span className="w-2 h-2 rounded-xs" style={{ backgroundColor: primaryColor }} />
-                  <h2 className="font-bold text-xs tracking-wide uppercase text-slate-900">
-                    {getSectionTitle(data, 'languages')}
-                  </h2>
-                </div>
-                <div className="space-y-1 text-xs font-mono">
+            {languages.length > 0 && (
+              <div>
+                <SectionHeader
+                  title={getSectionTitle(data, 'languages')}
+                  icon={<Languages className="w-4 h-4" />}
+                  primaryColor={primaryColor}
+                  headerStyle={theme.headerStyle || 'left-bar'}
+                />
+                <div className="space-y-1 text-xs font-mono text-slate-700">
                   {languages.map((l) => (
                     <div key={l.id} className="flex justify-between">
                       <span>{l.language}</span>
@@ -249,7 +235,7 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ data, theme }) => 
                     </div>
                   ))}
                 </div>
-              </section>
+              </div>
             )}
           </div>
         );
@@ -261,12 +247,11 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ data, theme }) => 
             {customSections.map((sec) => (
               !data.hiddenSections.includes(sec.id) && (
                 <section key={sec.id} className="avoid-break" style={{ marginBottom: density.sectionGap }}>
-                  <div className="flex items-center gap-2 mb-2 pb-1 border-b border-slate-100">
-                    <span className="w-2.5 h-2.5 rounded-xs" style={{ backgroundColor: primaryColor }} />
-                    <h2 className="font-bold text-sm tracking-wide uppercase text-slate-900">
-                      {sec.title}
-                    </h2>
-                  </div>
+                  <SectionHeader
+                    title={sec.title}
+                    primaryColor={primaryColor}
+                    headerStyle={theme.headerStyle || 'left-bar'}
+                  />
                   <div className="space-y-2">
                     {sec.items.map((item) => (
                       <div key={item.id} className="text-xs">
@@ -274,7 +259,7 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ data, theme }) => 
                           <span>{item.title}</span>
                           {item.date && <span className="text-slate-400 font-mono">{item.date}</span>}
                         </div>
-                        {item.subtitle && <div className="text-slate-600 font-mono text-[11px]">{item.subtitle}</div>}
+                        {item.subtitle && <div className="text-slate-600 text-xs">{item.subtitle}</div>}
                         <p className="text-slate-700 whitespace-pre-line mt-0.5">{item.description}</p>
                       </div>
                     ))}
@@ -320,23 +305,7 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ data, theme }) => 
 
         {/* Profile Avatar - Standard 1-inch 25mm x 35mm */}
         {profile.showAvatar && (
-          <div className="shrink-0" style={{ width: '25mm', height: '35mm' }}>
-            {profile.avatar ? (
-              <img 
-                src={profile.avatar} 
-                alt={profile.name} 
-                className={`w-full h-full object-cover border shadow-2xs ${avatarRadiusClass}`}
-                style={{ borderColor: primaryColor }}
-              />
-            ) : (
-              <div 
-                className={`w-full h-full border border-dashed border-slate-300 bg-slate-50 flex flex-col items-center justify-center text-slate-400 p-1 text-center font-mono select-none ${avatarRadiusClass}`}
-              >
-                <span className="text-[9px] font-medium text-slate-500">1寸照片</span>
-                <span className="text-[7.5px] text-slate-400">25×35mm</span>
-              </div>
-            )}
-          </div>
+          <ResumeAvatar profile={profile} theme={theme} />
         )}
       </header>
 

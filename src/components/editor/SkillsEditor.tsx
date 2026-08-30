@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { SkillItem } from '../../types';
-import { Plus, Trash2, Sparkles, Tag } from 'lucide-react';
+import { Plus, Trash2, Sparkles, Tag, Wrench } from 'lucide-react';
+import { SectionTitleBar } from './SectionTitleBar';
 
 interface SkillsEditorProps {
   skills: SkillItem[];
   onChange: (updated: SkillItem[]) => void;
+  sectionTitle?: string;
+  onUpdateSectionTitle?: (newTitle: string) => void;
 }
 
 const COMMON_SKILLS = [
@@ -13,7 +16,12 @@ const COMMON_SKILLS = [
   '产品规划 (PRD)', '数据分析 (SQL/Python)', '大模型微调 (LLM/RAG)', '微前端架构', 'Git / CI-CD'
 ];
 
-export const SkillsEditor: React.FC<SkillsEditorProps> = ({ skills, onChange }) => {
+export const SkillsEditor: React.FC<SkillsEditorProps> = ({
+  skills,
+  onChange,
+  sectionTitle,
+  onUpdateSectionTitle,
+}) => {
   const [newSkillName, setNewSkillName] = useState('');
 
   const handleAdd = (nameToAdd?: string) => {
@@ -40,6 +48,16 @@ export const SkillsEditor: React.FC<SkillsEditorProps> = ({ skills, onChange }) 
 
   return (
     <div className="space-y-4 text-xs">
+      {onUpdateSectionTitle && (
+        <SectionTitleBar
+          sectionKey="skills"
+          currentTitle={sectionTitle}
+          onUpdateTitle={onUpdateSectionTitle}
+          icon={<Wrench className="w-4 h-4" />}
+          subtitle="可自由修改为：专业技能、核心技能、技术栈、技能清单、专业特长等"
+        />
+      )}
+
       {/* Quick Add Custom Skill */}
       <div className="flex gap-2">
         <input
