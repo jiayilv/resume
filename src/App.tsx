@@ -19,7 +19,7 @@ import { CertificatesLanguagesEditor } from './components/editor/CertificatesLan
 import { SummaryEditor } from './components/editor/SummaryEditor';
 import { ResumePreview } from './components/ResumePreview';
 import { ThemeSelector } from './components/ThemeSelector';
-import { exportToPdf, exportToJson } from './utils/exportUtils';
+import { exportToPdf, exportToJson, printResumeCanvas } from './utils/exportUtils';
 import {
   Printer,
   Download,
@@ -39,6 +39,7 @@ import {
   ChevronRight,
   Eye,
   Sparkles,
+  Loader2,
 } from 'lucide-react';
 
 const STORAGE_KEY = 'jianliben_resume_data_v1';
@@ -95,6 +96,8 @@ export function App() {
   const [activeTab, setActiveTab] = useState<string>('profile');
   const [showThemePanel, setShowThemePanel] = useState<boolean>(true);
   const [previewScale, setPreviewScale] = useState<number>(0.85);
+  const [isPrinting, setIsPrinting] = useState<boolean>(false);
+  const [isExporting, setIsExporting] = useState<boolean>(false);
 
   const previewRef = useRef<HTMLDivElement>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
@@ -165,13 +168,34 @@ export function App() {
     }
   };
 
-  // Export handlers
-  const handlePrint = () => {
-    window.print();
+  // Export handlers with High-precision Sliced Snapshot Printing
+  const handlePrint = async () => {
+    if (isPrinting) return;
+    setIsPrinting(true);
+    try {
+      const docTitle = `${resumeData.profile.name || '个人简历'}_${resumeData.profile.title || '求职'}`;
+      await printResumeCanvas('resume-canvas', docTitle);
+    } catch (error) {
+      console.error('打印执行异常:', error);
+      window.print();
+    } finally {
+      setIsPrinting(false);
+    }
   };
 
-  const handleExportPdf = () => {
-    exportToPdf('resume-canvas', `${resumeData.profile.name || '简历'}_${resumeData.profile.title || '求职'}.pdf`);
+  const handleExportPdf = async () => {
+    if (isExporting) return;
+    setIsExporting(true);
+    try {
+      await exportToPdf(
+        'resume-canvas',
+        `${resumeData.profile.name || '个人简历'}_${resumeData.profile.title || '求职'}.pdf`
+      );
+    } catch (error) {
+      console.error('PDF导出异常:', error);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const handleExportJson = () => {
@@ -295,21 +319,44 @@ export function App() {
             {/* Print & PDF Button */}
             <button
               onClick={handlePrint}
-              className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs text-xs transition-all hover:shadow-md"
-              title="高质量直接打印或另存为PDF（保留完整基本信息）"
+              disabled={isPrinting}
+              className={`px-3.5 py-1.5 font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs text-xs transition-all ${
+                isPrinting
+                  ? 'bg-blue-400 text-white cursor-wait'
+                  : 'bg-blue-600 hover:bg-blue-700 text-white hover:shadow-md'
+              }`}
+              title="根据当前 A4 预览生成像素级高保真打印或存为 PDF（支持多页自动分页与上边距保留）"
             >
-              <Printer className="w-4 h-4" />
-              <span>打印 / 存为PDF</span>
+              {isPrinting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-white" />
+                  <span>生成打印中...</span>
+                </>
+              ) : (
+                <>
+                  <Printer className="w-4 h-4" />
+                  <span>打印 / 存为PDF</span>
+                </>
+              )}
             </button>
 
             {/* More export dropdown */}
             <div className="flex items-center gap-1">
               <button
                 onClick={handleExportPdf}
-                className="p-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl cursor-pointer shadow-2xs"
-                title="直接下载 PDF 文件"
+                disabled={isExporting}
+                className={`p-2 border rounded-xl shadow-2xs transition-colors ${
+                  isExporting
+                    ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-wait'
+                    : 'bg-white border-slate-300 hover:bg-slate-50 text-slate-700 cursor-pointer'
+                }`}
+                title="直接下载 PDF 文件（标准 A4 多页智能分页）"
               >
-                <Download className="w-4 h-4" />
+                {isExporting ? (
+                  <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                ) : (
+                  <Download className="w-4 h-4" />
+                )}
               </button>
 
               <button

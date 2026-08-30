@@ -374,15 +374,24 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
           </div>
         </div>
 
-        {/* Profile Avatar */}
-        {profile.showAvatar && profile.avatar && (
-          <div className="shrink-0">
-            <img 
-              src={profile.avatar} 
-              alt={profile.name} 
-              className={`w-24 h-28 object-cover border-2 shadow-sm ${avatarRadiusClass}`}
-              style={{ borderColor: primaryColor }}
-            />
+        {/* Profile Avatar - Standard 1-inch 25mm x 35mm */}
+        {profile.showAvatar && (
+          <div className="shrink-0" style={{ width: '25mm', height: '35mm' }}>
+            {profile.avatar ? (
+              <img 
+                src={profile.avatar} 
+                alt={profile.name} 
+                className={`w-full h-full object-cover border shadow-2xs ${avatarRadiusClass}`}
+                style={{ borderColor: primaryColor }}
+              />
+            ) : (
+              <div 
+                className={`w-full h-full border border-dashed border-slate-300 bg-slate-50 flex flex-col items-center justify-center text-slate-400 p-1 text-center select-none ${avatarRadiusClass}`}
+              >
+                <span className="text-[9px] font-medium text-slate-500">1寸照片</span>
+                <span className="text-[7.5px] text-slate-400">25×35mm</span>
+              </div>
+            )}
           </div>
         )}
       </header>

@@ -211,23 +211,45 @@ export const AcademicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
       style={density.containerStyle}
     >
       {/* Centered Academic Heading */}
-      <header className="text-center border-b-2 border-slate-900 pb-4 mb-4">
-        <h1 className="text-2xl sm:text-3xl font-serif font-bold tracking-normal uppercase text-slate-950 mb-1">
-          {profile.name || 'FULL NAME'}
-        </h1>
-        {profile.title && (
-          <p className="text-xs font-serif italic text-slate-700 mb-2">
-            {profile.title}
-          </p>
-        )}
+      <header className="border-b-2 border-slate-900 pb-4 mb-4 flex items-center justify-between gap-4">
+        <div className="flex-1 text-center">
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold tracking-normal uppercase text-slate-950 mb-1">
+            {profile.name || 'FULL NAME'}
+          </h1>
+          {profile.title && (
+            <p className="text-xs font-serif italic text-slate-700 mb-2">
+              {profile.title}
+            </p>
+          )}
 
-        <div className="flex flex-wrap justify-center items-center gap-x-3 gap-y-1 text-xs text-slate-700 font-serif">
-          {profile.phone && <span>{profile.phone}</span>}
-          {profile.email && <span>• {profile.email}</span>}
-          {profile.location && <span>• {profile.location}</span>}
-          {profile.website && <span>• {profile.website}</span>}
-          {profile.github && <span>• {profile.github}</span>}
+          <div className="flex flex-wrap justify-center items-center gap-x-3 gap-y-1 text-xs text-slate-700 font-serif">
+            {profile.phone && <span>{profile.phone}</span>}
+            {profile.email && <span>• {profile.email}</span>}
+            {profile.location && <span>• {profile.location}</span>}
+            {profile.website && <span>• {profile.website}</span>}
+            {profile.github && <span>• {profile.github}</span>}
+          </div>
         </div>
+
+        {/* Profile Avatar - Standard 1-inch 25mm x 35mm */}
+        {profile.showAvatar && (
+          <div className="shrink-0" style={{ width: '25mm', height: '35mm' }}>
+            {profile.avatar ? (
+              <img 
+                src={profile.avatar} 
+                alt={profile.name} 
+                className="w-full h-full object-cover border border-slate-900 shadow-2xs"
+              />
+            ) : (
+              <div 
+                className="w-full h-full border border-dashed border-slate-400 bg-slate-50 flex flex-col items-center justify-center text-slate-500 p-1 text-center select-none"
+              >
+                <span className="text-[9px] font-serif font-medium">PHOTO</span>
+                <span className="text-[7.5px] font-serif text-slate-400">25×35mm</span>
+              </div>
+            )}
+          </div>
+        )}
       </header>
 
       {/* Dynamic Ordered Content */}

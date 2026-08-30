@@ -141,14 +141,25 @@ export const SidebarEliteTemplate: React.FC<TemplateProps> = ({ data, theme }) =
         className="w-[230px] text-white shrink-0 space-y-5"
         style={{ backgroundColor: primaryColor, padding: '24px 18px' }}
       >
-        {/* Avatar */}
-        {profile.showAvatar && profile.avatar && (
+        {/* Avatar - Standard 1-inch 25mm x 35mm */}
+        {profile.showAvatar && (
           <div className="flex justify-center">
-            <img 
-              src={profile.avatar} 
-              alt={profile.name} 
-              className="w-24 h-28 object-cover rounded-xl border-2 border-white/40 shadow-md"
-            />
+            <div className="shrink-0" style={{ width: '25mm', height: '35mm' }}>
+              {profile.avatar ? (
+                <img 
+                  src={profile.avatar} 
+                  alt={profile.name} 
+                  className="w-full h-full object-cover rounded-lg border-2 border-white/50 shadow-md"
+                />
+              ) : (
+                <div 
+                  className="w-full h-full border border-dashed border-white/50 bg-white/10 rounded-lg flex flex-col items-center justify-center text-white/80 p-1 text-center select-none"
+                >
+                  <span className="text-[9px] font-medium">1寸照片</span>
+                  <span className="text-[7.5px] text-white/60">25×35mm</span>
+                </div>
+              )}
+            </div>
           </div>
         )}
 

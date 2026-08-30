@@ -144,39 +144,43 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ profile, onChange 
         </div>
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          {/* Avatar Dropzone Box */}
-          <div 
-            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-            onDragLeave={() => setIsDragging(false)}
-            onDrop={handleDrop}
-            onClick={() => fileInputRef.current?.click()}
-            className={`relative group shrink-0 w-20 h-24 rounded-xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all overflow-hidden ${
-              isDragging
-                ? 'border-blue-600 bg-blue-50/80 ring-2 ring-blue-400/40 scale-102'
-                : profile.avatar
-                ? 'border-slate-300 bg-white'
-                : 'border-slate-300 hover:border-blue-400 bg-slate-100/70 hover:bg-blue-50/40'
-            }`}
-            title="点击或拖拽上传照片"
-          >
-            {profile.avatar ? (
-              <>
-                <img 
-                  src={profile.avatar} 
-                  alt="头像" 
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-black/40 text-white opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity text-[10px] font-medium gap-0.5">
-                  <Upload className="w-3.5 h-3.5" />
-                  <span>更换照片</span>
+          {/* Avatar Dropzone Box (Standard 1-inch 25mm x 35mm, 5:7 ratio) */}
+          <div className="flex flex-col items-center gap-1 shrink-0">
+            <div 
+              onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+              onDragLeave={() => setIsDragging(false)}
+              onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
+              className={`relative group w-[75px] h-[105px] rounded-lg border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all overflow-hidden ${
+                isDragging
+                  ? 'border-blue-600 bg-blue-50/80 ring-2 ring-blue-400/40 scale-102'
+                  : profile.avatar
+                  ? 'border-slate-300 bg-white shadow-xs'
+                  : 'border-slate-300 hover:border-blue-400 bg-slate-100/70 hover:bg-blue-50/40'
+              }`}
+              title="点击或拖拽上传 1 寸证件照 (25mm × 35mm)"
+            >
+              {profile.avatar ? (
+                <>
+                  <img 
+                    src={profile.avatar} 
+                    alt="头像" 
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/40 text-white opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity text-[10px] font-medium gap-0.5">
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>更换照片</span>
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col items-center justify-center text-slate-400 gap-1 p-1 text-center">
+                  <Upload className="w-4 h-4 text-slate-400" />
+                  <span className="text-[10px] text-slate-600 font-medium leading-tight">1寸照片</span>
+                  <span className="text-[8px] text-slate-400 font-mono">25×35mm</span>
                 </div>
-              </>
-            ) : (
-              <div className="flex flex-col items-center justify-center text-slate-400 gap-1 p-1 text-center">
-                <Upload className="w-5 h-5 text-slate-400" />
-                <span className="text-[10px] text-slate-500 font-medium leading-tight">点击/拖拽上传</span>
-              </div>
-            )}
+              )}
+            </div>
+            <span className="text-[10px] text-slate-500 font-medium">1寸 (25×35mm)</span>
           </div>
 
           <div className="flex-1 space-y-2.5 w-full">
@@ -195,7 +199,7 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ profile, onChange 
                 className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs text-xs"
               >
                 <Upload className="w-3.5 h-3.5" />
-                本地选择照片
+                本地选择1寸照片
               </button>
 
               <button

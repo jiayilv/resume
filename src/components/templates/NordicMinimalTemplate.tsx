@@ -248,12 +248,24 @@ export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) 
             </div>
           </div>
 
-          {profile.showAvatar && profile.avatar && (
-            <img 
-              src={profile.avatar} 
-              alt={profile.name} 
-              className="w-20 h-24 object-cover grayscale contrast-125 border border-slate-300 shadow-xs"
-            />
+          {/* Profile Avatar - Standard 1-inch 25mm x 35mm */}
+          {profile.showAvatar && (
+            <div className="shrink-0" style={{ width: '25mm', height: '35mm' }}>
+              {profile.avatar ? (
+                <img 
+                  src={profile.avatar} 
+                  alt={profile.name} 
+                  className="w-full h-full object-cover grayscale contrast-125 border border-slate-300 shadow-2xs"
+                />
+              ) : (
+                <div 
+                  className="w-full h-full border border-dashed border-slate-300 bg-slate-50 flex flex-col items-center justify-center text-slate-400 p-1 text-center select-none"
+                >
+                  <span className="text-[9px] font-medium text-slate-500">1寸照片</span>
+                  <span className="text-[7.5px] text-slate-400">25×35mm</span>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </header>
