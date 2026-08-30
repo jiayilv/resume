@@ -34,6 +34,8 @@ export interface Education {
   gpa?: string;
   courses?: string;
   honors?: string;
+  customPoints?: string[]; // e.g. ["CET-4 (610分)", "全国大学生数学建模竞赛一等奖"]
+  additionalInfo?: string;
 }
 
 export interface SkillItem {
@@ -108,20 +110,21 @@ export interface ResumeData {
   certificates: CertificateItem[];
   languages: LanguageItem[];
   customSections: CustomSection[];
-  sectionOrder: string[]; // ['jobIntent', 'summary', 'work', 'project', 'education', 'skills', 'certificates', 'languages', 'custom']
+  sectionOrder: string[]; // ['jobIntent', 'summary', 'work', 'project', 'education', 'skills', 'certs', 'custom']
   hiddenSections: string[];
+  sectionTitles?: Record<string, string>; // e.g. { summary: '自我评价', work: '工作经历', ... }
 }
 
 export type TemplateId = 'classic' | 'modern' | 'sidebar' | 'minimal' | 'executive' | 'academic';
 
 export type FontFamily = 'sans' | 'serif' | 'mono';
-export type SpacingLevel = 'compact' | 'normal' | 'relaxed';
+export type SpacingLevel = 'compact' | 'normal' | 'relaxed' | 'fill-a4';
 export type AvatarShape = 'square' | 'rounded' | 'circle';
 
 export interface ThemeConfig {
   templateId: TemplateId;
   primaryColor: string;
-  secondaryColor: string;
+  secondaryColor?: string;
   fontFamily: FontFamily;
   fontSize: 'small' | 'medium' | 'large';
   lineHeight: SpacingLevel;
@@ -130,6 +133,7 @@ export interface ThemeConfig {
   avatarShape: AvatarShape;
   showIcons: boolean;
   showDividers: boolean;
+  autoFitA4?: boolean; // whether to auto-spread content to fill 1 full A4 page
 }
 
 export interface AIDiagnosisResult {

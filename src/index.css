@@ -13,15 +13,21 @@
 }
 
 @media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
   html, body {
     background: #ffffff !important;
     padding: 0 !important;
     margin: 0 !important;
+    width: 210mm !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
-  .no-print, nav, header, aside, .editor-panel, .floating-toolbar, .toast-container {
+  .no-print, .app-header, .editor-panel, .floating-toolbar, .toast-container {
     display: none !important;
   }
 
@@ -30,8 +36,9 @@
     padding: 0 !important;
     box-shadow: none !important;
     border: none !important;
-    width: 100% !important;
-    max-width: 100% !important;
+    width: 210mm !important;
+    max-width: 210mm !important;
+    min-height: auto !important;
   }
 
   .page-break {

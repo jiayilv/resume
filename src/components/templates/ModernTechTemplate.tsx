@@ -1,9 +1,10 @@
 import React from 'react';
 import { ResumeData, ThemeConfig } from '../../types';
 import { 
-  Mail, Phone, MapPin, Globe, Github, Linkedin, 
-  Award, BookOpen, Briefcase, FolderGit2, Wrench, Languages, Sparkles, CheckCircle2, ChevronRight
+  Mail, Phone, MapPin, Globe, Github, 
+  Award, BookOpen, Briefcase, FolderGit2, Wrench, Languages, Sparkles, Tag, Terminal
 } from 'lucide-react';
+import { getDensityStyles, getSectionTitle, DEFAULT_SECTION_ORDER } from '../../utils/templateHelpers';
 
 interface TemplateProps {
   data: ResumeData;
@@ -12,335 +13,324 @@ interface TemplateProps {
 
 export const ModernTechTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
   const { profile, jobIntent, summary, workExperiences, projectExperiences, educations, skills, certificates, languages, customSections } = data;
-  const primaryColor = theme.primaryColor || '#0284c7';
+  const primaryColor = theme.primaryColor || '#0e7490';
+  const density = getDensityStyles(theme);
 
   const avatarRadiusClass = 
     theme.avatarShape === 'circle' ? 'rounded-full' :
-    theme.avatarShape === 'rounded' ? 'rounded-2xl' : 'rounded-lg';
+    theme.avatarShape === 'rounded' ? 'rounded-xl' : 'rounded-none';
 
-  return (
-    <div 
-      className="p-8 bg-white text-slate-800 max-w-[800px] mx-auto transition-all"
-      style={{
-        fontFamily: theme.fontFamily === 'serif' ? '"Noto Serif SC", serif' : theme.fontFamily === 'mono' ? '"Fira Code", monospace' : '"Noto Sans SC", sans-serif',
-        fontSize: theme.fontSize === 'small' ? '13px' : theme.fontSize === 'large' ? '15px' : '14px',
-        lineHeight: theme.lineHeight === 'compact' ? 1.4 : theme.lineHeight === 'relaxed' ? 1.7 : 1.55,
-      }}
-    >
-      {/* Modern Banner Profile */}
-      <header className="relative bg-slate-900 text-white rounded-2xl p-6 mb-6 overflow-hidden shadow-sm">
-        <div 
-          className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl opacity-20 pointer-events-none"
-          style={{ backgroundColor: primaryColor }}
-        />
-        
-        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
-          <div className="flex-1">
-            <div className="flex flex-wrap items-baseline gap-3 mb-1.5">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">{profile.name || '求职者姓名'}</h1>
-              {profile.title && (
-                <span 
-                  className="text-xs font-semibold px-2.5 py-1 rounded-full text-white tracking-wide"
-                  style={{ backgroundColor: primaryColor }}
-                >
-                  {profile.title}
-                </span>
-              )}
-            </div>
+  const order = data.sectionOrder && data.sectionOrder.length > 0 ? data.sectionOrder : DEFAULT_SECTION_ORDER;
 
-            {/* Sub attributes */}
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-300 mb-3">
-              {profile.gender && <span>{profile.gender}</span>}
-              {profile.age && <span>{profile.age}</span>}
-              {profile.workYears && <span>{profile.workYears}</span>}
-              {profile.highestDegree && <span>{profile.highestDegree}</span>}
-              {profile.status && (
-                <span className="text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded text-[11px] border border-emerald-800/60">
-                  {profile.status}
-                </span>
-              )}
-            </div>
+  const renderSection = (sectionKey: string) => {
+    if (data.hiddenSections.includes(sectionKey)) return null;
 
-            {/* Contact Pills */}
-            <div className="flex flex-wrap items-center gap-2 text-xs text-slate-300">
-              {profile.phone && (
-                <span className="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700">
-                  <Phone className="w-3 h-3" style={{ color: primaryColor }} />
-                  {profile.phone}
-                </span>
-              )}
-              {profile.email && (
-                <span className="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700">
-                  <Mail className="w-3 h-3" style={{ color: primaryColor }} />
-                  {profile.email}
-                </span>
-              )}
-              {profile.wechat && (
-                <span className="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700">
-                  <span className="font-semibold text-emerald-400">微</span>
-                  {profile.wechat}
-                </span>
-              )}
-              {profile.location && (
-                <span className="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700">
-                  <MapPin className="w-3 h-3" style={{ color: primaryColor }} />
-                  {profile.location}
-                </span>
-              )}
-              {profile.github && (
-                <span className="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700">
-                  <Github className="w-3 h-3" style={{ color: primaryColor }} />
-                  {profile.github}
-                </span>
-              )}
-            </div>
+    switch (sectionKey) {
+      case 'jobIntent':
+        if (!jobIntent.targetPosition) return null;
+        return (
+          <div 
+            key="jobIntent"
+            className="p-2.5 rounded-lg border flex flex-wrap justify-between items-center text-xs font-mono avoid-break"
+            style={{ 
+              backgroundColor: `${primaryColor}0a`, 
+              borderColor: `${primaryColor}30`,
+              marginBottom: density.sectionGap 
+            }}
+          >
+            <span><strong style={{ color: primaryColor }}>TARGET_ROLE:</strong> {jobIntent.targetPosition}</span>
+            {jobIntent.targetCity && <span>CITY: {jobIntent.targetCity}</span>}
+            {jobIntent.targetSalary && <span>SALARY: {jobIntent.targetSalary}</span>}
+            {jobIntent.availableTime && <span>STATUS: {jobIntent.availableTime}</span>}
           </div>
+        );
 
-          {profile.showAvatar && profile.avatar && (
-            <div className="shrink-0">
-              <img 
-                src={profile.avatar} 
-                alt={profile.name} 
-                className={`w-24 h-28 object-cover border-2 border-slate-700 shadow-md ${avatarRadiusClass}`}
-              />
+      case 'summary':
+        if (!summary) return null;
+        return (
+          <section key="summary" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
+            <div className="flex items-center gap-2 mb-2 pb-1 border-b border-slate-100">
+              <span className="w-2.5 h-2.5 rounded-xs" style={{ backgroundColor: primaryColor }} />
+              <h2 className="font-bold text-sm tracking-wide uppercase text-slate-900">
+                {getSectionTitle(data, 'summary')}
+              </h2>
             </div>
-          )}
-        </div>
-      </header>
-
-      {/* Target Job Intent */}
-      {jobIntent.targetPosition && !data.hiddenSections.includes('jobIntent') && (
-        <div 
-          className="mb-6 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs border"
-          style={{ backgroundColor: `${primaryColor}08`, borderColor: `${primaryColor}25` }}
-        >
-          <div className="flex items-center gap-2">
-            <span className="font-bold px-2 py-0.5 rounded text-white text-[11px]" style={{ backgroundColor: primaryColor }}>
-              求职意向
-            </span>
-            <span className="font-bold text-slate-900 text-sm">{jobIntent.targetPosition}</span>
-          </div>
-          <div className="flex flex-wrap gap-x-4 gap-y-1 text-slate-600">
-            {jobIntent.targetCity && <span>期望城市: <strong className="text-slate-800">{jobIntent.targetCity}</strong></span>}
-            {jobIntent.targetSalary && <span>期望薪资: <strong className="text-slate-800">{jobIntent.targetSalary}</strong></span>}
-            {jobIntent.availableTime && <span>到岗时间: <strong className="text-slate-800">{jobIntent.availableTime}</strong></span>}
-          </div>
-        </div>
-      )}
-
-      {/* Content Stream */}
-      <div className="space-y-6">
-        {/* Summary */}
-        {summary && !data.hiddenSections.includes('summary') && (
-          <section className="avoid-break">
-            <div className="flex items-center gap-2 mb-2.5">
-              <span className="p-1 rounded-md text-white" style={{ backgroundColor: primaryColor }}>
-                <Sparkles className="w-3.5 h-3.5" />
-              </span>
-              <h2 className="font-bold text-sm text-slate-900 tracking-tight">核心竞争力与个人优势</h2>
-            </div>
-            <div className="bg-slate-50/70 border border-slate-200/70 rounded-xl p-3.5 text-xs sm:text-sm text-slate-700 leading-relaxed whitespace-pre-line text-justify">
+            <p className="text-slate-700 leading-relaxed whitespace-pre-line text-justify" style={{ fontSize: density.bodySize }}>
               {summary}
-            </div>
+            </p>
           </section>
-        )}
+        );
 
-        {/* Work Experiences */}
-        {workExperiences.length > 0 && !data.hiddenSections.includes('work') && (
-          <section className="avoid-break">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="p-1 rounded-md text-white" style={{ backgroundColor: primaryColor }}>
-                <Briefcase className="w-3.5 h-3.5" />
-              </span>
-              <h2 className="font-bold text-sm text-slate-900 tracking-tight">工作履历</h2>
+      case 'work':
+        if (workExperiences.length === 0) return null;
+        return (
+          <section key="work" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
+            <div className="flex items-center gap-2 mb-2.5 pb-1 border-b border-slate-100">
+              <span className="w-2.5 h-2.5 rounded-xs" style={{ backgroundColor: primaryColor }} />
+              <h2 className="font-bold text-sm tracking-wide uppercase text-slate-900">
+                {getSectionTitle(data, 'work')}
+              </h2>
             </div>
 
-            <div className="relative pl-5 border-l-2 space-y-5" style={{ borderColor: `${primaryColor}30` }}>
-              {workExperiences.map((item) => (
-                <div key={item.id} className="relative text-xs sm:text-sm">
-                  {/* Timeline bullet */}
-                  <span 
-                    className="absolute -left-[27px] top-1 w-3.5 h-3.5 rounded-full border-2 border-white"
-                    style={{ backgroundColor: primaryColor }}
-                  />
-
-                  <div className="flex flex-wrap items-baseline justify-between gap-2 mb-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-slate-900 text-sm">{item.company}</span>
-                      {item.department && <span className="text-slate-500 text-xs font-normal">· {item.department}</span>}
-                    </div>
-                    <span className="font-semibold text-slate-800">{item.position}</span>
-                    <span className="text-slate-500 text-xs font-mono bg-slate-100 px-2 py-0.5 rounded">
-                      {item.startDate} - {item.current ? '至今' : item.endDate}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
+              {workExperiences.map((w) => (
+                <div key={w.id} className="relative pl-3 border-l-2" style={{ borderColor: `${primaryColor}40` }}>
+                  <div className="flex flex-wrap justify-between items-baseline gap-2 mb-1">
+                    <span className="font-bold text-slate-900" style={{ fontSize: density.subTitleSize }}>
+                      {w.company} {w.department && <span className="font-normal text-slate-500 text-xs">/ {w.department}</span>}
                     </span>
+                    <span className="font-semibold" style={{ color: primaryColor, fontSize: density.bodySize }}>{w.position}</span>
+                    <span className="text-slate-400 font-mono text-xs">{w.startDate} - {w.current ? 'PRESENT' : w.endDate}</span>
                   </div>
-
-                  {item.description && (
-                    <p className="text-slate-700 mb-2 leading-relaxed">{item.description}</p>
-                  )}
-
-                  {item.achievements && (
-                    <div 
-                      className="text-slate-700 whitespace-pre-line leading-relaxed text-xs p-3 rounded-lg border"
-                      style={{ backgroundColor: `${primaryColor}05`, borderColor: `${primaryColor}15` }}
-                    >
-                      {item.achievements}
+                  {w.description && <p className="text-slate-700 mb-1 leading-relaxed" style={{ fontSize: density.bodySize }}>{w.description}</p>}
+                  {w.achievements && (
+                    <div className="text-slate-700 whitespace-pre-line leading-relaxed" style={{ fontSize: density.bodySize }}>
+                      {w.achievements}
                     </div>
                   )}
                 </div>
               ))}
             </div>
           </section>
-        )}
+        );
 
-        {/* Project Experiences */}
-        {projectExperiences.length > 0 && !data.hiddenSections.includes('project') && (
-          <section className="avoid-break">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="p-1 rounded-md text-white" style={{ backgroundColor: primaryColor }}>
-                <FolderGit2 className="w-3.5 h-3.5" />
-              </span>
-              <h2 className="font-bold text-sm text-slate-900 tracking-tight">项目经验</h2>
+      case 'project':
+        if (projectExperiences.length === 0) return null;
+        return (
+          <section key="project" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
+            <div className="flex items-center gap-2 mb-2.5 pb-1 border-b border-slate-100">
+              <span className="w-2.5 h-2.5 rounded-xs" style={{ backgroundColor: primaryColor }} />
+              <h2 className="font-bold text-sm tracking-wide uppercase text-slate-900">
+                {getSectionTitle(data, 'project')}
+              </h2>
             </div>
 
-            <div className="relative pl-5 border-l-2 space-y-5" style={{ borderColor: `${primaryColor}30` }}>
-              {projectExperiences.map((proj) => (
-                <div key={proj.id} className="relative text-xs sm:text-sm">
-                  <span 
-                    className="absolute -left-[27px] top-1 w-3.5 h-3.5 rounded-full border-2 border-white"
-                    style={{ backgroundColor: primaryColor }}
-                  />
-
-                  <div className="flex flex-wrap items-baseline justify-between gap-2 mb-1">
-                    <span className="font-bold text-slate-900 text-sm">{proj.projectName}</span>
-                    <span className="font-medium text-slate-800">{proj.role}</span>
-                    <span className="text-slate-500 text-xs font-mono bg-slate-100 px-2 py-0.5 rounded">
-                      {proj.startDate} - {proj.current ? '至今' : proj.endDate}
-                    </span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
+              {projectExperiences.map((p) => (
+                <div key={p.id} className="relative pl-3 border-l-2" style={{ borderColor: `${primaryColor}40` }}>
+                  <div className="flex flex-wrap justify-between items-baseline gap-2 mb-1">
+                    <span className="font-bold text-slate-900" style={{ fontSize: density.subTitleSize }}>{p.projectName}</span>
+                    <span className="font-medium text-slate-700" style={{ fontSize: density.bodySize }}>{p.role}</span>
+                    <span className="text-slate-400 font-mono text-xs">{p.startDate} - {p.current ? 'PRESENT' : p.endDate}</span>
                   </div>
-
-                  {proj.techStack && (
-                    <div className="mb-1.5 flex flex-wrap items-center gap-1.5 text-xs">
-                      <span className="font-semibold text-slate-500">Tech Stack:</span>
-                      <span className="font-mono text-slate-700 bg-slate-100 px-2 py-0.5 rounded text-[11px] border border-slate-200">
-                        {proj.techStack}
-                      </span>
+                  {p.techStack && (
+                    <div className="text-xs font-mono mb-1" style={{ color: primaryColor }}>
+                      STACK: {p.techStack}
                     </div>
                   )}
-
-                  {proj.description && (
-                    <p className="text-slate-700 mb-1.5 leading-relaxed">{proj.description}</p>
-                  )}
-
-                  {proj.results && (
-                    <div 
-                      className="text-slate-700 whitespace-pre-line leading-relaxed text-xs p-3 rounded-lg border"
-                      style={{ backgroundColor: `${primaryColor}05`, borderColor: `${primaryColor}15` }}
-                    >
-                      {proj.results}
+                  {p.description && <p className="text-slate-700 mb-1 leading-relaxed" style={{ fontSize: density.bodySize }}>{p.description}</p>}
+                  {p.results && (
+                    <div className="text-slate-700 whitespace-pre-line leading-relaxed" style={{ fontSize: density.bodySize }}>
+                      {p.results}
                     </div>
                   )}
                 </div>
               ))}
             </div>
           </section>
-        )}
+        );
 
-        {/* Education & Skills Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 avoid-break">
-          {/* Education */}
-          {educations.length > 0 && !data.hiddenSections.includes('education') && (
-            <section>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="p-1 rounded-md text-white" style={{ backgroundColor: primaryColor }}>
-                  <BookOpen className="w-3.5 h-3.5" />
-                </span>
-                <h2 className="font-bold text-sm text-slate-900 tracking-tight">教育背景</h2>
-              </div>
-              <div className="space-y-3">
-                {educations.map((edu) => (
-                  <div key={edu.id} className="bg-slate-50/80 border border-slate-200/60 rounded-xl p-3 text-xs">
-                    <div className="flex justify-between font-bold text-slate-900">
-                      <span>{edu.school}</span>
-                      <span className="font-mono text-slate-500 font-normal">{edu.startDate} - {edu.endDate}</span>
+      case 'education':
+        if (educations.length === 0) return null;
+        return (
+          <section key="education" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
+            <div className="flex items-center gap-2 mb-2.5 pb-1 border-b border-slate-100">
+              <span className="w-2.5 h-2.5 rounded-xs" style={{ backgroundColor: primaryColor }} />
+              <h2 className="font-bold text-sm tracking-wide uppercase text-slate-900">
+                {getSectionTitle(data, 'education')}
+              </h2>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
+              {educations.map((edu) => (
+                <div key={edu.id} className="relative pl-3 border-l-2" style={{ borderColor: `${primaryColor}40` }}>
+                  <div className="flex flex-wrap justify-between items-baseline gap-2">
+                    <span className="font-bold text-slate-900" style={{ fontSize: density.subTitleSize }}>{edu.school}</span>
+                    <span className="font-medium text-slate-700" style={{ fontSize: density.bodySize }}>{edu.major} · {edu.degree}</span>
+                    <span className="text-slate-400 font-mono text-xs">{edu.startDate} - {edu.endDate}</span>
+                  </div>
+                  {(edu.gpa || edu.honors || edu.courses) && (
+                    <div className="text-slate-500 mt-0.5 flex flex-wrap gap-x-4" style={{ fontSize: density.metaSize }}>
+                      {edu.gpa && <span>GPA: {edu.gpa}</span>}
+                      {edu.honors && <span>HONOR: {edu.honors}</span>}
+                      {edu.courses && <span>COURSES: {edu.courses}</span>}
                     </div>
-                    <div className="text-slate-700 font-medium mt-0.5">{edu.major} · {edu.degree}</div>
-                    {(edu.gpa || edu.honors) && (
-                      <div className="text-slate-500 mt-1 text-[11px]">
-                        {edu.gpa && <span>GPA: {edu.gpa} </span>}
-                        {edu.honors && <span>· 荣誉: {edu.honors}</span>}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
+                  )}
 
-          {/* Skills */}
-          {skills.length > 0 && !data.hiddenSections.includes('skills') && (
-            <section>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="p-1 rounded-md text-white" style={{ backgroundColor: primaryColor }}>
-                  <Wrench className="w-3.5 h-3.5" />
+                  {/* Custom points like CET-4 */}
+                  {edu.customPoints && edu.customPoints.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-1.5">
+                      {edu.customPoints.map((pt, pIdx) => (
+                        <span 
+                          key={pIdx}
+                          className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded text-[11px] font-mono border"
+                          style={{ backgroundColor: `${primaryColor}0a`, borderColor: `${primaryColor}30`, color: primaryColor }}
+                        >
+                          <Tag className="w-2.5 h-2.5" />
+                          {pt}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {edu.additionalInfo && (
+                    <p className="text-slate-600 text-xs mt-1 leading-relaxed">{edu.additionalInfo}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+
+      case 'skills':
+        if (skills.length === 0) return null;
+        return (
+          <section key="skills" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
+            <div className="flex items-center gap-2 mb-2.5 pb-1 border-b border-slate-100">
+              <span className="w-2.5 h-2.5 rounded-xs" style={{ backgroundColor: primaryColor }} />
+              <h2 className="font-bold text-sm tracking-wide uppercase text-slate-900">
+                {getSectionTitle(data, 'skills')}
+              </h2>
+            </div>
+
+            <div className="flex flex-wrap gap-2 text-xs font-mono">
+              {skills.map((s) => (
+                <span 
+                  key={s.id}
+                  className="px-2.5 py-1 rounded-md border font-medium flex items-center gap-1.5"
+                  style={{ backgroundColor: `${primaryColor}08`, borderColor: `${primaryColor}25`, color: '#0f172a' }}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: primaryColor }} />
+                  {s.name}
                 </span>
-                <h2 className="font-bold text-sm text-slate-900 tracking-tight">专业技能栈</h2>
-              </div>
-              <div className="flex flex-wrap gap-2 text-xs">
-                {skills.map((skill) => (
-                  <div 
-                    key={skill.id} 
-                    className="flex items-center gap-2 px-2.5 py-1 rounded-lg border text-xs font-medium"
-                    style={{ backgroundColor: `${primaryColor}08`, borderColor: `${primaryColor}20` }}
-                  >
-                    <span className="text-slate-800">{skill.name}</span>
-                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: primaryColor }} />
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-        </div>
+              ))}
+            </div>
+          </section>
+        );
 
-        {/* Certificates & Languages */}
-        {((certificates.length > 0 && !data.hiddenSections.includes('certificates')) || 
-          (languages.length > 0 && !data.hiddenSections.includes('languages'))) && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 avoid-break pt-2 border-t border-slate-100">
+      case 'certs':
+      case 'certificates':
+      case 'languages':
+        if (certificates.length === 0 && languages.length === 0) return null;
+        return (
+          <div key="certs_group" className="grid grid-cols-1 sm:grid-cols-2 gap-4 avoid-break" style={{ marginBottom: density.sectionGap }}>
             {certificates.length > 0 && !data.hiddenSections.includes('certificates') && (
-              <div className="text-xs">
-                <div className="font-bold text-slate-900 mb-1.5 flex items-center gap-1.5">
-                  <Award className="w-3.5 h-3.5" style={{ color: primaryColor }} />
-                  荣誉证书
+              <section>
+                <div className="flex items-center gap-2 mb-2 pb-1 border-b border-slate-100">
+                  <span className="w-2 h-2 rounded-xs" style={{ backgroundColor: primaryColor }} />
+                  <h2 className="font-bold text-xs tracking-wide uppercase text-slate-900">
+                    {getSectionTitle(data, 'certificates')}
+                  </h2>
                 </div>
-                <div className="space-y-1 text-slate-700">
+                <div className="space-y-1 text-xs font-mono">
                   {certificates.map((c) => (
                     <div key={c.id} className="flex justify-between">
                       <span>{c.name}</span>
-                      <span className="text-slate-500 font-mono">{c.date}</span>
+                      <span className="text-slate-400">{c.date}</span>
                     </div>
                   ))}
                 </div>
-              </div>
+              </section>
             )}
 
             {languages.length > 0 && !data.hiddenSections.includes('languages') && (
-              <div className="text-xs">
-                <div className="font-bold text-slate-900 mb-1.5 flex items-center gap-1.5">
-                  <Languages className="w-3.5 h-3.5" style={{ color: primaryColor }} />
-                  语言能力
+              <section>
+                <div className="flex items-center gap-2 mb-2 pb-1 border-b border-slate-100">
+                  <span className="w-2 h-2 rounded-xs" style={{ backgroundColor: primaryColor }} />
+                  <h2 className="font-bold text-xs tracking-wide uppercase text-slate-900">
+                    {getSectionTitle(data, 'languages')}
+                  </h2>
                 </div>
-                <div className="space-y-1 text-slate-700">
+                <div className="space-y-1 text-xs font-mono">
                   {languages.map((l) => (
                     <div key={l.id} className="flex justify-between">
-                      <span className="font-medium">{l.language}</span>
-                      <span className="text-slate-600">{l.proficiency}</span>
+                      <span>{l.language}</span>
+                      <span className="text-slate-500">{l.proficiency}</span>
                     </div>
                   ))}
                 </div>
-              </div>
+              </section>
             )}
           </div>
+        );
+
+      case 'custom':
+        if (!customSections || customSections.length === 0) return null;
+        return (
+          <div key="custom_group" style={{ marginBottom: density.sectionGap }}>
+            {customSections.map((sec) => (
+              !data.hiddenSections.includes(sec.id) && (
+                <section key={sec.id} className="avoid-break" style={{ marginBottom: density.sectionGap }}>
+                  <div className="flex items-center gap-2 mb-2 pb-1 border-b border-slate-100">
+                    <span className="w-2.5 h-2.5 rounded-xs" style={{ backgroundColor: primaryColor }} />
+                    <h2 className="font-bold text-sm tracking-wide uppercase text-slate-900">
+                      {sec.title}
+                    </h2>
+                  </div>
+                  <div className="space-y-2">
+                    {sec.items.map((item) => (
+                      <div key={item.id} className="text-xs">
+                        <div className="flex justify-between font-medium text-slate-900">
+                          <span>{item.title}</span>
+                          {item.date && <span className="text-slate-400 font-mono">{item.date}</span>}
+                        </div>
+                        {item.subtitle && <div className="text-slate-600 font-mono text-[11px]">{item.subtitle}</div>}
+                        <p className="text-slate-700 whitespace-pre-line mt-0.5">{item.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )
+            ))}
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div 
+      className="bg-white text-slate-800 leading-relaxed max-w-[800px] mx-auto transition-all"
+      style={density.containerStyle}
+    >
+      {/* Modern Tech Header */}
+      <header className="border-b pb-5 mb-5 flex justify-between items-center gap-6" style={{ borderColor: `${primaryColor}30` }}>
+        <div className="flex-1">
+          <div className="flex items-center gap-3 mb-1">
+            <h1 className="text-3xl font-extrabold tracking-tight text-slate-950 font-mono">
+              {profile.name || 'DEVELOPER'}
+            </h1>
+            {profile.title && (
+              <span className="px-2.5 py-0.5 text-xs font-mono rounded font-semibold text-white" style={{ backgroundColor: primaryColor }}>
+                {profile.title}
+              </span>
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-600 font-mono mt-2">
+            {profile.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" style={{ color: primaryColor }} /> {profile.phone}</span>}
+            {profile.email && <span className="flex items-center gap-1"><Mail className="w-3 h-3" style={{ color: primaryColor }} /> {profile.email}</span>}
+            {profile.location && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" style={{ color: primaryColor }} /> {profile.location}</span>}
+            {profile.github && <span className="flex items-center gap-1"><Github className="w-3 h-3" style={{ color: primaryColor }} /> {profile.github}</span>}
+            {profile.website && <span className="flex items-center gap-1"><Globe className="w-3 h-3" style={{ color: primaryColor }} /> {profile.website}</span>}
+          </div>
+        </div>
+
+        {profile.showAvatar && profile.avatar && (
+          <img 
+            src={profile.avatar} 
+            alt={profile.name} 
+            className={`w-20 h-24 object-cover border-2 shadow-sm ${avatarRadiusClass}`}
+            style={{ borderColor: primaryColor }}
+          />
         )}
+      </header>
+
+      {/* Main Ordered List */}
+      <div>
+        {order.map((key) => renderSection(key))}
       </div>
     </div>
   );

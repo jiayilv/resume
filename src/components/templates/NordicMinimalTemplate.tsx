@@ -1,6 +1,7 @@
 import React from 'react';
 import { ResumeData, ThemeConfig } from '../../types';
-import { Mail, Phone, MapPin, Globe, Github } from 'lucide-react';
+import { Mail, Phone, MapPin, Globe, Github, Tag } from 'lucide-react';
+import { getDensityStyles, getSectionTitle, DEFAULT_SECTION_ORDER } from '../../utils/templateHelpers';
 
 interface TemplateProps {
   data: ResumeData;
@@ -8,32 +9,237 @@ interface TemplateProps {
 }
 
 export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
-  const { profile, jobIntent, summary, workExperiences, projectExperiences, educations, skills, certificates, languages } = data;
+  const { profile, jobIntent, summary, workExperiences, projectExperiences, educations, skills, certificates, languages, customSections } = data;
   const primaryColor = theme.primaryColor || '#0f172a';
+  const density = getDensityStyles(theme);
+
+  const order = data.sectionOrder && data.sectionOrder.length > 0 ? data.sectionOrder : DEFAULT_SECTION_ORDER;
+
+  const renderSection = (sectionKey: string) => {
+    if (data.hiddenSections.includes(sectionKey)) return null;
+
+    switch (sectionKey) {
+      case 'jobIntent':
+        if (!jobIntent.targetPosition) return null;
+        return (
+          <div key="jobIntent" className="pb-2 border-b border-slate-100 flex justify-between text-xs text-slate-600 avoid-break" style={{ marginBottom: density.sectionGap }}>
+            <span><strong className="font-semibold text-slate-800">{getSectionTitle(data, 'jobIntent')}:</strong> {jobIntent.targetPosition}</span>
+            {jobIntent.targetCity && <span>期望城市: {jobIntent.targetCity}</span>}
+            {jobIntent.targetSalary && <span>期望薪资: {jobIntent.targetSalary}</span>}
+          </div>
+        );
+
+      case 'summary':
+        if (!summary) return null;
+        return (
+          <section key="summary" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
+            <h2 className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-2">
+              {getSectionTitle(data, 'summary')}
+            </h2>
+            <p className="text-slate-700 leading-relaxed text-justify" style={{ fontSize: density.bodySize }}>
+              {summary}
+            </p>
+          </section>
+        );
+
+      case 'work':
+        if (workExperiences.length === 0) return null;
+        return (
+          <section key="work" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
+            <h2 className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-3 border-b border-slate-100 pb-1">
+              {getSectionTitle(data, 'work')}
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
+              {workExperiences.map((w) => (
+                <div key={w.id}>
+                  <div className="flex justify-between items-baseline mb-1">
+                    <div>
+                      <span className="font-semibold text-slate-900" style={{ fontSize: density.subTitleSize }}>{w.company}</span>
+                      {w.department && <span className="text-slate-500 font-light ml-2 text-xs">({w.department})</span>}
+                    </div>
+                    <span className="text-slate-400 text-xs font-mono">{w.startDate} — {w.current ? '至今' : w.endDate}</span>
+                  </div>
+                  <div className="font-medium text-slate-700 mb-1" style={{ fontSize: density.bodySize }}>{w.position}</div>
+                  {w.description && <p className="text-slate-600 mb-1 leading-relaxed" style={{ fontSize: density.bodySize }}>{w.description}</p>}
+                  {w.achievements && (
+                    <div className="text-slate-600 whitespace-pre-line leading-relaxed pl-2 border-l border-slate-200" style={{ fontSize: density.bodySize }}>
+                      {w.achievements}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+
+      case 'project':
+        if (projectExperiences.length === 0) return null;
+        return (
+          <section key="project" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
+            <h2 className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-3 border-b border-slate-100 pb-1">
+              {getSectionTitle(data, 'project')}
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
+              {projectExperiences.map((p) => (
+                <div key={p.id}>
+                  <div className="flex justify-between items-baseline mb-1">
+                    <span className="font-semibold text-slate-900" style={{ fontSize: density.subTitleSize }}>{p.projectName}</span>
+                    <span className="text-slate-400 text-xs font-mono">{p.startDate} — {p.current ? '至今' : p.endDate}</span>
+                  </div>
+                  <div className="text-slate-600 mb-1 font-medium" style={{ fontSize: density.bodySize }}>
+                    {p.role} {p.techStack && <span className="text-slate-400 font-mono text-[11px]">| {p.techStack}</span>}
+                  </div>
+                  {p.description && <p className="text-slate-600 mb-1 leading-relaxed" style={{ fontSize: density.bodySize }}>{p.description}</p>}
+                  {p.results && (
+                    <div className="text-slate-600 whitespace-pre-line leading-relaxed pl-2 border-l border-slate-200" style={{ fontSize: density.bodySize }}>
+                      {p.results}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+
+      case 'education':
+        if (educations.length === 0) return null;
+        return (
+          <section key="education" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
+            <h2 className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-2 border-b border-slate-100 pb-1">
+              {getSectionTitle(data, 'education')}
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
+              {educations.map((edu) => (
+                <div key={edu.id}>
+                  <div className="flex justify-between font-semibold text-slate-900" style={{ fontSize: density.subTitleSize }}>
+                    <span>{edu.school}</span>
+                    <span className="text-slate-400 font-mono text-xs">{edu.startDate} - {edu.endDate}</span>
+                  </div>
+                  <div className="text-slate-600" style={{ fontSize: density.bodySize }}>{edu.major} · {edu.degree}</div>
+                  {edu.gpa && <div className="text-slate-500 text-xs">GPA: {edu.gpa}</div>}
+                  {edu.customPoints && edu.customPoints.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-1">
+                      {edu.customPoints.map((pt, pIdx) => (
+                        <span key={pIdx} className="border border-slate-200 px-2 py-0.5 rounded text-slate-600 text-[11px]">
+                          {pt}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+
+      case 'skills':
+        if (skills.length === 0) return null;
+        return (
+          <section key="skills" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
+            <h2 className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-2 border-b border-slate-100 pb-1">
+              {getSectionTitle(data, 'skills')}
+            </h2>
+            <div className="flex flex-wrap gap-1.5 text-xs">
+              {skills.map((s) => (
+                <span key={s.id} className="border border-slate-200 px-2 py-0.5 rounded text-slate-700 text-[11px]">
+                  {s.name}
+                </span>
+              ))}
+            </div>
+          </section>
+        );
+
+      case 'certs':
+      case 'certificates':
+      case 'languages':
+        if (certificates.length === 0 && languages.length === 0) return null;
+        return (
+          <div key="certs_group" className="grid grid-cols-1 sm:grid-cols-2 gap-4 avoid-break" style={{ marginBottom: density.sectionGap }}>
+            {certificates.length > 0 && (
+              <div>
+                <h2 className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-1 border-b border-slate-100 pb-1">
+                  {getSectionTitle(data, 'certificates')}
+                </h2>
+                <div className="space-y-1 text-xs text-slate-600">
+                  {certificates.map((c) => (
+                    <div key={c.id} className="flex justify-between">
+                      <span>{c.name}</span>
+                      <span className="text-slate-400 font-mono">{c.date}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {languages.length > 0 && (
+              <div>
+                <h2 className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-1 border-b border-slate-100 pb-1">
+                  {getSectionTitle(data, 'languages')}
+                </h2>
+                <div className="space-y-1 text-xs text-slate-600">
+                  {languages.map((l) => (
+                    <div key={l.id} className="flex justify-between">
+                      <span>{l.language}</span>
+                      <span>{l.proficiency}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+
+      case 'custom':
+        if (!customSections || customSections.length === 0) return null;
+        return (
+          <div key="custom_group" style={{ marginBottom: density.sectionGap }}>
+            {customSections.map((sec) => (
+              !data.hiddenSections.includes(sec.id) && (
+                <section key={sec.id} className="avoid-break" style={{ marginBottom: density.sectionGap }}>
+                  <h2 className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-2 border-b border-slate-100 pb-1">
+                    {sec.title}
+                  </h2>
+                  <div className="space-y-2">
+                    {sec.items.map((item) => (
+                      <div key={item.id} className="text-xs">
+                        <div className="flex justify-between font-semibold text-slate-900">
+                          <span>{item.title}</span>
+                          {item.date && <span className="text-slate-400 font-mono">{item.date}</span>}
+                        </div>
+                        {item.subtitle && <div className="text-slate-600">{item.subtitle}</div>}
+                        <p className="text-slate-600 mt-0.5">{item.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )
+            ))}
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
 
   return (
     <div 
-      className="p-10 bg-white text-slate-800 max-w-[800px] mx-auto transition-all"
-      style={{
-        fontFamily: theme.fontFamily === 'serif' ? '"Noto Serif SC", serif' : theme.fontFamily === 'mono' ? '"Fira Code", monospace' : '"Noto Sans SC", sans-serif',
-        fontSize: theme.fontSize === 'small' ? '13px' : theme.fontSize === 'large' ? '15px' : '14px',
-        lineHeight: theme.lineHeight === 'compact' ? 1.45 : theme.lineHeight === 'relaxed' ? 1.75 : 1.6,
-      }}
+      className="bg-white text-slate-800 max-w-[800px] mx-auto transition-all"
+      style={density.containerStyle}
     >
       {/* Minimal Header */}
-      <header className="border-b border-slate-200 pb-6 mb-6">
+      <header className="border-b border-slate-200 pb-5 mb-5">
         <div className="flex justify-between items-start">
           <div>
             <h1 className="text-3xl font-light tracking-widest text-slate-900 mb-1">
               {profile.name || '求职者姓名'}
             </h1>
             {profile.title && (
-              <p className="text-sm font-medium text-slate-600 tracking-wider uppercase mb-3">
+              <p className="text-xs font-medium text-slate-600 tracking-wider uppercase mb-2">
                 {profile.title}
               </p>
             )}
             
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-slate-500 font-light">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 font-light">
               {profile.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {profile.phone}</span>}
               {profile.email && <span className="flex items-center gap-1"><Mail className="w-3 h-3" /> {profile.email}</span>}
               {profile.location && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {profile.location}</span>}
@@ -46,124 +252,15 @@ export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) 
             <img 
               src={profile.avatar} 
               alt={profile.name} 
-              className="w-20 h-24 object-cover grayscale contrast-125 border border-slate-300 shadow-sm"
+              className="w-20 h-24 object-cover grayscale contrast-125 border border-slate-300 shadow-xs"
             />
           )}
         </div>
       </header>
 
-      {/* Target Job Intent */}
-      {jobIntent.targetPosition && !data.hiddenSections.includes('jobIntent') && (
-        <div className="mb-6 pb-2 border-b border-slate-100 flex justify-between text-xs text-slate-600">
-          <span><strong className="font-semibold text-slate-800">求职意向:</strong> {jobIntent.targetPosition}</span>
-          {jobIntent.targetCity && <span>期望城市: {jobIntent.targetCity}</span>}
-          {jobIntent.targetSalary && <span>期望薪资: {jobIntent.targetSalary}</span>}
-        </div>
-      )}
-
-      {/* Summary */}
-      {summary && !data.hiddenSections.includes('summary') && (
-        <section className="mb-6 avoid-break">
-          <h2 className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-2">
-            PROFILE / 个人总结
-          </h2>
-          <p className="text-slate-700 text-xs sm:text-sm leading-relaxed text-justify">
-            {summary}
-          </p>
-        </section>
-      )}
-
-      {/* Work Experiences */}
-      {workExperiences.length > 0 && !data.hiddenSections.includes('work') && (
-        <section className="mb-6 avoid-break">
-          <h2 className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-3 border-b border-slate-100 pb-1">
-            EXPERIENCE / 工作经历
-          </h2>
-          <div className="space-y-4">
-            {workExperiences.map((w) => (
-              <div key={w.id} className="text-xs sm:text-sm">
-                <div className="flex justify-between items-baseline mb-1">
-                  <div>
-                    <span className="font-semibold text-slate-900">{w.company}</span>
-                    {w.department && <span className="text-slate-500 font-light ml-2">({w.department})</span>}
-                  </div>
-                  <span className="text-slate-400 text-xs font-mono">{w.startDate} — {w.current ? '至今' : w.endDate}</span>
-                </div>
-                <div className="text-xs font-medium text-slate-700 mb-1">{w.position}</div>
-                {w.description && <p className="text-slate-600 mb-1 leading-relaxed text-xs">{w.description}</p>}
-                {w.achievements && (
-                  <div className="text-slate-600 whitespace-pre-line text-xs leading-relaxed pl-2 border-l border-slate-200">
-                    {w.achievements}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Projects */}
-      {projectExperiences.length > 0 && !data.hiddenSections.includes('project') && (
-        <section className="mb-6 avoid-break">
-          <h2 className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-3 border-b border-slate-100 pb-1">
-            PROJECTS / 项目经验
-          </h2>
-          <div className="space-y-4">
-            {projectExperiences.map((p) => (
-              <div key={p.id} className="text-xs sm:text-sm">
-                <div className="flex justify-between items-baseline mb-1">
-                  <span className="font-semibold text-slate-900">{p.projectName}</span>
-                  <span className="text-slate-400 text-xs font-mono">{p.startDate} — {p.current ? '至今' : p.endDate}</span>
-                </div>
-                <div className="text-xs text-slate-600 mb-1 font-medium">{p.role} {p.techStack && <span className="text-slate-400 font-mono text-[11px]">| {p.techStack}</span>}</div>
-                {p.description && <p className="text-slate-600 mb-1 leading-relaxed text-xs">{p.description}</p>}
-                {p.results && (
-                  <div className="text-slate-600 whitespace-pre-line text-xs leading-relaxed pl-2 border-l border-slate-200">
-                    {p.results}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Education & Skills */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 avoid-break">
-        {educations.length > 0 && !data.hiddenSections.includes('education') && (
-          <section>
-            <h2 className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-2 border-b border-slate-100 pb-1">
-              EDUCATION / 教育背景
-            </h2>
-            <div className="space-y-2">
-              {educations.map((edu) => (
-                <div key={edu.id} className="text-xs">
-                  <div className="flex justify-between font-semibold text-slate-900">
-                    <span>{edu.school}</span>
-                    <span className="text-slate-400 font-mono text-[11px]">{edu.startDate} - {edu.endDate}</span>
-                  </div>
-                  <div className="text-slate-600">{edu.major} · {edu.degree}</div>
-                  {edu.gpa && <div className="text-slate-500 text-[11px]">GPA: {edu.gpa}</div>}
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {skills.length > 0 && !data.hiddenSections.includes('skills') && (
-          <section>
-            <h2 className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-2 border-b border-slate-100 pb-1">
-              SKILLS / 专业技能
-            </h2>
-            <div className="flex flex-wrap gap-1.5 text-xs">
-              {skills.map((s) => (
-                <span key={s.id} className="border border-slate-200 px-2 py-0.5 rounded text-slate-700 text-[11px]">
-                  {s.name}
-                </span>
-              ))}
-            </div>
-          </section>
-        )}
+      {/* Main Ordered Content */}
+      <div>
+        {order.map((key) => renderSection(key))}
       </div>
     </div>
   );

@@ -2,14 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   ResumeData,
   ThemeConfig,
-  UserProfile,
-  JobIntent,
-  WorkExperience,
-  ProjectExperience,
-  Education,
-  SkillItem,
-  CertificateItem,
-  LanguageItem,
 } from './types';
 import {
   sampleFrontendResume,
@@ -27,25 +19,15 @@ import { CertificatesLanguagesEditor } from './components/editor/CertificatesLan
 import { SummaryEditor } from './components/editor/SummaryEditor';
 import { ResumePreview } from './components/ResumePreview';
 import { ThemeSelector } from './components/ThemeSelector';
-import { AIPolishModal } from './components/ai/AIPolishModal';
-import { AIDiagnosisModal } from './components/ai/AIDiagnosisModal';
-import { AIJDMatchModal } from './components/ai/AIJDMatchModal';
-import { AITranslateModal } from './components/ai/AITranslateModal';
-import { exportToPdf, exportToJson, exportToImage } from './utils/exportUtils';
+import { exportToPdf, exportToJson } from './utils/exportUtils';
 import {
-  Sparkles,
-  ShieldCheck,
-  Target,
-  Languages,
   Printer,
   Download,
   Upload,
   FileText,
-  RotateCcw,
   Palette,
   ZoomIn,
   ZoomOut,
-  Maximize2,
   Briefcase,
   FolderGit2,
   GraduationCap,
@@ -56,7 +38,7 @@ import {
   FileCheck2,
   ChevronRight,
   Eye,
-  SlidersHorizontal,
+  Sparkles,
 } from 'lucide-react';
 
 const STORAGE_KEY = 'jianliben_resume_data_v1';
@@ -68,12 +50,24 @@ export function App() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        return {
+          ...parsed,
+          sectionTitles: {
+            summary: '自我评价',
+            ...parsed.sectionTitles,
+          },
+        };
       } catch (e) {
         console.error('Failed to parse saved resume data', e);
       }
     }
-    return sampleFrontendResume;
+    return {
+      ...sampleFrontendResume,
+      sectionTitles: {
+        summary: '自我评价',
+      },
+    };
   });
 
   const [theme, setTheme] = useState<ThemeConfig>(() => {
@@ -91,6 +85,9 @@ export function App() {
       fontFamily: 'sans',
       fontSize: 'medium',
       lineHeight: 'normal',
+      sectionSpacing: 'normal',
+      pagePadding: 'normal',
+      autoFitA4: false,
     };
   });
 
@@ -98,16 +95,6 @@ export function App() {
   const [activeTab, setActiveTab] = useState<string>('profile');
   const [showThemePanel, setShowThemePanel] = useState<boolean>(true);
   const [previewScale, setPreviewScale] = useState<number>(0.85);
-
-  // AI Modal States
-  const [polishModalOpen, setPolishModalOpen] = useState(false);
-  const [polishText, setPolishText] = useState('');
-  const [polishRoleContext, setPolishRoleContext] = useState('');
-  const [polishApplyCallback, setPolishApplyCallback] = useState<((newText: string) => void) | null>(null);
-
-  const [diagnosisModalOpen, setDiagnosisModalOpen] = useState(false);
-  const [jdMatchModalOpen, setJdMatchModalOpen] = useState(false);
-  const [translateModalOpen, setTranslateModalOpen] = useState(false);
 
   const previewRef = useRef<HTMLDivElement>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
@@ -149,29 +136,33 @@ export function App() {
 
   // Preset Template loader
   const handleLoadSample = (type: 'frontend' | 'pm' | 'designer' | 'grad') => {
-    if (confirm('载入样例将覆盖当前编辑内容，是否继续？')) {
+    if (confirm('载入范例将覆盖当前编辑内容，是否继续？')) {
       if (type === 'frontend') {
-        setResumeData(sampleFrontendResume);
+        setResumeData({
+          ...sampleFrontendResume,
+          sectionTitles: { summary: '自我评价' },
+        });
         setTheme((t) => ({ ...t, templateId: 'modern', primaryColor: '#1e40af' }));
       } else if (type === 'pm') {
-        setResumeData(sampleProductManagerResume);
+        setResumeData({
+          ...sampleProductManagerResume,
+          sectionTitles: { summary: '自我评价' },
+        });
         setTheme((t) => ({ ...t, templateId: 'classic', primaryColor: '#0f172a' }));
       } else if (type === 'designer') {
-        setResumeData(sampleDesignerResume);
+        setResumeData({
+          ...sampleDesignerResume,
+          sectionTitles: { summary: '自我评价' },
+        });
         setTheme((t) => ({ ...t, templateId: 'minimal', primaryColor: '#4f46e5' }));
       } else if (type === 'grad') {
-        setResumeData(sampleFreshGradResume);
+        setResumeData({
+          ...sampleFreshGradResume,
+          sectionTitles: { summary: '自我评价' },
+        });
         setTheme((t) => ({ ...t, templateId: 'sidebar', primaryColor: '#0e7490' }));
       }
     }
-  };
-
-  // Open single text item polish modal
-  const handleOpenPolish = (text: string, onApply: (newText: string) => void, contextRole?: string) => {
-    setPolishText(text);
-    setPolishRoleContext(contextRole || resumeData.profile.title || '求职者');
-    setPolishApplyCallback(() => onApply);
-    setPolishModalOpen(true);
   };
 
   // Export handlers
@@ -196,9 +187,9 @@ export function App() {
           const parsed = JSON.parse(event.target?.result as string);
           if (parsed && parsed.profile) {
             setResumeData(parsed);
-            alert('简历数据恢复导入成功！');
+            alert('简历数据导入成功！');
           } else {
-            alert('导入失败：文件格式不符合简历数据规范');
+            alert('导入失败：文件格式不符合规范');
           }
         } catch (err) {
           alert('解析 JSON 失败');
@@ -208,6 +199,19 @@ export function App() {
     }
   };
 
+  const handleToggleAutoFitA4 = () => {
+    const nextState = !theme.autoFitA4;
+    setTheme((t) => ({
+      ...t,
+      autoFitA4: nextState,
+      lineHeight: nextState ? 'fill-a4' : 'normal',
+      sectionSpacing: nextState ? 'fill-a4' : 'normal',
+      pagePadding: nextState ? 'fill-a4' : 'normal',
+    }));
+  };
+
+  const summaryLabel = resumeData.sectionTitles?.summary || '自我评价';
+
   const editorTabs = [
     { id: 'profile', label: '基本信息', icon: User },
     { id: 'jobIntent', label: '求职意向', icon: Compass },
@@ -216,7 +220,7 @@ export function App() {
     { id: 'education', label: '教育背景', icon: GraduationCap, count: resumeData.educations.length },
     { id: 'skills', label: '专业技能', icon: Wrench, count: resumeData.skills.length },
     { id: 'certs', label: '证书语言', icon: Award },
-    { id: 'summary', label: '自我评价', icon: FileCheck2 },
+    { id: 'summary', label: summaryLabel, icon: FileCheck2 },
   ];
 
   return (
@@ -232,39 +236,28 @@ export function App() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-extrabold text-base tracking-tight text-slate-900">
-                  简历本 <span className="text-blue-600 text-xs font-semibold px-1.5 py-0.5 bg-blue-50 rounded-md border border-blue-200">AI 智能版</span>
+                  简历本 <span className="text-blue-600 text-xs font-semibold px-1.5 py-0.5 bg-blue-50 rounded-md border border-blue-200">专业排版</span>
                 </span>
               </div>
               <p className="text-[11px] text-slate-500 hidden sm:block">
-                专业高薪求职简历制作平台 · STAR法则量化 · ATS高通过率
+                所见即所得标准 A4 简历生成器 · 自由模块排序 · 精准防跨页
               </p>
             </div>
           </div>
 
-          {/* AI Power Suite Buttons */}
-          <div className="flex items-center gap-1.5 flex-wrap">
+          {/* Center Action: One-Click A4 Spread */}
+          <div className="flex items-center gap-2">
             <button
-              onClick={() => setDiagnosisModalOpen(true)}
-              className="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs text-xs transition-all hover:shadow-md"
+              onClick={handleToggleAutoFitA4}
+              className={`px-3.5 py-1.5 rounded-xl font-bold flex items-center gap-1.5 cursor-pointer shadow-xs text-xs transition-all ${
+                theme.autoFitA4
+                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white ring-2 ring-emerald-400'
+                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white'
+              }`}
+              title="根据内容量自动调节行高、段落间距和内边距，使整份简历刚好均匀填满一张标准A4纸"
             >
-              <ShieldCheck className="w-4 h-4 text-blue-200" />
-              <span>AI 深度体检与评分</span>
-            </button>
-
-            <button
-              onClick={() => setJdMatchModalOpen(true)}
-              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs text-xs transition-all hover:shadow-md"
-            >
-              <Target className="w-4 h-4 text-emerald-200" />
-              <span>AI 职位 JD 匹配</span>
-            </button>
-
-            <button
-              onClick={() => setTranslateModalOpen(true)}
-              className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs text-xs transition-all"
-            >
-              <Languages className="w-3.5 h-3.5 text-slate-300" />
-              <span>双语互译</span>
+              <Sparkles className="w-4 h-4 text-amber-300" />
+              <span>{theme.autoFitA4 ? '已开启：内容均匀铺满A4纸' : '一键内容均匀铺满A4纸'}</span>
             </button>
           </div>
 
@@ -303,7 +296,7 @@ export function App() {
             <button
               onClick={handlePrint}
               className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs text-xs transition-all hover:shadow-md"
-              title="高质量直接打印或另存为PDF"
+              title="高质量直接打印或另存为PDF（保留完整基本信息）"
             >
               <Printer className="w-4 h-4" />
               <span>打印 / 存为PDF</span>
@@ -353,7 +346,7 @@ export function App() {
               className="font-bold text-slate-700 hover:text-blue-600 flex items-center gap-1 cursor-pointer"
             >
               <Palette className="w-3.5 h-3.5 text-blue-600" />
-              {showThemePanel ? '收起模版与样式配置' : '展开模版与样式配置'}
+              {showThemePanel ? '收起模版与模块排版设置' : '展开模版与模块排版设置'}
               <ChevronRight className={`w-3.5 h-3.5 transition-transform ${showThemePanel ? 'rotate-90' : ''}`} />
             </button>
             <span className="text-slate-400">|</span>
@@ -389,12 +382,13 @@ export function App() {
           </div>
         </div>
 
-        {/* Collapsible Theme Selector */}
+        {/* Collapsible Theme & Section Order Selector */}
         {showThemePanel && (
           <ThemeSelector
             theme={theme}
             onChangeTheme={setTheme}
             resumeData={resumeData}
+            onChangeResumeData={setResumeData}
             onToggleSection={handleToggleSection}
           />
         )}
@@ -455,7 +449,6 @@ export function App() {
               <WorkExperienceEditor
                 workExperiences={resumeData.workExperiences}
                 onChange={(workExperiences) => setResumeData({ ...resumeData, workExperiences })}
-                onOpenPolishModal={handleOpenPolish}
               />
             )}
 
@@ -465,7 +458,6 @@ export function App() {
                 onChange={(projectExperiences) =>
                   setResumeData({ ...resumeData, projectExperiences })
                 }
-                onOpenPolishModal={handleOpenPolish}
               />
             )}
 
@@ -497,8 +489,18 @@ export function App() {
             {activeTab === 'summary' && (
               <SummaryEditor
                 summary={resumeData.summary}
+                sectionTitle={resumeData.sectionTitles?.summary || '自我评价'}
                 resumeData={resumeData}
                 onChange={(summary) => setResumeData({ ...resumeData, summary })}
+                onChangeTitle={(newTitle) =>
+                  setResumeData({
+                    ...resumeData,
+                    sectionTitles: {
+                      ...resumeData.sectionTitles,
+                      summary: newTitle,
+                    },
+                  })
+                }
               />
             )}
           </div>
@@ -528,38 +530,6 @@ export function App() {
           </div>
         </section>
       </main>
-
-      {/* AI Assistant Modals */}
-      <AIPolishModal
-        isOpen={polishModalOpen}
-        onClose={() => setPolishModalOpen(false)}
-        originalText={polishText}
-        contextRole={polishRoleContext}
-        onApply={(newText) => {
-          if (polishApplyCallback) {
-            polishApplyCallback(newText);
-          }
-        }}
-      />
-
-      <AIDiagnosisModal
-        isOpen={diagnosisModalOpen}
-        onClose={() => setDiagnosisModalOpen(false)}
-        resumeData={resumeData}
-      />
-
-      <AIJDMatchModal
-        isOpen={jdMatchModalOpen}
-        onClose={() => setJdMatchModalOpen(false)}
-        resumeData={resumeData}
-      />
-
-      <AITranslateModal
-        isOpen={translateModalOpen}
-        onClose={() => setTranslateModalOpen(false)}
-        resumeData={resumeData}
-        onApplyTranslated={(translatedData) => setResumeData(translatedData)}
-      />
     </div>
   );
 }

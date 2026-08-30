@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { WorkExperience } from '../../types';
-import { Plus, Trash2, Sparkles, ChevronDown, ChevronUp, GripVertical, Building2, Calendar } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, ChevronUp, Tag, X } from 'lucide-react';
 
 interface WorkExperienceEditorProps {
   workExperiences: WorkExperience[];
   onChange: (updated: WorkExperience[]) => void;
-  onOpenPolishModal: (text: string, onApply: (newText: string) => void, contextRole?: string) => void;
+  onOpenPolishModal?: (text: string, onApply: (newText: string) => void, contextRole?: string) => void;
 }
+
+const QUICK_TAGS = ['主导重构', '团队管理', '核心骨干', '从0到1搭建', '性能优化', '业务增长', '年度优秀员工'];
 
 export const WorkExperienceEditor: React.FC<WorkExperienceEditorProps> = ({
   workExperiences,
   onChange,
-  onOpenPolishModal,
 }) => {
   const [expandedId, setExpandedId] = useState<string | null>(workExperiences[0]?.id || null);
+  const [newTagInputs, setNewTagInputs] = useState<Record<string, string>>({});
 
   const handleAdd = () => {
     const newId = 'work_' + Date.now();
@@ -39,6 +41,18 @@ export const WorkExperienceEditor: React.FC<WorkExperienceEditorProps> = ({
 
   const handleDelete = (id: string) => {
     onChange(workExperiences.filter((w) => w.id !== id));
+  };
+
+  const handleAddTag = (workId: string, tag: string) => {
+    if (!tag.trim()) return;
+    const work = workExperiences.find((w) => w.id === workId);
+    if (!work) return;
+
+    // Append to achievements as a bullet point or tag
+    const currentAch = work.achievements || '';
+    const newAch = currentAch ? `${currentAch}\n• 【${tag.trim()}】` : `• 【${tag.trim()}】`;
+    handleUpdate(workId, { achievements: newAch });
+    setNewTagInputs({ ...newTagInputs, [workId]: '' });
   };
 
   return (
@@ -180,27 +194,58 @@ export const WorkExperienceEditor: React.FC<WorkExperienceEditorProps> = ({
                   />
                 </div>
 
-                {/* Key Achievements & STAR Polish */}
-                <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <label className="text-slate-700 font-semibold flex items-center gap-1">
-                      核心业绩与成果（推荐 STAR 格式 / 分条量化）
-                    </label>
+                {/* Quick Add Custom Point Bar */}
+                <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-lg space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-slate-700 flex items-center gap-1">
+                      <Tag className="w-3.5 h-3.5 text-blue-600" />
+                      添加自定义亮点/标签（快捷插入到工作业绩）：
+                    </span>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={newTagInputs[item.id] || ''}
+                      onChange={(e) => setNewTagInputs({ ...newTagInputs, [item.id]: e.target.value })}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddTag(item.id, newTagInputs[item.id] || '');
+                        }
+                      }}
+                      placeholder="输入自定义亮点并回车 (如: 独立负责千万级流量系统)"
+                      className="flex-1 px-2.5 py-1 bg-white border border-slate-300 rounded-md text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    />
                     <button
                       type="button"
-                      onClick={() =>
-                        onOpenPolishModal(
-                          item.achievements || item.description,
-                          (polished) => handleUpdate(item.id, { achievements: polished }),
-                          `${item.company} ${item.position}`
-                        )
-                      }
-                      className="text-amber-600 hover:text-amber-700 bg-amber-50 hover:bg-amber-100 px-2 py-0.5 rounded-md font-bold flex items-center gap-1 cursor-pointer transition-colors shadow-2xs text-[11px]"
+                      onClick={() => handleAddTag(item.id, newTagInputs[item.id] || '')}
+                      className="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-semibold cursor-pointer"
                     >
-                      <Sparkles className="w-3 h-3 text-amber-500" />
-                      AI STAR润色与量化
+                      插入亮点
                     </button>
                   </div>
+
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    <span className="text-[11px] text-slate-500">快捷推荐:</span>
+                    {QUICK_TAGS.map((tag) => (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => handleAddTag(item.id, tag)}
+                        className="px-2 py-0.5 bg-white border border-slate-200 hover:border-blue-400 text-slate-700 rounded text-[11px] cursor-pointer"
+                      >
+                        + {tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Key Achievements */}
+                <div>
+                  <label className="block text-slate-700 font-semibold mb-1">
+                    核心业绩与成果（每行一条，支持使用 • 符号）
+                  </label>
                   <textarea
                     rows={4}
                     value={item.achievements || ''}
