@@ -28,6 +28,7 @@ import {
   SlicedResumePage,
 } from './utils/exportUtils';
 import { PrintPreviewModal } from './components/PrintPreviewModal';
+import { AuthKeyModal, isAuthorUnlocked } from './components/AuthKeyModal';
 import {
   Printer,
   Download,
@@ -113,6 +114,10 @@ export function App() {
   const [slicedPages, setSlicedPages] = useState<SlicedResumePage[]>([]);
   const [isSlicing, setIsSlicing] = useState<boolean>(false);
 
+  // Author Verification Modal state
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
+  const [pendingAuthAction, setPendingAuthAction] = useState<(() => void) | null>(null);
+
   const previewRef = useRef<HTMLDivElement>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
 
@@ -184,6 +189,16 @@ export function App() {
 
   const docTitle = `${resumeData.profile.name || '个人简历'}_${resumeData.profile.title || '求职'}`;
 
+  // Execute action with author key check (Author's Birthday 0320)
+  const executeWithAuth = (action: () => void) => {
+    if (isAuthorUnlocked()) {
+      action();
+    } else {
+      setPendingAuthAction(() => action);
+      setIsAuthModalOpen(true);
+    }
+  };
+
   // Open Print and Slicing Preview Modal with instant snapshot
   const handleOpenPrintModal = async () => {
     if (isSlicing) return;
@@ -198,6 +213,12 @@ export function App() {
     } finally {
       setIsSlicing(false);
     }
+  };
+
+  const handleTriggerPrint = () => {
+    executeWithAuth(() => {
+      handleOpenPrintModal();
+    });
   };
 
   // Direct print action
@@ -228,6 +249,12 @@ export function App() {
     } finally {
       setIsExporting(false);
     }
+  };
+
+  const handleTriggerExportPdf = () => {
+    executeWithAuth(() => {
+      handleExportPdf();
+    });
   };
 
   const handleExportJson = () => {
@@ -350,7 +377,7 @@ export function App() {
 
             {/* Print & PDF Button (Opens A4 Sliced Snapshot Modal) */}
             <button
-              onClick={handleOpenPrintModal}
+              onClick={handleTriggerPrint}
               disabled={isSlicing || isPrinting}
               className={`px-3.5 py-1.5 font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs text-xs transition-all ${
                 isSlicing
@@ -375,7 +402,7 @@ export function App() {
             {/* More export dropdown */}
             <div className="flex items-center gap-1">
               <button
-                onClick={handleExportPdf}
+                onClick={handleTriggerExportPdf}
                 disabled={isExporting}
                 className={`p-2 border rounded-xl shadow-2xs transition-colors ${
                   isExporting
@@ -392,7 +419,7 @@ export function App() {
               </button>
 
               <button
-                onClick={handleOpenPrintModal}
+                onClick={handleTriggerPrint}
                 className="p-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl cursor-pointer shadow-2xs hidden md:flex"
                 title="在新标签页纯净打印 / 预览"
               >
@@ -625,6 +652,21 @@ export function App() {
         pages={slicedPages}
         isLoading={isSlicing}
         docTitle={docTitle}
+      />
+
+      {/* Author Key Verification Modal */}
+      <AuthKeyModal
+        isOpen={isAuthModalOpen}
+        onClose={() => {
+          setIsAuthModalOpen(false);
+          setPendingAuthAction(null);
+        }}
+        onSuccess={() => {
+          if (pendingAuthAction) {
+            pendingAuthAction();
+            setPendingAuthAction(null);
+          }
+        }}
       />
     </div>
   );
