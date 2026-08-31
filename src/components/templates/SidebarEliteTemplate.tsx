@@ -52,11 +52,14 @@ export const SidebarEliteTemplate: React.FC<TemplateProps> = ({ data, theme }) =
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {workExperiences.map((item) => (
                 <div key={item.id}>
-                  <div className="flex flex-wrap justify-between items-baseline gap-1 mb-1">
-                    <span className="font-bold text-slate-900" style={{ fontSize: density.subTitleSize }}>
-                      {item.company} {item.department && <span className="font-normal text-slate-500 text-xs">({item.department})</span>}
-                    </span>
-                    <span className="text-slate-500 text-xs font-mono">{item.startDate} - {item.current ? '至今' : item.endDate}</span>
+                  <div className="flex justify-between items-baseline gap-2 mb-1 min-w-0">
+                    <div className="flex items-baseline gap-1.5 min-w-0 flex-1">
+                      <span className="font-bold text-slate-900 whitespace-nowrap break-keep shrink-0" style={{ fontSize: density.subTitleSize }}>
+                        {item.company}
+                      </span>
+                      {item.department && <span className="font-normal text-slate-500 text-xs whitespace-nowrap break-keep shrink-0">({item.department})</span>}
+                    </div>
+                    <span className="text-slate-500 text-xs font-mono whitespace-nowrap break-keep shrink-0 text-right">{item.startDate} - {item.current ? '至今' : item.endDate}</span>
                   </div>
                   <div className="font-semibold text-slate-700 mb-1" style={{ fontSize: density.bodySize }}>{item.position}</div>
                   {item.description && <p className="text-slate-600 mb-1 leading-relaxed" style={{ fontSize: density.bodySize }}>{item.description}</p>}
@@ -83,9 +86,9 @@ export const SidebarEliteTemplate: React.FC<TemplateProps> = ({ data, theme }) =
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {projectExperiences.map((proj) => (
                 <div key={proj.id}>
-                  <div className="flex flex-wrap justify-between items-baseline gap-1 mb-1">
-                    <span className="font-bold text-slate-900" style={{ fontSize: density.subTitleSize }}>{proj.projectName}</span>
-                    <span className="text-slate-500 text-xs font-mono">{proj.startDate} - {proj.current ? '至今' : proj.endDate}</span>
+                  <div className="flex justify-between items-baseline gap-2 mb-1 min-w-0">
+                    <span className="font-bold text-slate-900 whitespace-nowrap break-keep shrink-0" style={{ fontSize: density.subTitleSize }}>{proj.projectName}</span>
+                    <span className="text-slate-500 text-xs font-mono whitespace-nowrap break-keep shrink-0 text-right">{proj.startDate} - {proj.current ? '至今' : proj.endDate}</span>
                   </div>
                   <div className="font-medium text-slate-700 mb-1" style={{ fontSize: density.bodySize }}>
                     {proj.role} {proj.techStack && <span className="text-slate-500 font-mono text-[11px]">| {proj.techStack}</span>}

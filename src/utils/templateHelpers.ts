@@ -99,10 +99,10 @@ export function getDensityStyles(theme: ThemeConfig) {
 
   const fontFamily =
     theme.fontFamily === 'serif'
-      ? '"Noto Serif SC", serif'
+      ? '"Noto Serif SC", "Source Han Serif SC", "Songti SC", "SimSun", STSong, "Times New Roman", Georgia, serif'
       : theme.fontFamily === 'mono'
-      ? '"Fira Code", monospace'
-      : '"Noto Sans SC", sans-serif';
+      ? '"Fira Code", "JetBrains Mono", "Cascadia Code", Consolas, "PingFang SC", "Noto Sans SC", monospace'
+      : '"Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Plus Jakarta Sans", sans-serif';
 
   return {
     containerStyle: {

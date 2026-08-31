@@ -19,14 +19,14 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
   switch (headerStyle) {
     case 'left-bar':
       return (
-        <div className={`flex items-center gap-2 pb-1 mb-2.5 ${className}`}>
+        <div className={`flex items-center gap-2 pb-1 mb-2.5 min-w-0 ${className}`}>
           <span
             className="w-1.5 h-4.5 rounded-xs shrink-0"
             style={{ backgroundColor: primaryColor }}
           />
-          {icon && <span style={{ color: primaryColor }}>{icon}</span>}
+          {icon && <span className="shrink-0" style={{ color: primaryColor }}>{icon}</span>}
           <h2
-            className="font-bold text-sm tracking-wide uppercase text-slate-900"
+            className="font-bold text-sm tracking-normal uppercase text-slate-900 whitespace-nowrap shrink-0 break-keep"
           >
             {title}
           </h2>
@@ -35,13 +35,13 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
 
     case 'pill':
       return (
-        <div className={`flex items-center mb-2.5 ${className}`}>
+        <div className={`flex items-center mb-2.5 min-w-0 ${className}`}>
           <div
-            className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-white text-xs font-bold shadow-2xs"
+            className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-white text-xs font-bold shadow-2xs whitespace-nowrap shrink-0 break-keep"
             style={{ backgroundColor: primaryColor }}
           >
-            {icon && <span className="scale-90">{icon}</span>}
-            <span>{title}</span>
+            {icon && <span className="scale-90 shrink-0">{icon}</span>}
+            <span className="whitespace-nowrap shrink-0 break-keep">{title}</span>
           </div>
         </div>
       );
@@ -49,28 +49,28 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
     case 'double-line':
       return (
         <div
-          className={`flex items-center justify-between border-y py-1 mb-2.5 ${className}`}
+          className={`flex items-center justify-between border-y py-1 mb-2.5 min-w-0 ${className}`}
           style={{ borderColor: `${primaryColor}40` }}
         >
-          <div className="flex items-center gap-2">
-            {icon && <span style={{ color: primaryColor }}>{icon}</span>}
+          <div className="flex items-center gap-2 min-w-0">
+            {icon && <span className="shrink-0" style={{ color: primaryColor }}>{icon}</span>}
             <h2
-              className="font-bold text-sm tracking-wider uppercase"
+              className="font-bold text-sm tracking-normal uppercase whitespace-nowrap shrink-0 break-keep"
               style={{ color: primaryColor }}
             >
               {title}
             </h2>
           </div>
-          <span className="text-[10px] text-slate-300 tracking-widest">///</span>
+          <span className="text-[10px] text-slate-300 tracking-widest shrink-0 select-none">///</span>
         </div>
       );
 
     case 'minimal':
       return (
-        <div className={`flex items-center gap-2 mb-2 ${className}`}>
-          {icon && <span style={{ color: primaryColor }}>{icon}</span>}
+        <div className={`flex items-center gap-2 mb-2 min-w-0 ${className}`}>
+          {icon && <span className="shrink-0" style={{ color: primaryColor }}>{icon}</span>}
           <h2
-            className="font-bold text-sm tracking-wide uppercase text-slate-900"
+            className="font-bold text-sm tracking-normal uppercase text-slate-900 whitespace-nowrap shrink-0 break-keep"
           >
             {title}
           </h2>
@@ -79,17 +79,17 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
 
     case 'academic':
       return (
-        <div className={`flex items-center gap-3 my-2 ${className}`}>
-          <div className="flex-1 h-px bg-slate-300" />
-          <div className="flex items-center gap-1.5">
-            {icon && <span style={{ color: primaryColor }}>{icon}</span>}
+        <div className={`flex items-center gap-3 my-2 min-w-0 ${className}`}>
+          <div className="flex-1 h-px bg-slate-300 min-w-4" />
+          <div className="flex items-center gap-1.5 shrink-0">
+            {icon && <span className="shrink-0" style={{ color: primaryColor }}>{icon}</span>}
             <h2
-              className="font-bold text-xs tracking-widest uppercase text-slate-900"
+              className="font-bold text-xs tracking-wider uppercase text-slate-900 whitespace-nowrap shrink-0 break-keep"
             >
               {title}
             </h2>
           </div>
-          <div className="flex-1 h-px bg-slate-300" />
+          <div className="flex-1 h-px bg-slate-300 min-w-4" />
         </div>
       );
 
@@ -97,12 +97,12 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
     default:
       return (
         <div
-          className={`flex items-center gap-2 border-b pb-1 mb-2.5 ${className}`}
+          className={`flex items-center gap-2 border-b pb-1 mb-2.5 min-w-0 ${className}`}
           style={{ borderColor: `${primaryColor}40` }}
         >
-          {icon && <span style={{ color: primaryColor }}>{icon}</span>}
+          {icon && <span className="shrink-0" style={{ color: primaryColor }}>{icon}</span>}
           <h2
-            className="font-bold text-sm tracking-wide uppercase"
+            className="font-bold text-sm tracking-normal uppercase whitespace-nowrap shrink-0 break-keep"
             style={{ color: primaryColor }}
           >
             {title}

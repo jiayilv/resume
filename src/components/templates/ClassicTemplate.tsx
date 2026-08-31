@@ -30,14 +30,18 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
         return (
           <div 
             key="jobIntent"
-            className="bg-slate-50 border border-slate-200/80 rounded-md p-2 px-3 flex flex-wrap items-center justify-between text-xs avoid-break"
+            className="bg-slate-50 border border-slate-200/80 rounded-md p-2 px-3 flex flex-wrap items-center justify-between text-xs avoid-break gap-2"
             style={{ marginBottom: density.sectionGap }}
           >
-            <span className="font-semibold text-slate-700">{getSectionTitle(data, 'jobIntent')}：</span>
-            <span className="font-bold text-slate-900">{jobIntent.targetPosition}</span>
-            {jobIntent.targetCity && <span className="text-slate-600">期望城市: {jobIntent.targetCity}</span>}
-            {jobIntent.targetSalary && <span className="text-slate-600">期望薪资: {jobIntent.targetSalary}</span>}
-            {jobIntent.availableTime && <span className="text-slate-600">到岗时间: {jobIntent.availableTime}</span>}
+            <div className="flex items-center gap-1.5 whitespace-nowrap break-keep">
+              <span className="font-semibold text-slate-700">{getSectionTitle(data, 'jobIntent')}：</span>
+              <span className="font-bold text-slate-900">{jobIntent.targetPosition}</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-x-3 text-slate-600 text-xs">
+              {jobIntent.targetCity && <span className="whitespace-nowrap break-keep">期望城市: {jobIntent.targetCity}</span>}
+              {jobIntent.targetSalary && <span className="whitespace-nowrap break-keep">期望薪资: {jobIntent.targetSalary}</span>}
+              {jobIntent.availableTime && <span className="whitespace-nowrap break-keep">到岗时间: {jobIntent.availableTime}</span>}
+            </div>
           </div>
         );
 
@@ -71,13 +75,13 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {workExperiences.map((item) => (
                 <div key={item.id}>
-                  <div className="flex flex-wrap items-baseline justify-between gap-2 mb-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-slate-900" style={{ fontSize: density.subTitleSize }}>{item.company}</span>
-                      {item.department && <span className="text-slate-500 text-xs">({item.department})</span>}
+                  <div className="flex items-baseline justify-between gap-2 mb-1 min-w-0">
+                    <div className="flex items-baseline gap-2 min-w-0 flex-1">
+                      <span className="font-bold text-slate-900 whitespace-nowrap break-keep shrink-0" style={{ fontSize: density.subTitleSize }}>{item.company}</span>
+                      {item.department && <span className="text-slate-500 text-xs whitespace-nowrap break-keep shrink-0">({item.department})</span>}
+                      <span className="font-semibold text-slate-800 ml-2 whitespace-nowrap break-keep shrink-0" style={{ fontSize: density.bodySize }}>{item.position}</span>
                     </div>
-                    <span className="font-semibold text-slate-800" style={{ fontSize: density.bodySize }}>{item.position}</span>
-                    <span className="text-slate-500 text-xs tabular-nums">
+                    <span className="text-slate-500 text-xs tabular-nums whitespace-nowrap break-keep shrink-0 text-right">
                       {item.startDate} - {item.current ? '至今' : item.endDate}
                     </span>
                   </div>
@@ -111,10 +115,12 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {projectExperiences.map((proj) => (
                 <div key={proj.id}>
-                  <div className="flex flex-wrap items-baseline justify-between gap-2 mb-1">
-                    <span className="font-bold text-slate-900" style={{ fontSize: density.subTitleSize }}>{proj.projectName}</span>
-                    <span className="font-medium text-slate-800" style={{ fontSize: density.bodySize }}>{proj.role}</span>
-                    <span className="text-slate-500 text-xs tabular-nums">
+                  <div className="flex items-baseline justify-between gap-2 mb-1 min-w-0">
+                    <div className="flex items-baseline gap-2 min-w-0 flex-1">
+                      <span className="font-bold text-slate-900 whitespace-nowrap break-keep shrink-0" style={{ fontSize: density.subTitleSize }}>{proj.projectName}</span>
+                      <span className="font-medium text-slate-800 ml-2 whitespace-nowrap break-keep shrink-0" style={{ fontSize: density.bodySize }}>{proj.role}</span>
+                    </div>
+                    <span className="text-slate-500 text-xs tabular-nums whitespace-nowrap break-keep shrink-0 text-right">
                       {proj.startDate} - {proj.current ? '至今' : proj.endDate}
                     </span>
                   </div>
@@ -155,17 +161,19 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {educations.map((edu) => (
                 <div key={edu.id}>
-                  <div className="flex flex-wrap items-baseline justify-between gap-2">
-                    <span className="font-bold text-slate-900" style={{ fontSize: density.subTitleSize }}>{edu.school}</span>
-                    <span className="font-medium text-slate-800" style={{ fontSize: density.bodySize }}>{edu.major} · {edu.degree}</span>
-                    <span className="text-slate-500 text-xs tabular-nums">{edu.startDate} - {edu.endDate}</span>
+                  <div className="flex items-baseline justify-between gap-2 min-w-0">
+                    <div className="flex items-baseline gap-2 min-w-0 flex-1">
+                      <span className="font-bold text-slate-900 whitespace-nowrap break-keep shrink-0" style={{ fontSize: density.subTitleSize }}>{edu.school}</span>
+                      <span className="font-medium text-slate-800 ml-2 whitespace-nowrap break-keep shrink-0" style={{ fontSize: density.bodySize }}>{edu.major} · {edu.degree}</span>
+                    </div>
+                    <span className="text-slate-500 text-xs tabular-nums whitespace-nowrap break-keep shrink-0 text-right">{edu.startDate} - {edu.endDate}</span>
                   </div>
 
                   {(edu.gpa || edu.honors || edu.courses) && (
                     <div className="text-slate-600 mt-1 flex flex-wrap gap-x-4" style={{ fontSize: density.metaSize }}>
-                      {edu.gpa && <span>GPA: {edu.gpa}</span>}
-                      {edu.honors && <span>荣誉: {edu.honors}</span>}
-                      {edu.courses && <span>主修: {edu.courses}</span>}
+                      {edu.gpa && <span className="whitespace-nowrap break-keep">GPA: {edu.gpa}</span>}
+                      {edu.honors && <span className="whitespace-nowrap break-keep">荣誉: {edu.honors}</span>}
+                      {edu.courses && <span className="whitespace-nowrap break-keep">主修: {edu.courses}</span>}
                     </div>
                   )}
 
@@ -175,10 +183,10 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
                       {edu.customPoints.map((pt, pIdx) => (
                         <span 
                           key={pIdx}
-                          className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded text-[11px] font-medium border"
+                          className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded text-[11px] font-medium border whitespace-nowrap break-keep"
                           style={{ backgroundColor: `${primaryColor}0c`, borderColor: `${primaryColor}30`, color: primaryColor }}
                         >
-                          <Tag className="w-2.5 h-2.5" />
+                          <Tag className="w-2.5 h-2.5 shrink-0" />
                           {pt}
                         </span>
                       ))}

@@ -29,17 +29,22 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ data, theme }) => 
         return (
           <div 
             key="jobIntent"
-            className="p-2.5 rounded-lg border flex flex-wrap justify-between items-center text-xs font-mono avoid-break"
+            className="p-2.5 rounded-lg border flex flex-wrap justify-between items-center text-xs font-mono avoid-break gap-2"
             style={{ 
               backgroundColor: `${primaryColor}0a`, 
               borderColor: `${primaryColor}30`,
               marginBottom: density.sectionGap 
             }}
           >
-            <span><strong style={{ color: primaryColor }}>{getSectionTitle(data, 'jobIntent').toUpperCase()}:</strong> {jobIntent.targetPosition}</span>
-            {jobIntent.targetCity && <span>CITY: {jobIntent.targetCity}</span>}
-            {jobIntent.targetSalary && <span>SALARY: {jobIntent.targetSalary}</span>}
-            {jobIntent.availableTime && <span>STATUS: {jobIntent.availableTime}</span>}
+            <div className="flex items-center gap-1.5 whitespace-nowrap break-keep">
+              <strong style={{ color: primaryColor }}>{getSectionTitle(data, 'jobIntent').toUpperCase()}:</strong>
+              <span>{jobIntent.targetPosition}</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-x-3">
+              {jobIntent.targetCity && <span className="whitespace-nowrap break-keep">CITY: {jobIntent.targetCity}</span>}
+              {jobIntent.targetSalary && <span className="whitespace-nowrap break-keep">SALARY: {jobIntent.targetSalary}</span>}
+              {jobIntent.availableTime && <span className="whitespace-nowrap break-keep">STATUS: {jobIntent.availableTime}</span>}
+            </div>
           </div>
         );
 
@@ -73,12 +78,15 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ data, theme }) => 
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {workExperiences.map((w) => (
                 <div key={w.id} className="relative pl-3 border-l-2" style={{ borderColor: `${primaryColor}40` }}>
-                  <div className="flex flex-wrap justify-between items-baseline gap-2 mb-1">
-                    <span className="font-bold text-slate-900" style={{ fontSize: density.subTitleSize }}>
-                      {w.company} {w.department && <span className="font-normal text-slate-500 text-xs">/ {w.department}</span>}
-                    </span>
-                    <span className="font-semibold" style={{ color: primaryColor, fontSize: density.bodySize }}>{w.position}</span>
-                    <span className="text-slate-400 font-mono text-xs">{w.startDate} - {w.current ? 'PRESENT' : w.endDate}</span>
+                  <div className="flex justify-between items-baseline gap-2 mb-1 min-w-0">
+                    <div className="flex items-baseline gap-2 min-w-0 flex-1">
+                      <span className="font-bold text-slate-900 whitespace-nowrap break-keep shrink-0" style={{ fontSize: density.subTitleSize }}>
+                        {w.company}
+                      </span>
+                      {w.department && <span className="font-normal text-slate-500 text-xs whitespace-nowrap break-keep shrink-0">/ {w.department}</span>}
+                      <span className="font-semibold ml-2 whitespace-nowrap break-keep shrink-0" style={{ color: primaryColor, fontSize: density.bodySize }}>{w.position}</span>
+                    </div>
+                    <span className="text-slate-400 font-mono text-xs whitespace-nowrap break-keep shrink-0 text-right">{w.startDate} - {w.current ? 'PRESENT' : w.endDate}</span>
                   </div>
                   {w.description && <p className="text-slate-700 mb-1 leading-relaxed" style={{ fontSize: density.bodySize }}>{w.description}</p>}
                   {w.achievements && (
@@ -106,10 +114,12 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ data, theme }) => 
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {projectExperiences.map((p) => (
                 <div key={p.id} className="relative pl-3 border-l-2" style={{ borderColor: `${primaryColor}40` }}>
-                  <div className="flex flex-wrap justify-between items-baseline gap-2 mb-1">
-                    <span className="font-bold text-slate-900" style={{ fontSize: density.subTitleSize }}>{p.projectName}</span>
-                    <span className="font-medium" style={{ color: primaryColor, fontSize: density.bodySize }}>{p.role}</span>
-                    <span className="text-slate-400 font-mono text-xs">{p.startDate} - {p.current ? 'PRESENT' : p.endDate}</span>
+                  <div className="flex justify-between items-baseline gap-2 mb-1 min-w-0">
+                    <div className="flex items-baseline gap-2 min-w-0 flex-1">
+                      <span className="font-bold text-slate-900 whitespace-nowrap break-keep shrink-0" style={{ fontSize: density.subTitleSize }}>{p.projectName}</span>
+                      <span className="font-medium ml-2 whitespace-nowrap break-keep shrink-0" style={{ color: primaryColor, fontSize: density.bodySize }}>{p.role}</span>
+                    </div>
+                    <span className="text-slate-400 font-mono text-xs whitespace-nowrap break-keep shrink-0 text-right">{p.startDate} - {p.current ? 'PRESENT' : p.endDate}</span>
                   </div>
                   {p.techStack && (
                     <div className="mb-1 text-xs text-slate-500 font-mono">
@@ -142,22 +152,24 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ data, theme }) => 
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {educations.map((edu) => (
                 <div key={edu.id}>
-                  <div className="flex justify-between items-baseline">
-                    <span className="font-bold text-slate-900" style={{ fontSize: density.subTitleSize }}>{edu.school}</span>
-                    <span className="text-slate-400 font-mono text-xs">{edu.startDate} - {edu.endDate}</span>
+                  <div className="flex justify-between items-baseline gap-2 min-w-0">
+                    <div className="flex items-baseline gap-2 min-w-0 flex-1">
+                      <span className="font-bold text-slate-900 whitespace-nowrap break-keep shrink-0" style={{ fontSize: density.subTitleSize }}>{edu.school}</span>
+                      <span className="text-slate-700 text-xs ml-2 whitespace-nowrap break-keep shrink-0">{edu.major} · {edu.degree}</span>
+                    </div>
+                    <span className="text-slate-400 font-mono text-xs whitespace-nowrap break-keep shrink-0 text-right">{edu.startDate} - {edu.endDate}</span>
                   </div>
-                  <div className="text-slate-700 text-xs">{edu.major} · {edu.degree}</div>
                   {(edu.gpa || edu.honors || edu.courses) && (
                     <div className="text-slate-500 font-mono mt-0.5" style={{ fontSize: density.metaSize }}>
-                      {edu.gpa && `GPA: ${edu.gpa} `}
-                      {edu.honors && `HONORS: ${edu.honors} `}
-                      {edu.courses && `COURSES: ${edu.courses}`}
+                      {edu.gpa && <span className="whitespace-nowrap break-keep">GPA: {edu.gpa} </span>}
+                      {edu.honors && <span className="whitespace-nowrap break-keep">HONORS: {edu.honors} </span>}
+                      {edu.courses && <span className="whitespace-nowrap break-keep">COURSES: {edu.courses}</span>}
                     </div>
                   )}
                   {edu.customPoints && edu.customPoints.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mt-1">
                       {edu.customPoints.map((pt, idx) => (
-                        <span key={idx} className="bg-slate-100 px-1.5 py-0.5 rounded text-[10px] font-mono text-slate-700">
+                        <span key={idx} className="bg-slate-100 px-1.5 py-0.5 rounded text-[10px] font-mono text-slate-700 whitespace-nowrap break-keep">
                           #{pt}
                         </span>
                       ))}

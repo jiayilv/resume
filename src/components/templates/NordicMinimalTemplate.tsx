@@ -24,10 +24,15 @@ export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) 
       case 'jobIntent':
         if (!jobIntent.targetPosition) return null;
         return (
-          <div key="jobIntent" className="pb-2 border-b border-slate-100 flex justify-between text-xs text-slate-600 avoid-break" style={{ marginBottom: density.sectionGap }}>
-            <span><strong className="font-semibold text-slate-800">{getSectionTitle(data, 'jobIntent')}:</strong> {jobIntent.targetPosition}</span>
-            {jobIntent.targetCity && <span>期望城市: {jobIntent.targetCity}</span>}
-            {jobIntent.targetSalary && <span>期望薪资: {jobIntent.targetSalary}</span>}
+          <div key="jobIntent" className="pb-2 border-b border-slate-100 flex flex-wrap justify-between items-center text-xs text-slate-600 avoid-break gap-2" style={{ marginBottom: density.sectionGap }}>
+            <div className="flex items-center gap-1.5 whitespace-nowrap break-keep">
+              <strong className="font-semibold text-slate-800">{getSectionTitle(data, 'jobIntent')}:</strong>
+              <span className="text-slate-900 font-medium">{jobIntent.targetPosition}</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-x-3">
+              {jobIntent.targetCity && <span className="whitespace-nowrap break-keep">期望城市: {jobIntent.targetCity}</span>}
+              {jobIntent.targetSalary && <span className="whitespace-nowrap break-keep">期望薪资: {jobIntent.targetSalary}</span>}
+            </div>
           </div>
         );
 
@@ -58,14 +63,14 @@ export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) 
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {workExperiences.map((w) => (
                 <div key={w.id}>
-                  <div className="flex justify-between items-baseline mb-1">
-                    <div>
-                      <span className="font-semibold text-slate-900" style={{ fontSize: density.subTitleSize }}>{w.company}</span>
-                      {w.department && <span className="text-slate-500 font-light ml-2 text-xs">({w.department})</span>}
+                  <div className="flex justify-between items-baseline gap-2 mb-1 min-w-0">
+                    <div className="flex items-baseline gap-2 min-w-0 flex-1">
+                      <span className="font-semibold text-slate-900 whitespace-nowrap break-keep shrink-0" style={{ fontSize: density.subTitleSize }}>{w.company}</span>
+                      {w.department && <span className="text-slate-500 font-light text-xs whitespace-nowrap break-keep shrink-0">({w.department})</span>}
+                      <span className="font-medium text-slate-700 ml-2 whitespace-nowrap break-keep shrink-0" style={{ fontSize: density.bodySize }}>{w.position}</span>
                     </div>
-                    <span className="text-slate-400 text-xs font-mono">{w.startDate} — {w.current ? '至今' : w.endDate}</span>
+                    <span className="text-slate-400 text-xs font-mono whitespace-nowrap break-keep shrink-0 text-right">{w.startDate} — {w.current ? '至今' : w.endDate}</span>
                   </div>
-                  <div className="font-medium text-slate-700 mb-1" style={{ fontSize: density.bodySize }}>{w.position}</div>
                   {w.description && <p className="text-slate-600 mb-1 leading-relaxed" style={{ fontSize: density.bodySize }}>{w.description}</p>}
                   {w.achievements && (
                     <div className="text-slate-600 whitespace-pre-line leading-relaxed pl-2 border-l border-slate-200" style={{ fontSize: density.bodySize }}>
@@ -90,12 +95,14 @@ export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) 
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {projectExperiences.map((p) => (
                 <div key={p.id}>
-                  <div className="flex justify-between items-baseline mb-1">
-                    <span className="font-semibold text-slate-900" style={{ fontSize: density.subTitleSize }}>{p.projectName}</span>
-                    <span className="text-slate-400 text-xs font-mono">{p.startDate} — {p.current ? '至今' : p.endDate}</span>
-                  </div>
-                  <div className="text-slate-600 mb-1 font-medium" style={{ fontSize: density.bodySize }}>
-                    {p.role} {p.techStack && <span className="text-slate-400 font-mono text-[11px]">| {p.techStack}</span>}
+                  <div className="flex justify-between items-baseline gap-2 mb-1 min-w-0">
+                    <div className="flex items-baseline gap-2 min-w-0 flex-1">
+                      <span className="font-semibold text-slate-900 whitespace-nowrap break-keep shrink-0" style={{ fontSize: density.subTitleSize }}>{p.projectName}</span>
+                      <span className="text-slate-600 ml-2 font-medium whitespace-nowrap break-keep shrink-0" style={{ fontSize: density.bodySize }}>
+                        {p.role} {p.techStack && <span className="text-slate-400 font-mono text-[11px]">| {p.techStack}</span>}
+                      </span>
+                    </div>
+                    <span className="text-slate-400 text-xs font-mono whitespace-nowrap break-keep shrink-0 text-right">{p.startDate} — {p.current ? '至今' : p.endDate}</span>
                   </div>
                   {p.description && <p className="text-slate-600 mb-1 leading-relaxed" style={{ fontSize: density.bodySize }}>{p.description}</p>}
                   {p.results && (
@@ -121,22 +128,24 @@ export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) 
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {educations.map((edu) => (
                 <div key={edu.id}>
-                  <div className="flex justify-between items-baseline">
-                    <span className="font-semibold text-slate-900" style={{ fontSize: density.subTitleSize }}>{edu.school}</span>
-                    <span className="text-slate-400 text-xs font-mono">{edu.startDate} — {edu.endDate}</span>
+                  <div className="flex justify-between items-baseline gap-2 min-w-0">
+                    <div className="flex items-baseline gap-2 min-w-0 flex-1">
+                      <span className="font-semibold text-slate-900 whitespace-nowrap break-keep shrink-0" style={{ fontSize: density.subTitleSize }}>{edu.school}</span>
+                      <span className="text-slate-600 text-xs ml-2 whitespace-nowrap break-keep shrink-0">{edu.major} · {edu.degree}</span>
+                    </div>
+                    <span className="text-slate-400 text-xs font-mono whitespace-nowrap break-keep shrink-0 text-right">{edu.startDate} — {edu.endDate}</span>
                   </div>
-                  <div className="text-slate-600 text-xs">{edu.major} · {edu.degree}</div>
                   {(edu.gpa || edu.honors || edu.courses) && (
                     <div className="text-slate-500 text-[11px] mt-0.5" style={{ fontSize: density.metaSize }}>
-                      {edu.gpa && `GPA: ${edu.gpa} `}
-                      {edu.honors && `荣誉: ${edu.honors} `}
-                      {edu.courses && `主修: ${edu.courses}`}
+                      {edu.gpa && <span className="whitespace-nowrap break-keep">GPA: {edu.gpa} </span>}
+                      {edu.honors && <span className="whitespace-nowrap break-keep">荣誉: {edu.honors} </span>}
+                      {edu.courses && <span className="whitespace-nowrap break-keep">主修: {edu.courses}</span>}
                     </div>
                   )}
                   {edu.customPoints && edu.customPoints.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1">
                       {edu.customPoints.map((pt, idx) => (
-                        <span key={idx} className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[10px]">
+                        <span key={idx} className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[10px] whitespace-nowrap break-keep">
                           {pt}
                         </span>
                       ))}

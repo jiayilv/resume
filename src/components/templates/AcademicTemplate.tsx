@@ -58,22 +58,22 @@ export const AcademicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {educations.map((edu) => (
                 <div key={edu.id} className="font-serif">
-                  <div className="flex justify-between font-bold text-slate-900" style={{ fontSize: density.subTitleSize }}>
-                    <span>{edu.school}</span>
-                    <span className="font-normal font-mono text-xs">{edu.startDate} – {edu.endDate}</span>
+                  <div className="flex justify-between items-baseline gap-2 min-w-0 font-bold text-slate-900" style={{ fontSize: density.subTitleSize }}>
+                    <span className="whitespace-nowrap break-keep shrink-0">{edu.school}</span>
+                    <span className="font-normal font-mono text-xs whitespace-nowrap break-keep shrink-0 text-right">{edu.startDate} – {edu.endDate}</span>
                   </div>
                   <div className="italic text-slate-700" style={{ fontSize: density.bodySize }}>{edu.degree} in {edu.major}</div>
                   {(edu.gpa || edu.honors || edu.courses) && (
                     <div className="text-xs text-slate-600 mt-0.5">
-                      {edu.gpa && <span>GPA: {edu.gpa} </span>}
-                      {edu.honors && <span>| Honors: {edu.honors} </span>}
-                      {edu.courses && <span>| Key Courses: {edu.courses}</span>}
+                      {edu.gpa && <span className="whitespace-nowrap break-keep">GPA: {edu.gpa} </span>}
+                      {edu.honors && <span className="whitespace-nowrap break-keep">| Honors: {edu.honors} </span>}
+                      {edu.courses && <span className="whitespace-nowrap break-keep">| Key Courses: {edu.courses}</span>}
                     </div>
                   )}
                   {edu.customPoints && edu.customPoints.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mt-1">
                       {edu.customPoints.map((pt, pIdx) => (
-                        <span key={pIdx} className="text-slate-800 text-[11px] font-sans border border-slate-300 px-1.5 py-0.5 rounded">
+                        <span key={pIdx} className="text-slate-800 text-[11px] font-sans border border-slate-300 px-1.5 py-0.5 rounded whitespace-nowrap break-keep">
                           {pt}
                         </span>
                       ))}
@@ -97,11 +97,14 @@ export const AcademicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {workExperiences.map((w) => (
                 <div key={w.id} className="font-serif">
-                  <div className="flex justify-between font-bold text-slate-900" style={{ fontSize: density.subTitleSize }}>
-                    <span>{w.company}</span>
-                    <span className="font-normal font-mono text-xs">{w.startDate} – {w.current ? 'Present' : w.endDate}</span>
+                  <div className="flex justify-between items-baseline gap-2 min-w-0 font-bold text-slate-900" style={{ fontSize: density.subTitleSize }}>
+                    <div className="flex items-baseline gap-1.5 min-w-0 flex-1">
+                      <span className="whitespace-nowrap break-keep shrink-0">{w.company}</span>
+                      {w.department && <span className="font-normal text-slate-600 text-xs whitespace-nowrap break-keep shrink-0">({w.department})</span>}
+                    </div>
+                    <span className="font-normal font-mono text-xs whitespace-nowrap break-keep shrink-0 text-right">{w.startDate} – {w.current ? 'Present' : w.endDate}</span>
                   </div>
-                  <div className="italic text-slate-800 mb-1" style={{ fontSize: density.bodySize }}>{w.position} {w.department && `(${w.department})`}</div>
+                  <div className="italic text-slate-800 mb-1" style={{ fontSize: density.bodySize }}>{w.position}</div>
                   {w.description && <p className="text-slate-700 mb-1 leading-relaxed font-sans" style={{ fontSize: density.bodySize }}>{w.description}</p>}
                   {w.achievements && (
                     <div className="text-slate-700 whitespace-pre-line leading-relaxed font-sans pl-2 border-l border-slate-300" style={{ fontSize: density.bodySize }}>
@@ -126,9 +129,9 @@ export const AcademicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: density.itemGap }}>
               {projectExperiences.map((p) => (
                 <div key={p.id} className="font-serif">
-                  <div className="flex justify-between font-bold text-slate-900" style={{ fontSize: density.subTitleSize }}>
-                    <span>{p.projectName}</span>
-                    <span className="font-normal font-mono text-xs">{p.startDate} – {p.current ? 'Present' : p.endDate}</span>
+                  <div className="flex justify-between items-baseline gap-2 min-w-0 font-bold text-slate-900" style={{ fontSize: density.subTitleSize }}>
+                    <span className="whitespace-nowrap break-keep shrink-0">{p.projectName}</span>
+                    <span className="font-normal font-mono text-xs whitespace-nowrap break-keep shrink-0 text-right">{p.startDate} – {p.current ? 'Present' : p.endDate}</span>
                   </div>
                   <div className="italic text-slate-700 mb-1" style={{ fontSize: density.bodySize }}>
                     {p.role} {p.techStack && <span className="font-sans text-slate-600 text-xs">| {p.techStack}</span>}
