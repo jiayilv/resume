@@ -160,8 +160,8 @@ export const AcademicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
             <div className="text-xs text-slate-800 font-sans space-y-1">
               <div className="flex flex-wrap gap-x-4 gap-y-1">
                 {skills.map((s) => (
-                  <span key={s.id}>
-                    <strong>{s.name}</strong> ({s.level === 5 ? 'Expert' : s.level >= 4 ? 'Advanced' : 'Proficient'})
+                  <span key={s.id} className="font-serif">
+                    <strong>{s.name}</strong>
                   </span>
                 ))}
               </div>
@@ -172,45 +172,7 @@ export const AcademicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
       case 'certs':
       case 'certificates':
       case 'languages':
-        if (certificates.length === 0 && languages.length === 0) return null;
-        return (
-          <div key="certs_group" className="grid grid-cols-1 sm:grid-cols-2 gap-4 avoid-break" style={{ marginBottom: density.sectionGap }}>
-            {certificates.length > 0 && (
-              <div>
-                <SectionHeader
-                  title={getSectionTitle(data, 'certificates')}
-                  primaryColor={primaryColor}
-                  headerStyle={theme.headerStyle || 'academic'}
-                />
-                <div className="space-y-1 text-xs font-serif text-slate-700">
-                  {certificates.map((c) => (
-                    <div key={c.id} className="flex justify-between">
-                      <span>{c.name}</span>
-                      <span className="font-mono text-slate-500">{c.date}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            {languages.length > 0 && (
-              <div>
-                <SectionHeader
-                  title={getSectionTitle(data, 'languages')}
-                  primaryColor={primaryColor}
-                  headerStyle={theme.headerStyle || 'academic'}
-                />
-                <div className="space-y-1 text-xs font-serif text-slate-700">
-                  {languages.map((l) => (
-                    <div key={l.id} className="flex justify-between">
-                      <span>{l.language}</span>
-                      <span className="italic text-slate-600">{l.proficiency}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        );
+        return null;
 
       case 'custom':
         if (!customSections || customSections.length === 0) return null;
@@ -259,10 +221,21 @@ export const AcademicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
             {profile.name || 'FULL NAME'}
           </h1>
           {profile.title && (
-            <p className="text-xs font-serif italic text-slate-700 mb-2">
+            <p className="text-xs font-serif italic text-slate-700 mb-1">
               {profile.title}
             </p>
           )}
+
+          <div className="flex flex-wrap justify-center items-center gap-x-3 gap-y-1 text-xs text-slate-600 font-serif mb-1.5">
+            {profile.gender && <span>{profile.gender}</span>}
+            {profile.age && <span>{profile.age}</span>}
+            {profile.birthDate && !profile.age && <span>{profile.birthDate}</span>}
+            {profile.workYears && <span>{profile.workYears}</span>}
+            {profile.highestDegree && <span>{profile.highestDegree}</span>}
+            {profile.maritalStatus && <span>{profile.maritalStatus}</span>}
+            {profile.politicalStatus && <span>{profile.politicalStatus}</span>}
+            {profile.nativePlace && <span>籍贯: {profile.nativePlace}</span>}
+          </div>
 
           <div className="flex flex-wrap justify-center items-center gap-x-3 gap-y-1 text-xs text-slate-700 font-serif">
             {profile.phone && <span>{profile.phone}</span>}

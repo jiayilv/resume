@@ -143,17 +143,6 @@ export const ProjectExperienceEditor: React.FC<ProjectExperienceEditorProps> = (
                     />
                   </div>
 
-                  <div className="sm:col-span-2">
-                    <label className="block text-slate-700 font-semibold mb-1">技术栈 / 采用工具</label>
-                    <input
-                      type="text"
-                      value={item.techStack || ''}
-                      onChange={(e) => handleUpdate(item.id, { techStack: e.target.value })}
-                      placeholder="如：React 18 + TypeScript + Zustand + WebAssembly + NestJS"
-                      className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono text-[11px]"
-                    />
-                  </div>
-
                   <div>
                     <label className="block text-slate-700 font-semibold mb-1">项目起止时间</label>
                     <div className="flex items-center gap-2">

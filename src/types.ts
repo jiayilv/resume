@@ -91,6 +91,10 @@ export interface UserProfile {
   avatarBorder?: boolean;
   phone: string;
   email: string;
+  birthDate?: string; // 出生年月 (日历类选择，如 1996-08)
+  maritalStatus?: string; // 婚姻状况 (未婚 / 已婚 / 已婚已育 / 保密 等)
+  nativePlace?: string; // 籍贯地址 (如 湖北武汉 / 江苏南京)
+  politicalStatus?: string; // 政治面貌 (中共党员 / 共青团员 / 群众 等)
   wechat?: string;
   location: string;
   age?: string;

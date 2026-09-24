@@ -174,14 +174,14 @@ export const ExecutiveTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
               headerStyle={theme.headerStyle || 'left-bar'}
             />
 
-            <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="flex flex-wrap gap-2 text-xs">
               {skills.map((s) => (
-                <div key={s.id} className="flex justify-between items-center p-2 rounded bg-slate-50 border border-slate-100">
-                  <span className="font-medium text-slate-800">{s.name}</span>
-                  <span className="font-semibold text-[11px]" style={{ color: primaryColor }}>
-                    {s.level === 5 ? '精通 / 专家' : s.level >= 4 ? '熟练掌握' : '良好'}
-                  </span>
-                </div>
+                <span
+                  key={s.id}
+                  className="px-3 py-1 rounded bg-slate-50 border border-slate-200 font-medium text-slate-800 whitespace-nowrap break-keep"
+                >
+                  {s.name}
+                </span>
               ))}
             </div>
           </section>
@@ -190,47 +190,7 @@ export const ExecutiveTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
       case 'certs':
       case 'certificates':
       case 'languages':
-        if (certificates.length === 0 && languages.length === 0) return null;
-        return (
-          <div key="certs_group" className="grid grid-cols-1 sm:grid-cols-2 gap-4 avoid-break" style={{ marginBottom: density.sectionGap }}>
-            {certificates.length > 0 && (
-              <div>
-                <SectionHeader
-                  title={getSectionTitle(data, 'certificates')}
-                  icon={<Award className="w-4 h-4" />}
-                  primaryColor={primaryColor}
-                  headerStyle={theme.headerStyle || 'left-bar'}
-                />
-                <div className="space-y-1 text-xs text-slate-700">
-                  {certificates.map((c) => (
-                    <div key={c.id} className="flex justify-between">
-                      <span className="font-medium">{c.name}</span>
-                      <span className="text-slate-500 font-mono">{c.date}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            {languages.length > 0 && (
-              <div>
-                <SectionHeader
-                  title={getSectionTitle(data, 'languages')}
-                  icon={<Languages className="w-4 h-4" />}
-                  primaryColor={primaryColor}
-                  headerStyle={theme.headerStyle || 'left-bar'}
-                />
-                <div className="space-y-1 text-xs text-slate-700">
-                  {languages.map((l) => (
-                    <div key={l.id} className="flex justify-between">
-                      <span className="font-medium">{l.language}</span>
-                      <span className="text-slate-600">{l.proficiency}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        );
+        return null;
 
       case 'custom':
         if (!customSections || customSections.length === 0) return null;
@@ -283,11 +243,17 @@ export const ExecutiveTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
           </p>
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600">
+            {profile.gender && <span>{profile.gender}</span>}
+            {profile.age && <span>{profile.age}</span>}
+            {profile.birthDate && !profile.age && <span>{profile.birthDate}</span>}
+            {profile.workYears && <span>工作年限: {profile.workYears}</span>}
+            {profile.highestDegree && <span>最高学历: {profile.highestDegree}</span>}
+            {profile.maritalStatus && <span>{profile.maritalStatus}</span>}
+            {profile.politicalStatus && <span>{profile.politicalStatus}</span>}
+            {profile.nativePlace && <span>籍贯: {profile.nativePlace}</span>}
             {profile.phone && <span className="flex items-center gap-1 font-medium"><Phone className="w-3.5 h-3.5" style={{ color: primaryColor }} /> {profile.phone}</span>}
             {profile.email && <span className="flex items-center gap-1 font-medium"><Mail className="w-3.5 h-3.5" style={{ color: primaryColor }} /> {profile.email}</span>}
             {profile.location && <span className="flex items-center gap-1 font-medium"><MapPin className="w-3.5 h-3.5" style={{ color: primaryColor }} /> {profile.location}</span>}
-            {profile.workYears && <span>工作年限: {profile.workYears}</span>}
-            {profile.highestDegree && <span>最高学历: {profile.highestDegree}</span>}
           </div>
         </div>
 

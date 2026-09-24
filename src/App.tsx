@@ -15,7 +15,6 @@ import { WorkExperienceEditor } from './components/editor/WorkExperienceEditor';
 import { ProjectExperienceEditor } from './components/editor/ProjectExperienceEditor';
 import { EducationEditor } from './components/editor/EducationEditor';
 import { SkillsEditor } from './components/editor/SkillsEditor';
-import { CertificatesLanguagesEditor } from './components/editor/CertificatesLanguagesEditor';
 import { SummaryEditor } from './components/editor/SummaryEditor';
 import { ResumePreview } from './components/ResumePreview';
 import { ThemeSelector } from './components/ThemeSelector';
@@ -302,7 +301,6 @@ export function App() {
     { id: 'project', label: '项目经验', icon: FolderGit2, count: resumeData.projectExperiences.length },
     { id: 'education', label: '教育背景', icon: GraduationCap, count: resumeData.educations.length },
     { id: 'skills', label: '专业技能', icon: Wrench, count: resumeData.skills.length },
-    { id: 'certs', label: '证书语言', icon: Award },
     { id: 'summary', label: summaryLabel, icon: FileCheck2 },
   ];
 
@@ -328,7 +326,7 @@ export function App() {
             </div>
           </div>
 
-          {/* Center Action: One-Click A4 Spread */}
+          {/* Center Action: One-Click A4 Spread - Removed star icon as requested */}
           <div className="flex items-center gap-2">
             <button
               onClick={handleToggleAutoFitA4}
@@ -339,7 +337,6 @@ export function App() {
               }`}
               title="根据内容量自动调节行高、段落间距和内边距，使整份简历刚好均匀填满一张标准A4纸"
             >
-              <Sparkles className="w-4 h-4 text-amber-300" />
               <span>{theme.autoFitA4 ? '已开启：内容均匀铺满A4纸' : '一键内容均匀铺满A4纸'}</span>
             </button>
           </div>
@@ -586,17 +583,6 @@ export function App() {
               <SkillsEditor
                 skills={resumeData.skills}
                 onChange={(skills) => setResumeData({ ...resumeData, skills })}
-              />
-            )}
-
-            {activeTab === 'certs' && (
-              <CertificatesLanguagesEditor
-                certificates={resumeData.certificates}
-                languages={resumeData.languages}
-                onChangeCertificates={(certificates) =>
-                  setResumeData({ ...resumeData, certificates })
-                }
-                onChangeLanguages={(languages) => setResumeData({ ...resumeData, languages })}
               />
             )}
 

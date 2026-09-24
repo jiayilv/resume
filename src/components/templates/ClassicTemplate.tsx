@@ -213,20 +213,15 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
               headerStyle={theme.headerStyle}
             />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <div className="flex flex-wrap gap-2 text-xs">
               {skills.map((skill) => (
-                <div key={skill.id} className="flex items-center justify-between bg-slate-50/80 px-2.5 py-1.5 rounded border border-slate-100">
-                  <span className="font-medium text-slate-800" style={{ fontSize: density.bodySize }}>{skill.name}</span>
-                  <div className="flex items-center gap-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <span 
-                        key={star} 
-                        className={`w-2 h-2 rounded-full ${star <= skill.level ? 'opacity-100' : 'opacity-20'}`}
-                        style={{ backgroundColor: star <= skill.level ? primaryColor : '#94a3b8' }}
-                      />
-                    ))}
-                  </div>
-                </div>
+                <span
+                  key={skill.id}
+                  className="bg-slate-50 px-2.5 py-1 rounded border border-slate-200 text-slate-800 font-medium whitespace-nowrap break-keep"
+                  style={{ fontSize: density.bodySize }}
+                >
+                  {skill.name}
+                </span>
               ))}
             </div>
           </section>
@@ -235,48 +230,7 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
       case 'certs':
       case 'certificates':
       case 'languages':
-        if (certificates.length === 0 && languages.length === 0) return null;
-        return (
-          <div key="certs_group" className="grid grid-cols-1 sm:grid-cols-2 gap-4 avoid-break" style={{ marginBottom: density.sectionGap }}>
-            {certificates.length > 0 && !data.hiddenSections.includes('certificates') && (
-              <section>
-                <SectionHeader
-                  title={getSectionTitle(data, 'certificates')}
-                  icon={<Award className="w-4 h-4" />}
-                  primaryColor={primaryColor}
-                  headerStyle={theme.headerStyle}
-                />
-                <div className="space-y-1.5 text-xs text-slate-700">
-                  {certificates.map((c) => (
-                    <div key={c.id} className="flex justify-between">
-                      <span className="font-medium">{c.name}</span>
-                      <span className="text-slate-500 tabular-nums">{c.date}</span>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {languages.length > 0 && !data.hiddenSections.includes('languages') && (
-              <section>
-                <SectionHeader
-                  title={getSectionTitle(data, 'languages')}
-                  icon={<Languages className="w-4 h-4" />}
-                  primaryColor={primaryColor}
-                  headerStyle={theme.headerStyle}
-                />
-                <div className="space-y-1.5 text-xs text-slate-700">
-                  {languages.map((lang) => (
-                    <div key={lang.id} className="flex justify-between">
-                      <span className="font-medium">{lang.language}</span>
-                      <span className="text-slate-600">{lang.proficiency}</span>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-          </div>
-        );
+        return null;
 
       case 'custom':
         if (!customSections || customSections.length === 0) return null;
@@ -334,8 +288,12 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600 mb-2">
             {profile.gender && <span>{profile.gender}</span>}
             {profile.age && <span>{profile.age}</span>}
+            {profile.birthDate && !profile.age && <span>{profile.birthDate}</span>}
             {profile.workYears && <span>{profile.workYears}</span>}
             {profile.highestDegree && <span>{profile.highestDegree}</span>}
+            {profile.maritalStatus && <span>{profile.maritalStatus}</span>}
+            {profile.politicalStatus && <span>{profile.politicalStatus}</span>}
+            {profile.nativePlace && <span>籍贯: {profile.nativePlace}</span>}
             {profile.status && <span className="text-emerald-700 font-medium">{profile.status}</span>}
           </div>
 

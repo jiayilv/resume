@@ -166,16 +166,11 @@ export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) 
               primaryColor={primaryColor}
               headerStyle={theme.headerStyle || 'minimal'}
             />
-            <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs">
+            <div className="flex flex-wrap gap-2 text-xs">
               {skills.map((s) => (
-                <div key={s.id} className="flex items-center gap-2">
-                  <span className="text-slate-800">{s.name}</span>
-                  <div className="flex gap-0.5">
-                    {[1, 2, 3, 4, 5].map((dot) => (
-                      <span key={dot} className={`w-1.5 h-1.5 rounded-full ${dot <= s.level ? 'bg-slate-800' : 'bg-slate-200'}`} />
-                    ))}
-                  </div>
-                </div>
+                <span key={s.id} className="px-2.5 py-1 bg-slate-50 border border-slate-200 text-slate-800 rounded font-normal">
+                  {s.name}
+                </span>
               ))}
             </div>
           </section>
@@ -184,45 +179,7 @@ export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) 
       case 'certs':
       case 'certificates':
       case 'languages':
-        if (certificates.length === 0 && languages.length === 0) return null;
-        return (
-          <div key="certs_group" className="grid grid-cols-1 sm:grid-cols-2 gap-4 avoid-break" style={{ marginBottom: density.sectionGap }}>
-            {certificates.length > 0 && (
-              <div>
-                <SectionHeader
-                  title={getSectionTitle(data, 'certificates')}
-                  primaryColor={primaryColor}
-                  headerStyle={theme.headerStyle || 'minimal'}
-                />
-                <div className="space-y-1 text-xs text-slate-600">
-                  {certificates.map((c) => (
-                    <div key={c.id} className="flex justify-between">
-                      <span>{c.name}</span>
-                      <span className="text-slate-400">{c.date}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            {languages.length > 0 && (
-              <div>
-                <SectionHeader
-                  title={getSectionTitle(data, 'languages')}
-                  primaryColor={primaryColor}
-                  headerStyle={theme.headerStyle || 'minimal'}
-                />
-                <div className="space-y-1 text-xs text-slate-600">
-                  {languages.map((l) => (
-                    <div key={l.id} className="flex justify-between">
-                      <span>{l.language}</span>
-                      <span className="text-slate-400">{l.proficiency}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        );
+        return null;
 
       case 'custom':
         if (!customSections || customSections.length === 0) return null;
@@ -272,10 +229,22 @@ export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) 
               {profile.name || '求职者姓名'}
             </h1>
             {profile.title && (
-              <p className="text-xs font-medium text-slate-600 tracking-wider uppercase mb-2">
+              <p className="text-xs font-medium text-slate-600 tracking-wider uppercase mb-1">
                 {profile.title}
               </p>
             )}
+
+            {/* Quick Personal Tags */}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600 font-light mb-2">
+              {profile.gender && <span>{profile.gender}</span>}
+              {profile.age && <span>{profile.age}</span>}
+              {profile.birthDate && !profile.age && <span>{profile.birthDate}</span>}
+              {profile.workYears && <span>{profile.workYears}</span>}
+              {profile.highestDegree && <span>{profile.highestDegree}</span>}
+              {profile.maritalStatus && <span>{profile.maritalStatus}</span>}
+              {profile.politicalStatus && <span>{profile.politicalStatus}</span>}
+              {profile.nativePlace && <span>籍贯: {profile.nativePlace}</span>}
+            </div>
             
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 font-light">
               {profile.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {profile.phone}</span>}

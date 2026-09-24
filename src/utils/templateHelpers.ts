@@ -33,7 +33,6 @@ export const DEFAULT_SECTION_ORDER = [
   'project',
   'education',
   'skills',
-  'certs',
   'custom',
 ];
 

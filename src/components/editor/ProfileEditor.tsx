@@ -7,20 +7,13 @@ interface ProfileEditorProps {
   onChange: (updated: UserProfile) => void;
 }
 
-const PRESET_AVATARS = [
-  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&auto=format&fit=crop&q=80',
-];
-
 export const ProfileEditor: React.FC<ProfileEditorProps> = ({ profile, onChange }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [tempUrl, setTempUrl] = useState('');
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [showExtraLinks, setShowExtraLinks] = useState(Boolean(profile.wechat || profile.website || profile.github));
 
   const updateProfile = (updates: Partial<UserProfile>) => {
     onChange({ ...profile, ...updates });
@@ -28,6 +21,21 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ profile, onChange 
 
   const handleFieldChange = (key: keyof UserProfile, value: any) => {
     updateProfile({ [key]: value });
+  };
+
+  const handleBirthDateChange = (val: string) => {
+    const updates: Partial<UserProfile> = { birthDate: val };
+    if (val) {
+      const year = parseInt(val.split('-')[0], 10);
+      if (!isNaN(year) && year > 1940 && year <= new Date().getFullYear()) {
+        const computedAge = `${new Date().getFullYear() - year}岁`;
+        // If age is empty or was previously computed, sync age
+        if (!profile.age || profile.age.endsWith('岁')) {
+          updates.age = computedAge;
+        }
+      }
+    }
+    updateProfile(updates);
   };
 
   // Compress image to high-quality lightweight base64 to avoid localStorage quota issues
@@ -218,7 +226,7 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ profile, onChange 
                 className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs text-xs"
               >
                 <Upload className="w-3.5 h-3.5" />
-                本地选择照片 (支持1000×1400)
+                本地选择照片
               </button>
 
               <button
@@ -352,36 +360,16 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ profile, onChange 
                 </div>
               </div>
             )}
-
-            {/* Quick Presets */}
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-[11px] text-slate-500 font-medium">职场样图:</span>
-              <div className="flex gap-1.5">
-                {PRESET_AVATARS.map((url, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => {
-                      updateProfile({ avatar: url, showAvatar: true });
-                    }}
-                    className={`w-6 h-6 rounded-full overflow-hidden border cursor-pointer transition-transform ${
-                      profile.avatar === url ? 'ring-2 ring-blue-600 border-white scale-110' : 'border-slate-300 hover:scale-105'
-                    }`}
-                  >
-                    <img src={url} alt={`Preset ${idx}`} className="w-full h-full object-cover" />
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </div>
 
-      {/* Main Info Grid */}
+      {/* Main Info Grid - Exactly the 13 requested fields */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {/* 1. 你的姓名 */}
         <div>
           <label className="block text-slate-700 font-semibold mb-1">
-            姓名 <span className="text-red-500">*</span>
+            你的姓名 <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -392,35 +380,144 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ profile, onChange 
           />
         </div>
 
+        {/* 2. 出生年月（日历类选择） */}
         <div>
           <label className="block text-slate-700 font-semibold mb-1">
-            职位头衔 / 身份
+            出生年月（日历类选择）
           </label>
           <input
-            type="text"
-            value={profile.title}
-            onChange={(e) => handleFieldChange('title', e.target.value)}
-            placeholder="如：资深前端架构师 / 资深产品专家"
-            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900"
+            type="month"
+            value={profile.birthDate || ''}
+            onChange={(e) => handleBirthDateChange(e.target.value)}
+            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 font-sans"
           />
         </div>
 
+        {/* 3. 手机号码 */}
         <div>
           <label className="block text-slate-700 font-semibold mb-1">
-            手机电话 <span className="text-red-500">*</span>
+            手机号码 <span className="text-red-500">*</span>
           </label>
           <input
-            type="text"
+            type="tel"
             value={profile.phone}
             onChange={(e) => handleFieldChange('phone', e.target.value)}
-            placeholder="如：138-0000-0000"
+            placeholder="如：138-0013-8000"
             className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900"
           />
         </div>
 
+        {/* 4. 学历 */}
         <div>
           <label className="block text-slate-700 font-semibold mb-1">
-            电子邮箱 <span className="text-red-500">*</span>
+            学历
+          </label>
+          <input
+            type="text"
+            list="degree-presets"
+            value={profile.highestDegree || ''}
+            onChange={(e) => handleFieldChange('highestDegree', e.target.value)}
+            placeholder="如：硕士 / 本科 / 大专"
+            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900"
+          />
+          <datalist id="degree-presets">
+            <option value="博士研究生" />
+            <option value="硕士研究生" />
+            <option value="本科" />
+            <option value="大专" />
+            <option value="高中/中专" />
+          </datalist>
+        </div>
+
+        {/* 5. 婚姻状况 */}
+        <div>
+          <label className="block text-slate-700 font-semibold mb-1">
+            婚姻状况
+          </label>
+          <select
+            value={profile.maritalStatus || '未婚'}
+            onChange={(e) => handleFieldChange('maritalStatus', e.target.value)}
+            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900"
+          >
+            <option value="未婚">未婚</option>
+            <option value="已婚">已婚</option>
+            <option value="已婚已育">已婚已育</option>
+            <option value="保密">保密</option>
+          </select>
+        </div>
+
+        {/* 6. 籍贯地址 */}
+        <div>
+          <label className="block text-slate-700 font-semibold mb-1">
+            籍贯地址
+          </label>
+          <input
+            type="text"
+            value={profile.nativePlace || ''}
+            onChange={(e) => handleFieldChange('nativePlace', e.target.value)}
+            placeholder="如：湖北武汉 / 江苏南京"
+            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900"
+          />
+        </div>
+
+        {/* 7. 年龄 */}
+        <div>
+          <label className="block text-slate-700 font-semibold mb-1">
+            年龄
+          </label>
+          <input
+            type="text"
+            value={profile.age || ''}
+            onChange={(e) => handleFieldChange('age', e.target.value)}
+            placeholder="如：28岁"
+            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900"
+          />
+        </div>
+
+        {/* 8. 你的性别 */}
+        <div>
+          <label className="block text-slate-700 font-semibold mb-1">
+            你的性别
+          </label>
+          <select
+            value={profile.gender || '男'}
+            onChange={(e) => handleFieldChange('gender', e.target.value)}
+            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900"
+          >
+            <option value="男">男</option>
+            <option value="女">女</option>
+            <option value="保密">保密</option>
+          </select>
+        </div>
+
+        {/* 9. 工作经验 */}
+        <div>
+          <label className="block text-slate-700 font-semibold mb-1">
+            工作经验
+          </label>
+          <input
+            type="text"
+            list="workyears-presets"
+            value={profile.workYears || ''}
+            onChange={(e) => handleFieldChange('workYears', e.target.value)}
+            placeholder="如：5年经验 / 应届毕业生"
+            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900"
+          />
+          <datalist id="workyears-presets">
+            <option value="应届毕业生" />
+            <option value="1年经验" />
+            <option value="2年经验" />
+            <option value="3年经验" />
+            <option value="5年经验" />
+            <option value="8年经验" />
+            <option value="10年以上经验" />
+          </datalist>
+        </div>
+
+        {/* 10. 邮箱地址 */}
+        <div>
+          <label className="block text-slate-700 font-semibold mb-1">
+            邮箱地址 <span className="text-red-500">*</span>
           </label>
           <input
             type="email"
@@ -431,97 +528,118 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ profile, onChange 
           />
         </div>
 
+        {/* 11. 意向岗位 */}
         <div>
-          <label className="block text-slate-700 font-semibold mb-1">微信号</label>
+          <label className="block text-slate-700 font-semibold mb-1">
+            意向岗位 <span className="text-red-500">*</span>
+          </label>
           <input
             type="text"
-            value={profile.wechat || ''}
-            onChange={(e) => handleFieldChange('wechat', e.target.value)}
-            placeholder="如：dev_wechat"
+            value={profile.title}
+            onChange={(e) => handleFieldChange('title', e.target.value)}
+            placeholder="如：资深前端架构师 / 资深产品专家"
             className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900"
           />
         </div>
 
+        {/* 12. 政治面貌 */}
         <div>
-          <label className="block text-slate-700 font-semibold mb-1">现居城市</label>
+          <label className="block text-slate-700 font-semibold mb-1">
+            政治面貌
+          </label>
+          <input
+            type="text"
+            list="political-presets"
+            value={profile.politicalStatus || ''}
+            onChange={(e) => handleFieldChange('politicalStatus', e.target.value)}
+            placeholder="如：中共党员 / 共青团员 / 群众"
+            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900"
+          />
+          <datalist id="political-presets">
+            <option value="中共党员" />
+            <option value="中共预备党员" />
+            <option value="共青团员" />
+            <option value="群众" />
+            <option value="民主党派" />
+          </datalist>
+        </div>
+
+        {/* 13. 现居地址 */}
+        <div className="sm:col-span-2">
+          <label className="block text-slate-700 font-semibold mb-1">
+            现居地址
+          </label>
           <input
             type="text"
             value={profile.location}
             onChange={(e) => handleFieldChange('location', e.target.value)}
-            placeholder="如：北京市海淀区"
+            placeholder="如：北京市海淀区中关村南大街"
             className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900"
           />
         </div>
+      </div>
 
-        <div>
-          <label className="block text-slate-700 font-semibold mb-1">工作经验年限</label>
-          <input
-            type="text"
-            value={profile.workYears || ''}
-            onChange={(e) => handleFieldChange('workYears', e.target.value)}
-            placeholder="如：5年经验 / 应届毕业生"
-            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900"
-          />
-        </div>
+      {/* Optional Links Toggle */}
+      <div className="pt-2 border-t border-slate-200">
+        <button
+          type="button"
+          onClick={() => setShowExtraLinks(!showExtraLinks)}
+          className="text-[11px] text-slate-500 hover:text-blue-600 flex items-center gap-1 font-medium cursor-pointer"
+        >
+          <span>{showExtraLinks ? '收起附加社交与主页链接' : '+ 填写附加社交/主页链接 (微信号/GitHub/作品集/求职状态)'}</span>
+        </button>
 
-        <div>
-          <label className="block text-slate-700 font-semibold mb-1">最高学历</label>
-          <input
-            type="text"
-            value={profile.highestDegree || ''}
-            onChange={(e) => handleFieldChange('highestDegree', e.target.value)}
-            placeholder="如：硕士 / 本科"
-            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900"
-          />
-        </div>
+        {showExtraLinks && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2.5 p-3 bg-slate-50 rounded-xl border border-slate-200">
+            <div>
+              <label className="block text-slate-600 font-medium mb-1 text-[11px]">微信号</label>
+              <input
+                type="text"
+                value={profile.wechat || ''}
+                onChange={(e) => handleFieldChange('wechat', e.target.value)}
+                placeholder="如：dev_wechat"
+                className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-md text-xs focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-        <div>
-          <label className="block text-slate-700 font-semibold mb-1">求职状态</label>
-          <select
-            value={profile.status || '离职-随时到岗'}
-            onChange={(e) => handleFieldChange('status', e.target.value)}
-            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900"
-          >
-            <option value="离职-随时到岗">离职-随时到岗</option>
-            <option value="在职-月内到岗">在职-月内到岗</option>
-            <option value="在职-考虑机会">在职-考虑机会</option>
-            <option value="在职-暂不考虑">在职-暂不考虑</option>
-            <option value="应届生求职">应届生求职</option>
-          </select>
-        </div>
+            <div>
+              <label className="block text-slate-600 font-medium mb-1 text-[11px]">求职状态</label>
+              <select
+                value={profile.status || '离职-随时到岗'}
+                onChange={(e) => handleFieldChange('status', e.target.value)}
+                className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-md text-xs focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="离职-随时到岗">离职-随时到岗</option>
+                <option value="在职-月内到岗">在职-月内到岗</option>
+                <option value="在职-考虑机会">在职-考虑机会</option>
+                <option value="在职-暂不考虑">在职-暂不考虑</option>
+                <option value="应届生求职">应届生求职</option>
+              </select>
+            </div>
 
-        <div>
-          <label className="block text-slate-700 font-semibold mb-1">年龄 / 出生年月</label>
-          <input
-            type="text"
-            value={profile.age || ''}
-            onChange={(e) => handleFieldChange('age', e.target.value)}
-            placeholder="如：28岁 或 1996.08"
-            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900"
-          />
-        </div>
+            <div>
+              <label className="block text-slate-600 font-medium mb-1 text-[11px]">个人主页 / 作品集链接</label>
+              <input
+                type="text"
+                value={profile.website || ''}
+                onChange={(e) => handleFieldChange('website', e.target.value)}
+                placeholder="如：https://yourname.me"
+                className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-md text-xs font-mono"
+              />
+            </div>
 
-        <div>
-          <label className="block text-slate-700 font-semibold mb-1">个人主页 / 作品集链接</label>
-          <input
-            type="text"
-            value={profile.website || ''}
-            onChange={(e) => handleFieldChange('website', e.target.value)}
-            placeholder="如：https://yourname.me"
-            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 font-mono text-[11px]"
-          />
-        </div>
-
-        <div>
-          <label className="block text-slate-700 font-semibold mb-1">GitHub / Code 仓库</label>
-          <input
-            type="text"
-            value={profile.github || ''}
-            onChange={(e) => handleFieldChange('github', e.target.value)}
-            placeholder="如：github.com/username"
-            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 font-mono text-[11px]"
-          />
-        </div>
+            <div>
+              <label className="block text-slate-600 font-medium mb-1 text-[11px]">GitHub / Code 仓库</label>
+              <input
+                type="text"
+                value={profile.github || ''}
+                onChange={(e) => handleFieldChange('github', e.target.value)}
+                placeholder="如：github.com/username"
+                className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-md text-xs font-mono"
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

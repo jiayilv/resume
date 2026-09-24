@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ThemeConfig, ResumeData, HeaderStyle, AvatarShape } from '../types';
 import { Palette, Layout, Type, Sliders, Eye, EyeOff, ArrowUp, ArrowDown, Sparkles, MoveVertical, RotateCcw, Edit3, Check } from 'lucide-react';
-import { DEFAULT_SECTION_ORDER, SECTION_TITLE_PRESETS, getSectionTitle } from '../utils/templateHelpers';
+import { DEFAULT_SECTION_ORDER, SECTION_TITLE_PRESETS, DEFAULT_SECTION_TITLES, getSectionTitle } from '../utils/templateHelpers';
 
 interface ThemeSelectorProps {
   theme: ThemeConfig;
@@ -47,11 +47,12 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
   onChangeResumeData,
   onToggleSection,
 }) => {
-  const [activeTab, setActiveTab] = useState<'theme' | 'diy' | 'titles' | 'order'>('theme');
+  const [activeTab, setActiveTab] = useState<'theme' | 'diy' | 'modules'>('theme');
 
-  const currentOrder = resumeData.sectionOrder && resumeData.sectionOrder.length > 0
+  const currentOrder = (resumeData.sectionOrder && resumeData.sectionOrder.length > 0
     ? resumeData.sectionOrder
-    : DEFAULT_SECTION_ORDER;
+    : DEFAULT_SECTION_ORDER
+  ).filter((k) => k !== 'certs' && k !== 'certificates' && k !== 'languages');
 
   const handleMoveSection = (index: number, direction: 'up' | 'down') => {
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
@@ -70,7 +71,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
   const handleResetOrder = () => {
     onChangeResumeData({
       ...resumeData,
-      sectionOrder: DEFAULT_SECTION_ORDER,
+      sectionOrder: DEFAULT_SECTION_ORDER.filter((k) => k !== 'certs'),
     });
   };
 
@@ -138,32 +139,19 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
 
           <button
             type="button"
-            onClick={() => setActiveTab('titles')}
+            onClick={() => setActiveTab('modules')}
             className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-              activeTab === 'titles'
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-            }`}
-          >
-            <Edit3 className="w-3.5 h-3.5" />
-            模块叫法与自定义重命名
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('order')}
-            className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-              activeTab === 'order'
+              activeTab === 'modules'
                 ? 'bg-blue-600 text-white shadow-xs'
                 : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
             }`}
           >
             <MoveVertical className="w-3.5 h-3.5" />
-            模块排序与显隐 ({currentOrder.length})
+            模块排序、显隐与自定义重命名 ({currentOrder.length})
           </button>
         </div>
 
-        {/* Fill A4 Button */}
+        {/* Fill A4 Button - Removed star icon as requested */}
         <button
           type="button"
           onClick={handleToggleAutoFitA4}
@@ -174,8 +162,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
           }`}
           title="根据内容量自动调节行高、段落间距和内边距，使整份简历刚好均匀填满一张标准A4纸"
         >
-          <Sparkles className="w-3.5 h-3.5" />
-          {theme.autoFitA4 ? '已开启：内容均匀铺满A4纸' : '一键内容均匀铺满A4纸 (防空白/防跨页)'}
+          <span>{theme.autoFitA4 ? '已开启：内容均匀铺满A4纸' : '一键内容均匀铺满A4纸 (防空白/防跨页)'}</span>
         </button>
       </div>
 
@@ -445,71 +432,141 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
         </div>
       )}
 
-      {/* Module Renaming Tab */}
-      {activeTab === 'titles' && (
+      {/* Unified Module Management Tab: Order, Visibility, and Custom Renaming */}
+      {activeTab === 'modules' && (
         <div className="space-y-3 p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
-          <div className="flex items-center justify-between border-b border-slate-200 pb-2 flex-wrap gap-2">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-2.5 flex-wrap gap-2">
             <div>
               <h4 className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
-                <Edit3 className="w-3.5 h-3.5 text-blue-600" />
-                简历各模块叫法自由自定义 (DIY 标题)
+                <MoveVertical className="w-3.5 h-3.5 text-blue-600" />
+                模块管理（自由调整排序、显隐与自定义叫法）
               </h4>
               <p className="text-[11px] text-slate-500 mt-0.5">
-                在这里可以直接修改所有模块在简历中展现的标题（如工作经历 ➔ 实践经历、求职意向 ➔ 期望职位等）
+                可自由上下移动排列模块顺序、切换模块显隐，并直接自定义修改各模块在简历中的显示标题
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={handleResetAllTitles}
-              className="text-[11px] text-slate-500 hover:text-slate-800 flex items-center gap-1 cursor-pointer font-medium px-2 py-1 bg-white border border-slate-200 rounded-lg hover:border-slate-300"
-            >
-              <RotateCcw className="w-3 h-3" />
-              一键重置为默认叫法
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleResetOrder}
+                className="text-[11px] text-slate-600 hover:text-slate-900 flex items-center gap-1 cursor-pointer font-medium px-2.5 py-1 bg-white border border-slate-200 rounded-lg hover:border-slate-300 shadow-2xs"
+              >
+                <RotateCcw className="w-3 h-3 text-slate-400" />
+                恢复默认排序
+              </button>
+              <button
+                type="button"
+                onClick={handleResetAllTitles}
+                className="text-[11px] text-slate-600 hover:text-slate-900 flex items-center gap-1 cursor-pointer font-medium px-2.5 py-1 bg-white border border-slate-200 rounded-lg hover:border-slate-300 shadow-2xs"
+              >
+                <RotateCcw className="w-3 h-3 text-slate-400" />
+                恢复默认叫法
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {[
-              { key: 'work', defaultName: '工作经历', desc: '用于企业职场、社会实习、教学实践等' },
-              { key: 'jobIntent', defaultName: '求职意向', desc: '用于目标职位、期望方向、求职方向等' },
-              { key: 'project', defaultName: '项目经验', desc: '用于项目经历、科研成果、作品集等' },
-              { key: 'education', defaultName: '教育背景', desc: '用于学历学位、教育经历、学习履历等' },
-              { key: 'summary', defaultName: '自我评价', desc: '用于个人总结、个人亮点、个人优势等' },
-              { key: 'skills', defaultName: '专业技能', desc: '用于核心技能、技术栈、技能清单等' },
-              { key: 'certs', defaultName: '荣誉证书与语言', desc: '用于荣誉资质、语言水平、资格证书等' },
-              { key: 'custom', defaultName: '其他项目/亮点', desc: '用于社团活动、志愿经历、代表成果等' },
-            ].map(({ key, defaultName, desc }) => {
-              const currentTitle = getSectionTitle(resumeData, key);
-              const presets = SECTION_TITLE_PRESETS[key] || [];
+            {currentOrder.map((sectionKey, idx) => {
+              const isHidden = resumeData.hiddenSections.includes(sectionKey);
+              const currentTitle = getSectionTitle(resumeData, sectionKey);
+              const defaultName = DEFAULT_SECTION_TITLES[sectionKey] || sectionKey;
+              const presets = SECTION_TITLE_PRESETS[sectionKey] || [];
 
               return (
-                <div key={key} className="p-3 bg-white border border-slate-200 rounded-xl space-y-2 shadow-2xs">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="font-bold text-slate-800 text-xs">{defaultName}</span>
-                      <span className="text-[10px] text-slate-400 ml-1.5">{desc}</span>
+                <div
+                  key={sectionKey}
+                  className={`p-3 bg-white border rounded-xl space-y-2.5 shadow-2xs transition-all ${
+                    isHidden
+                      ? 'border-slate-200 bg-slate-50/70 opacity-75'
+                      : 'border-slate-300 hover:border-blue-400'
+                  }`}
+                >
+                  {/* Card Header: Order Number, Move Buttons & Visibility Toggle */}
+                  <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
+                    <div className="flex items-center gap-2">
+                      <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-[10.5px] font-bold flex items-center justify-center shrink-0">
+                        {idx + 1}
+                      </span>
+                      <div>
+                        <span className={`font-bold text-xs ${isHidden ? 'line-through text-slate-400' : 'text-slate-900'}`}>
+                          {defaultName}
+                        </span>
+                        {currentTitle !== defaultName && (
+                          <span className="text-[10px] text-blue-600 font-medium ml-1.5">
+                            ➔ 展现为「{currentTitle}」
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1 shrink-0">
+                      {/* Move Up */}
+                      <button
+                        type="button"
+                        disabled={idx === 0}
+                        onClick={() => handleMoveSection(idx, 'up')}
+                        className="p-1 text-slate-500 hover:text-blue-600 disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer hover:bg-slate-100 rounded"
+                        title="向上移动此模块"
+                      >
+                        <ArrowUp className="w-3.5 h-3.5" />
+                      </button>
+
+                      {/* Move Down */}
+                      <button
+                        type="button"
+                        disabled={idx === currentOrder.length - 1}
+                        onClick={() => handleMoveSection(idx, 'down')}
+                        className="p-1 text-slate-500 hover:text-blue-600 disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer hover:bg-slate-100 rounded"
+                        title="向下移动此模块"
+                      >
+                        <ArrowDown className="w-3.5 h-3.5" />
+                      </button>
+
+                      {/* Visibility Toggle */}
+                      <button
+                        type="button"
+                        onClick={() => onToggleSection(sectionKey)}
+                        className={`px-2 py-0.5 rounded text-[10.5px] flex items-center gap-1 cursor-pointer transition-colors font-medium ml-1 ${
+                          isHidden
+                            ? 'bg-slate-200 text-slate-500 hover:bg-slate-300'
+                            : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+                        }`}
+                        title={isHidden ? '点击取消隐藏' : '点击隐藏此模块'}
+                      >
+                        {isHidden ? (
+                          <>
+                            <EyeOff className="w-3 h-3" />
+                            <span>已隐藏</span>
+                          </>
+                        ) : (
+                          <>
+                            <Eye className="w-3 h-3" />
+                            <span>显示中</span>
+                          </>
+                        )}
+                      </button>
                     </div>
                   </div>
 
-                  {/* Input */}
+                  {/* Renaming Input */}
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[11px] text-slate-500 shrink-0 font-medium">当前叫法:</span>
+                    <span className="text-[11px] text-slate-500 shrink-0 font-medium">显示叫法:</span>
                     <input
                       type="text"
                       value={currentTitle}
-                      onChange={(e) => handleUpdateSectionTitle(key, e.target.value)}
+                      onChange={(e) => handleUpdateSectionTitle(sectionKey, e.target.value)}
                       placeholder={defaultName}
                       className="flex-1 px-2.5 py-1 bg-slate-50 border border-slate-300 rounded-md text-xs font-semibold text-blue-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     {currentTitle !== defaultName && (
                       <button
                         type="button"
-                        onClick={() => handleUpdateSectionTitle(key, defaultName)}
+                        onClick={() => handleUpdateSectionTitle(sectionKey, defaultName)}
                         className="text-[10px] text-slate-400 hover:text-slate-600 px-1.5 py-1 bg-slate-100 rounded cursor-pointer shrink-0"
-                        title="恢复默认"
+                        title="恢复默认叫法"
                       >
-                        恢复
+                        恢复默认
                       </button>
                     )}
                   </div>
@@ -522,7 +579,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
                         <button
                           key={p}
                           type="button"
-                          onClick={() => handleUpdateSectionTitle(key, p)}
+                          onClick={() => handleUpdateSectionTitle(sectionKey, p)}
                           className={`px-1.5 py-0.5 rounded text-[10.5px] cursor-pointer transition-all ${
                             currentTitle === p
                               ? 'bg-blue-600 text-white font-bold shadow-2xs'
@@ -534,87 +591,6 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
                       ))}
                     </div>
                   )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Section Reordering & Visibility Manager */}
-      {activeTab === 'order' && (
-        <div className="space-y-3 p-3 bg-slate-50 border border-slate-200 rounded-xl">
-          <div className="flex justify-between items-center">
-            <span className="font-bold text-slate-800 text-xs flex items-center gap-1">
-              <MoveVertical className="w-3.5 h-3.5 text-blue-600" />
-              调整模块在简历中的上下排列顺序（除基本信息固定置顶外）：
-            </span>
-            <button
-              type="button"
-              onClick={handleResetOrder}
-              className="text-[11px] text-slate-500 hover:text-slate-800 flex items-center gap-1 cursor-pointer font-medium"
-            >
-              <RotateCcw className="w-3 h-3" />
-              恢复默认顺序
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-            {currentOrder.map((sectionKey, idx) => {
-              const isHidden = resumeData.hiddenSections.includes(sectionKey);
-              const title = getSectionTitle(resumeData, sectionKey);
-
-              return (
-                <div
-                  key={sectionKey}
-                  className={`p-2.5 bg-white border rounded-lg flex items-center justify-between shadow-2xs transition-all ${
-                    isHidden ? 'border-slate-200 opacity-60 bg-slate-50' : 'border-slate-300 hover:border-blue-400'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold flex items-center justify-center">
-                      {idx + 1}
-                    </span>
-                    <span className={`font-semibold ${isHidden ? 'line-through text-slate-400' : 'text-slate-900'}`}>
-                      {title}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-1">
-                    {/* Up button */}
-                    <button
-                      type="button"
-                      disabled={idx === 0}
-                      onClick={() => handleMoveSection(idx, 'up')}
-                      className="p-1 text-slate-500 hover:text-blue-600 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer hover:bg-slate-100 rounded"
-                      title="向上移动"
-                    >
-                      <ArrowUp className="w-3.5 h-3.5" />
-                    </button>
-
-                    {/* Down button */}
-                    <button
-                      type="button"
-                      disabled={idx === currentOrder.length - 1}
-                      onClick={() => handleMoveSection(idx, 'down')}
-                      className="p-1 text-slate-500 hover:text-blue-600 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer hover:bg-slate-100 rounded"
-                      title="向下移动"
-                    >
-                      <ArrowDown className="w-3.5 h-3.5" />
-                    </button>
-
-                    {/* Toggle visibility */}
-                    <button
-                      type="button"
-                      onClick={() => onToggleSection(sectionKey)}
-                      className={`p-1 rounded cursor-pointer ${
-                        isHidden ? 'text-slate-400 hover:text-slate-600' : 'text-blue-600 hover:bg-blue-50'
-                      }`}
-                      title={isHidden ? '取消隐藏' : '隐藏此模块'}
-                    >
-                      {isHidden ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                    </button>
-                  </div>
                 </div>
               );
             })}

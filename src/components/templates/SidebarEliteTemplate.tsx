@@ -166,6 +166,18 @@ export const SidebarEliteTemplate: React.FC<TemplateProps> = ({ data, theme }) =
           {profile.title && <p className="text-xs text-white/80 font-medium mt-0.5">{profile.title}</p>}
         </div>
 
+        {/* Basic Personal Tags */}
+        <div className="flex flex-wrap gap-1 text-[11px] text-white/80 border-t border-white/20 pt-2.5">
+          {profile.gender && <span className="bg-white/10 px-1.5 py-0.5 rounded">{profile.gender}</span>}
+          {profile.age && <span className="bg-white/10 px-1.5 py-0.5 rounded">{profile.age}</span>}
+          {profile.birthDate && !profile.age && <span className="bg-white/10 px-1.5 py-0.5 rounded">{profile.birthDate}</span>}
+          {profile.workYears && <span className="bg-white/10 px-1.5 py-0.5 rounded">{profile.workYears}</span>}
+          {profile.highestDegree && <span className="bg-white/10 px-1.5 py-0.5 rounded">{profile.highestDegree}</span>}
+          {profile.maritalStatus && <span className="bg-white/10 px-1.5 py-0.5 rounded">{profile.maritalStatus}</span>}
+          {profile.politicalStatus && <span className="bg-white/10 px-1.5 py-0.5 rounded">{profile.politicalStatus}</span>}
+          {profile.nativePlace && <span className="bg-white/10 px-1.5 py-0.5 rounded">籍贯: {profile.nativePlace}</span>}
+        </div>
+
         {/* Contact Info */}
         <div className="space-y-2 text-xs text-white/85 border-t border-white/20 pt-3">
           {profile.phone && <div className="flex items-center gap-2"><Phone className="w-3.5 h-3.5 text-white/70" /> <span>{profile.phone}</span></div>}
@@ -201,52 +213,19 @@ export const SidebarEliteTemplate: React.FC<TemplateProps> = ({ data, theme }) =
           </div>
         )}
 
-        {/* Skills in Sidebar */}
+        {/* Skills in Sidebar without level bars */}
         {skills.length > 0 && !data.hiddenSections.includes('skills') && (
           <div className="border-t border-white/20 pt-3 space-y-2">
             <h3 className="text-xs font-bold uppercase tracking-wider text-white/90">
               {getSectionTitle(data, 'skills')}
             </h3>
-            <div className="space-y-1.5">
+            <div className="flex flex-wrap gap-1.5">
               {skills.map((s) => (
-                <div key={s.id} className="text-xs">
-                  <div className="flex justify-between text-white/90 mb-0.5">
-                    <span>{s.name}</span>
-                  </div>
-                  <div className="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-white h-full rounded-full" style={{ width: `${(s.level / 5) * 100}%` }} />
-                  </div>
-                </div>
+                <span key={s.id} className="bg-white/15 text-white px-2 py-0.5 rounded text-[11px]">
+                  {s.name}
+                </span>
               ))}
             </div>
-          </div>
-        )}
-
-        {/* Certs & Languages in Sidebar */}
-        {certificates.length > 0 && !data.hiddenSections.includes('certificates') && (
-          <div className="border-t border-white/20 pt-3 space-y-1.5">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-white/90">
-              {getSectionTitle(data, 'certificates')}
-            </h3>
-            {certificates.map((c) => (
-              <div key={c.id} className="text-xs text-white/80">
-                <div className="font-medium text-white">{c.name}</div>
-                <div className="text-white/60 text-[10px]">{c.date}</div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {languages.length > 0 && !data.hiddenSections.includes('languages') && (
-          <div className="border-t border-white/20 pt-3 space-y-1.5">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-white/90">
-              {getSectionTitle(data, 'languages')}
-            </h3>
-            {languages.map((l) => (
-              <div key={l.id} className="text-xs text-white/80">
-                <span className="font-medium text-white">{l.language}</span>: {l.proficiency}
-              </div>
-            ))}
           </div>
         )}
       </div>
