@@ -421,9 +421,37 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
                   </div>
                 </div>
 
+                {/* Skill Layout Option */}
+                <div className="pt-2 border-t border-slate-100">
+                  <span className="text-[11px] text-slate-700 block mb-1.5 font-medium">专业技能排版版式：</span>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {[
+                      { id: 'list', label: '条目列表(长句)' },
+                      { id: 'grid', label: '双列网格' },
+                      { id: 'tags', label: '胶囊标签' },
+                    ].map((sl) => (
+                      <button
+                        key={sl.id}
+                        type="button"
+                        onClick={() => {
+                          onChangeTheme({ ...theme, skillLayout: sl.id as any });
+                          onChangeResumeData({ ...resumeData, skillLayout: sl.id as any });
+                        }}
+                        className={`p-1.5 rounded-lg border text-center text-[10.5px] cursor-pointer transition-all ${
+                          (theme.skillLayout || resumeData.skillLayout || 'list') === sl.id
+                            ? 'border-blue-600 bg-blue-50/50 font-bold text-blue-700'
+                            : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                        }`}
+                      >
+                        {sl.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="pt-2 border-t border-slate-100 flex flex-col gap-1.5">
                   <span className="text-[10.5px] text-slate-500">
-                    💡 提示：在【模块叫法】标签页中，您可以自由将“工作经历”修改为“实践经历”，或将“求职意向”修改为“期望职位”等。
+                    💡 提示：在【模块管理】标签页中，您可以自由拖拽排序、显隐各模块，并自由重命名模块标题。
                   </span>
                 </div>
               </div>

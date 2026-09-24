@@ -1,7 +1,7 @@
 import React from 'react';
 import { ResumeData, ThemeConfig } from '../../types';
 import { Mail, Phone, MapPin, Globe, Github, Tag } from 'lucide-react';
-import { getDensityStyles, getSectionTitle, DEFAULT_SECTION_ORDER } from '../../utils/templateHelpers';
+import { getDensityStyles, getSectionTitle, determineSkillLayout, DEFAULT_SECTION_ORDER } from '../../utils/templateHelpers';
 import { SectionHeader } from './SectionHeader';
 import { ResumeAvatar } from '../ResumeAvatar';
 
@@ -150,6 +150,7 @@ export const AcademicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
 
       case 'skills':
         if (skills.length === 0) return null;
+        const skillLayout = determineSkillLayout(data, theme);
         return (
           <section key="skills" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
             <SectionHeader
@@ -157,15 +158,35 @@ export const AcademicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
               primaryColor={primaryColor}
               headerStyle={theme.headerStyle || 'academic'}
             />
-            <div className="text-xs text-slate-800 font-sans space-y-1">
-              <div className="flex flex-wrap gap-x-4 gap-y-1">
+            {skillLayout === 'tags' ? (
+              <div className="text-xs text-slate-800 font-sans space-y-1">
+                <div className="flex flex-wrap gap-2">
+                  {skills.map((s) => (
+                    <span key={s.id} className="font-serif px-2 py-0.5 border border-slate-300 rounded text-slate-900 max-w-full break-words break-all whitespace-normal">
+                      <strong>{s.name}</strong>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : skillLayout === 'grid' ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1.5 text-xs text-slate-800 font-serif">
                 {skills.map((s) => (
-                  <span key={s.id} className="font-serif">
-                    <strong>{s.name}</strong>
-                  </span>
+                  <div key={s.id} className="flex items-start gap-2 leading-relaxed">
+                    <span className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 bg-slate-800" />
+                    <span className="flex-1 break-words break-all whitespace-normal leading-relaxed">{s.name}</span>
+                  </div>
                 ))}
               </div>
-            </div>
+            ) : (
+              <div className="text-xs text-slate-800 font-serif space-y-1.5">
+                {skills.map((s) => (
+                  <div key={s.id} className="flex items-start gap-2 leading-relaxed">
+                    <span className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 bg-slate-800" />
+                    <span className="flex-1 break-words break-all whitespace-normal leading-relaxed">{s.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
         );
 

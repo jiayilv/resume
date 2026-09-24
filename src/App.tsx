@@ -583,6 +583,21 @@ export function App() {
               <SkillsEditor
                 skills={resumeData.skills}
                 onChange={(skills) => setResumeData({ ...resumeData, skills })}
+                sectionTitle={resumeData.sectionTitles?.skills || '专业技能'}
+                onUpdateSectionTitle={(newTitle) =>
+                  setResumeData({
+                    ...resumeData,
+                    sectionTitles: {
+                      ...resumeData.sectionTitles,
+                      skills: newTitle,
+                    },
+                  })
+                }
+                skillLayout={resumeData.skillLayout || theme.skillLayout || 'list'}
+                onChangeLayout={(layout) => {
+                  setResumeData({ ...resumeData, skillLayout: layout });
+                  setTheme({ ...theme, skillLayout: layout });
+                }}
               />
             )}
 

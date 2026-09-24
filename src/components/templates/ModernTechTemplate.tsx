@@ -4,7 +4,7 @@ import {
   Mail, Phone, MapPin, Globe, Github, 
   Award, BookOpen, Briefcase, FolderGit2, Wrench, Languages, Sparkles, Tag, Terminal
 } from 'lucide-react';
-import { getDensityStyles, getSectionTitle, DEFAULT_SECTION_ORDER } from '../../utils/templateHelpers';
+import { getDensityStyles, getSectionTitle, determineSkillLayout, DEFAULT_SECTION_ORDER } from '../../utils/templateHelpers';
 import { SectionHeader } from './SectionHeader';
 import { ResumeAvatar } from '../ResumeAvatar';
 
@@ -183,6 +183,7 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ data, theme }) => 
 
       case 'skills':
         if (skills.length === 0) return null;
+        const skillLayout = determineSkillLayout(data, theme);
         return (
           <section key="skills" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
             <SectionHeader
@@ -192,17 +193,51 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ data, theme }) => 
               headerStyle={theme.headerStyle || 'left-bar'}
             />
 
-            <div className="flex flex-wrap gap-1.5">
-              {skills.map((s) => (
-                <span 
-                  key={s.id}
-                  className="px-2.5 py-1 rounded text-xs font-mono font-medium border"
-                  style={{ backgroundColor: `${primaryColor}08`, borderColor: `${primaryColor}30`, color: primaryColor }}
-                >
-                  {s.name}
-                </span>
-              ))}
-            </div>
+            {skillLayout === 'list' && (
+              <div className="space-y-1.5 text-xs">
+                {skills.map((s) => (
+                  <div key={s.id} className="flex items-start gap-2 leading-relaxed" style={{ fontSize: density.bodySize }}>
+                    <span
+                      className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0"
+                      style={{ backgroundColor: primaryColor }}
+                    />
+                    <div className="flex-1 break-words break-all text-slate-800 font-normal leading-relaxed">
+                      {s.name}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {skillLayout === 'grid' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
+                {skills.map((s) => (
+                  <div key={s.id} className="flex items-start gap-2 leading-relaxed" style={{ fontSize: density.bodySize }}>
+                    <span
+                      className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0"
+                      style={{ backgroundColor: primaryColor }}
+                    />
+                    <div className="flex-1 break-words break-all text-slate-800 font-normal leading-relaxed">
+                      {s.name}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {skillLayout === 'tags' && (
+              <div className="flex flex-wrap gap-1.5">
+                {skills.map((s) => (
+                  <span 
+                    key={s.id}
+                    className="px-2.5 py-1 rounded text-xs font-mono font-medium border max-w-full break-words break-all whitespace-normal text-left"
+                    style={{ backgroundColor: `${primaryColor}08`, borderColor: `${primaryColor}30`, color: primaryColor, fontSize: density.bodySize }}
+                  >
+                    {s.name}
+                  </span>
+                ))}
+              </div>
+            )}
           </section>
         );
 

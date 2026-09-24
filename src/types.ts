@@ -121,6 +121,7 @@ export interface ResumeData {
   sectionOrder: string[]; // ['jobIntent', 'summary', 'work', 'project', 'education', 'skills', 'certs', 'custom']
   hiddenSections: string[];
   sectionTitles?: Record<string, string>; // e.g. { jobIntent: '求职意向', summary: '自我评价', work: '实践经历', ... }
+  skillLayout?: 'list' | 'tags' | 'grid'; // 排列布局：条目列表式(长句) / 胶囊标签式 / 双列网格式
 }
 
 export type TemplateId = 'classic' | 'modern' | 'sidebar' | 'minimal' | 'executive' | 'academic' | 'diy';
@@ -144,6 +145,7 @@ export interface ThemeConfig {
   showIcons?: boolean;
   showDividers?: boolean;
   autoFitA4?: boolean; // whether to auto-spread content to fill 1 full A4 page
+  skillLayout?: 'list' | 'tags' | 'grid';
 }
 
 export interface AIDiagnosisResult {

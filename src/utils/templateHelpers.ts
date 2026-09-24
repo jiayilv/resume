@@ -43,6 +43,24 @@ export function getSectionTitle(data: ResumeData, sectionKey: string): string {
   return DEFAULT_SECTION_TITLES[sectionKey] || sectionKey;
 }
 
+export function determineSkillLayout(data: ResumeData, theme?: ThemeConfig): 'list' | 'tags' | 'grid' {
+  if (data.skillLayout) return data.skillLayout;
+  if (theme?.skillLayout) return theme.skillLayout;
+
+  // Auto-detection based on content:
+  // If any skill contains a detailed sentence, length > 20, or punctuation like ，、；
+  const hasLongOrSentenceSkill = data.skills?.some(
+    (s) => s.name && (s.name.length > 20 || /[，；。;]/.test(s.name))
+  );
+
+  if (hasLongOrSentenceSkill) {
+    return 'list';
+  }
+
+  // If all skills are short keywords (e.g. "React", "Vue", "Java")
+  return 'tags';
+}
+
 export function getDensityStyles(theme: ThemeConfig) {
   const isAutoFit = theme.autoFitA4 || theme.lineHeight === 'fill-a4' || theme.sectionSpacing === 'fill-a4';
 

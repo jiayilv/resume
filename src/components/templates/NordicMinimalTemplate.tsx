@@ -1,7 +1,7 @@
 import React from 'react';
 import { ResumeData, ThemeConfig } from '../../types';
 import { Mail, Phone, MapPin, Globe, Github, Tag } from 'lucide-react';
-import { getDensityStyles, getSectionTitle, DEFAULT_SECTION_ORDER } from '../../utils/templateHelpers';
+import { getDensityStyles, getSectionTitle, determineSkillLayout, DEFAULT_SECTION_ORDER } from '../../utils/templateHelpers';
 import { SectionHeader } from './SectionHeader';
 import { ResumeAvatar } from '../ResumeAvatar';
 
@@ -159,6 +159,7 @@ export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) 
 
       case 'skills':
         if (skills.length === 0) return null;
+        const skillLayout = determineSkillLayout(data, theme);
         return (
           <section key="skills" className="avoid-break" style={{ marginBottom: density.sectionGap }}>
             <SectionHeader
@@ -166,13 +167,35 @@ export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) 
               primaryColor={primaryColor}
               headerStyle={theme.headerStyle || 'minimal'}
             />
-            <div className="flex flex-wrap gap-2 text-xs">
-              {skills.map((s) => (
-                <span key={s.id} className="px-2.5 py-1 bg-slate-50 border border-slate-200 text-slate-800 rounded font-normal">
-                  {s.name}
-                </span>
-              ))}
-            </div>
+            {skillLayout === 'list' && (
+              <div className="space-y-1.5 text-xs">
+                {skills.map((s) => (
+                  <div key={s.id} className="flex items-start gap-2 leading-relaxed" style={{ fontSize: density.bodySize }}>
+                    <span className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 bg-slate-400" />
+                    <span className="flex-1 break-words break-all text-slate-800 leading-relaxed font-light">{s.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            {skillLayout === 'grid' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
+                {skills.map((s) => (
+                  <div key={s.id} className="flex items-start gap-2 leading-relaxed" style={{ fontSize: density.bodySize }}>
+                    <span className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 bg-slate-400" />
+                    <span className="flex-1 break-words break-all text-slate-800 leading-relaxed font-light">{s.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            {skillLayout === 'tags' && (
+              <div className="flex flex-wrap gap-2 text-xs">
+                {skills.map((s) => (
+                  <span key={s.id} className="px-2.5 py-1 bg-slate-50 border border-slate-200 text-slate-800 rounded font-normal max-w-full break-words break-all whitespace-normal text-left" style={{ fontSize: density.bodySize }}>
+                    {s.name}
+                  </span>
+                ))}
+              </div>
+            )}
           </section>
         );
 

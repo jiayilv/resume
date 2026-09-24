@@ -219,11 +219,12 @@ export const SidebarEliteTemplate: React.FC<TemplateProps> = ({ data, theme }) =
             <h3 className="text-xs font-bold uppercase tracking-wider text-white/90">
               {getSectionTitle(data, 'skills')}
             </h3>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="space-y-1.5 text-xs text-white/90">
               {skills.map((s) => (
-                <span key={s.id} className="bg-white/15 text-white px-2 py-0.5 rounded text-[11px]">
-                  {s.name}
-                </span>
+                <div key={s.id} className="flex items-start gap-1.5 text-[11px] leading-relaxed">
+                  <span className="w-1 h-1 rounded-full bg-white/70 mt-1.5 shrink-0" />
+                  <span className="flex-1 break-words break-all whitespace-normal text-white/90">{s.name}</span>
+                </div>
               ))}
             </div>
           </div>
