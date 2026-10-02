@@ -309,11 +309,11 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
     >
       {/* Header Profile */}
       <header className="border-b-2 pb-5 mb-5 flex items-center justify-between gap-6" style={{ borderColor: primaryColor }}>
-        <div className="flex-1">
-          <div className="flex items-baseline gap-3 mb-1.5">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">{profile.name || '求职者姓名'}</h1>
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-baseline gap-3 mb-1.5">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 whitespace-nowrap break-keep shrink-0">{profile.name || '求职者姓名'}</h1>
             {profile.title && (
-              <span className="text-xs font-semibold px-2.5 py-0.5 rounded text-white" style={{ backgroundColor: primaryColor }}>
+              <span className="text-xs font-semibold px-2.5 py-0.5 rounded text-white whitespace-nowrap break-keep shrink-0" style={{ backgroundColor: primaryColor }}>
                 {profile.title}
               </span>
             )}
@@ -321,52 +321,52 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
 
           {/* Quick tags */}
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600 mb-2">
-            {profile.gender && <span>{profile.gender}</span>}
-            {profile.age && <span>{profile.age}</span>}
-            {profile.birthDate && !profile.age && <span>{profile.birthDate}</span>}
-            {profile.workYears && <span>{profile.workYears}</span>}
-            {profile.highestDegree && <span>{profile.highestDegree}</span>}
-            {profile.maritalStatus && <span>{profile.maritalStatus}</span>}
-            {profile.politicalStatus && <span>{profile.politicalStatus}</span>}
-            {profile.nativePlace && <span>籍贯: {profile.nativePlace}</span>}
-            {profile.status && <span className="text-emerald-700 font-medium">{profile.status}</span>}
+            {profile.gender && <span className="whitespace-nowrap break-keep shrink-0">{profile.gender}</span>}
+            {profile.age && <span className="whitespace-nowrap break-keep shrink-0">{profile.age}</span>}
+            {profile.birthDate && !profile.age && <span className="whitespace-nowrap break-keep shrink-0">{profile.birthDate}</span>}
+            {profile.workYears && <span className="whitespace-nowrap break-keep shrink-0">{profile.workYears}</span>}
+            {profile.highestDegree && <span className="whitespace-nowrap break-keep shrink-0">{profile.highestDegree}</span>}
+            {profile.maritalStatus && <span className="whitespace-nowrap break-keep shrink-0">{profile.maritalStatus}</span>}
+            {profile.politicalStatus && <span className="whitespace-nowrap break-keep shrink-0">{profile.politicalStatus}</span>}
+            {profile.nativePlace && <span className="whitespace-nowrap break-keep shrink-0">籍贯: {profile.nativePlace}</span>}
+            {profile.status && <span className="text-emerald-700 font-medium whitespace-nowrap break-keep shrink-0">{profile.status}</span>}
           </div>
 
           {/* Contact Details */}
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-600">
             {profile.phone && (
-              <span className="flex items-center gap-1">
-                <Phone className="w-3.5 h-3.5" style={{ color: primaryColor }} />
+              <span className="flex items-center gap-1 whitespace-nowrap break-keep shrink-0">
+                <Phone className="w-3.5 h-3.5 shrink-0" style={{ color: primaryColor }} />
                 {profile.phone}
               </span>
             )}
             {profile.email && (
-              <span className="flex items-center gap-1">
-                <Mail className="w-3.5 h-3.5" style={{ color: primaryColor }} />
+              <span className="flex items-center gap-1 whitespace-nowrap break-keep shrink-0">
+                <Mail className="w-3.5 h-3.5 shrink-0" style={{ color: primaryColor }} />
                 {profile.email}
               </span>
             )}
             {profile.wechat && (
-              <span className="flex items-center gap-1">
-                <span className="font-semibold" style={{ color: primaryColor }}>微信:</span>
+              <span className="flex items-center gap-1 whitespace-nowrap break-keep shrink-0">
+                <span className="font-semibold shrink-0" style={{ color: primaryColor }}>微信:</span>
                 {profile.wechat}
               </span>
             )}
             {profile.location && (
-              <span className="flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5" style={{ color: primaryColor }} />
+              <span className="flex items-center gap-1 whitespace-nowrap break-keep shrink-0">
+                <MapPin className="w-3.5 h-3.5 shrink-0" style={{ color: primaryColor }} />
                 {profile.location}
               </span>
             )}
             {profile.website && (
-              <span className="flex items-center gap-1">
-                <Globe className="w-3.5 h-3.5" style={{ color: primaryColor }} />
+              <span className="flex items-center gap-1 whitespace-nowrap break-keep shrink-0">
+                <Globe className="w-3.5 h-3.5 shrink-0" style={{ color: primaryColor }} />
                 {profile.website}
               </span>
             )}
             {profile.github && (
-              <span className="flex items-center gap-1">
-                <Github className="w-3.5 h-3.5" style={{ color: primaryColor }} />
+              <span className="flex items-center gap-1 whitespace-nowrap break-keep shrink-0">
+                <Github className="w-3.5 h-3.5 shrink-0" style={{ color: primaryColor }} />
                 {profile.github}
               </span>
             )}

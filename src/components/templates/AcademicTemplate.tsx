@@ -237,33 +237,35 @@ export const AcademicTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
     >
       {/* Centered Academic Heading */}
       <header className="border-b-2 border-slate-900 pb-4 mb-4 flex items-center justify-between gap-4">
-        <div className="flex-1 text-center">
-          <h1 className="text-2xl sm:text-3xl font-serif font-bold tracking-normal uppercase text-slate-950 mb-1">
+        <div className="flex-1 text-center min-w-0">
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold tracking-normal uppercase text-slate-950 mb-1 whitespace-nowrap break-keep">
             {profile.name || 'FULL NAME'}
           </h1>
           {profile.title && (
-            <p className="text-xs font-serif italic text-slate-700 mb-1">
+            <p className="text-xs font-serif italic text-slate-700 mb-1 whitespace-nowrap break-keep">
               {profile.title}
             </p>
           )}
 
           <div className="flex flex-wrap justify-center items-center gap-x-3 gap-y-1 text-xs text-slate-600 font-serif mb-1.5">
-            {profile.gender && <span>{profile.gender}</span>}
-            {profile.age && <span>{profile.age}</span>}
-            {profile.birthDate && !profile.age && <span>{profile.birthDate}</span>}
-            {profile.workYears && <span>{profile.workYears}</span>}
-            {profile.highestDegree && <span>{profile.highestDegree}</span>}
-            {profile.maritalStatus && <span>{profile.maritalStatus}</span>}
-            {profile.politicalStatus && <span>{profile.politicalStatus}</span>}
-            {profile.nativePlace && <span>籍贯: {profile.nativePlace}</span>}
+            {profile.gender && <span className="whitespace-nowrap break-keep shrink-0">{profile.gender}</span>}
+            {profile.age && <span className="whitespace-nowrap break-keep shrink-0">{profile.age}</span>}
+            {profile.birthDate && !profile.age && <span className="whitespace-nowrap break-keep shrink-0">{profile.birthDate}</span>}
+            {profile.workYears && <span className="whitespace-nowrap break-keep shrink-0">{profile.workYears}</span>}
+            {profile.highestDegree && <span className="whitespace-nowrap break-keep shrink-0">{profile.highestDegree}</span>}
+            {profile.maritalStatus && <span className="whitespace-nowrap break-keep shrink-0">{profile.maritalStatus}</span>}
+            {profile.politicalStatus && <span className="whitespace-nowrap break-keep shrink-0">{profile.politicalStatus}</span>}
+            {profile.nativePlace && <span className="whitespace-nowrap break-keep shrink-0">籍贯: {profile.nativePlace}</span>}
+            {profile.status && <span className="text-emerald-700 font-medium whitespace-nowrap break-keep shrink-0">{profile.status}</span>}
           </div>
 
           <div className="flex flex-wrap justify-center items-center gap-x-3 gap-y-1 text-xs text-slate-700 font-serif">
-            {profile.phone && <span>{profile.phone}</span>}
-            {profile.email && <span>• {profile.email}</span>}
-            {profile.location && <span>• {profile.location}</span>}
-            {profile.website && <span>• {profile.website}</span>}
-            {profile.github && <span>• {profile.github}</span>}
+            {profile.phone && <span className="whitespace-nowrap break-keep shrink-0">{profile.phone}</span>}
+            {profile.email && <span className="whitespace-nowrap break-keep shrink-0">• {profile.email}</span>}
+            {profile.wechat && <span className="whitespace-nowrap break-keep shrink-0">• 微信: {profile.wechat}</span>}
+            {profile.location && <span className="whitespace-nowrap break-keep shrink-0">• {profile.location}</span>}
+            {profile.website && <span className="whitespace-nowrap break-keep shrink-0">• {profile.website}</span>}
+            {profile.github && <span className="whitespace-nowrap break-keep shrink-0">• {profile.github}</span>}
           </div>
         </div>
 

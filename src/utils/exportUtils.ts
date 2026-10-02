@@ -148,7 +148,11 @@ export const sliceResumeCanvasToPages = async (
 /**
  * Generate full standalone HTML for sliced pages printing
  */
-export const generatePrintHtml = (pages: SlicedResumePage[], docTitle: string = '个人简历'): string => {
+export const generatePrintHtml = (
+  pages: SlicedResumePage[],
+  docTitle: string = '个人简历',
+  includeAutoPrintScript: boolean = false
+): string => {
   const pagesHtml = pages
     .map(
       (page, index) => `
@@ -158,6 +162,19 @@ export const generatePrintHtml = (pages: SlicedResumePage[], docTitle: string = 
     `
     )
     .join('');
+
+  const autoPrintScriptTag = includeAutoPrintScript
+    ? `
+      <script>
+        window.addEventListener('load', function() {
+          setTimeout(function() {
+            window.focus();
+            window.print();
+          }, 350);
+        });
+      </script>
+    `
+    : '';
 
   return `
     <!DOCTYPE html>
@@ -217,14 +234,7 @@ export const generatePrintHtml = (pages: SlicedResumePage[], docTitle: string = 
     </head>
     <body>
       ${pagesHtml}
-      <script>
-        window.addEventListener('load', () => {
-          setTimeout(() => {
-            window.focus();
-            window.print();
-          }, 300);
-        });
-      </script>
+      ${autoPrintScriptTag}
     </body>
     </html>
   `;
@@ -242,7 +252,8 @@ export const printResumeCanvas = async (
     throw new Error('未生成打印页面');
   }
 
-  const printHtml = generatePrintHtml(pages, docTitle);
+  // Generate HTML without auto-print script since iframe will be printed explicitly once
+  const printHtml = generatePrintHtml(pages, docTitle, false);
 
   // Strategy 1: Hidden clean iframe inside current document
   let printIframe = document.getElementById('resume-print-iframe') as HTMLIFrameElement;
@@ -306,7 +317,7 @@ export const printResumeCanvas = async (
  * Open standalone clean print tab/window
  */
 export const openPrintWindow = (pages: SlicedResumePage[], docTitle: string = '个人简历') => {
-  const printHtml = generatePrintHtml(pages, docTitle);
+  const printHtml = generatePrintHtml(pages, docTitle, true);
   const blob = new Blob([printHtml], { type: 'text/html;charset=utf-8' });
   const blobUrl = URL.createObjectURL(blob);
   const printWindow = window.open(blobUrl, '_blank');

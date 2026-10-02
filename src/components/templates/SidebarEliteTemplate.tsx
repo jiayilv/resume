@@ -162,29 +162,31 @@ export const SidebarEliteTemplate: React.FC<TemplateProps> = ({ data, theme }) =
         )}
 
         <div className="text-center sm:text-left">
-          <h1 className="text-xl font-bold tracking-tight text-white">{profile.name || '姓名'}</h1>
-          {profile.title && <p className="text-xs text-white/80 font-medium mt-0.5">{profile.title}</p>}
+          <h1 className="text-xl font-bold tracking-tight text-white whitespace-nowrap break-keep">{profile.name || '姓名'}</h1>
+          {profile.title && <p className="text-xs text-white/80 font-medium mt-0.5 whitespace-nowrap break-keep">{profile.title}</p>}
         </div>
 
         {/* Basic Personal Tags */}
         <div className="flex flex-wrap gap-1 text-[11px] text-white/80 border-t border-white/20 pt-2.5">
-          {profile.gender && <span className="bg-white/10 px-1.5 py-0.5 rounded">{profile.gender}</span>}
-          {profile.age && <span className="bg-white/10 px-1.5 py-0.5 rounded">{profile.age}</span>}
-          {profile.birthDate && !profile.age && <span className="bg-white/10 px-1.5 py-0.5 rounded">{profile.birthDate}</span>}
-          {profile.workYears && <span className="bg-white/10 px-1.5 py-0.5 rounded">{profile.workYears}</span>}
-          {profile.highestDegree && <span className="bg-white/10 px-1.5 py-0.5 rounded">{profile.highestDegree}</span>}
-          {profile.maritalStatus && <span className="bg-white/10 px-1.5 py-0.5 rounded">{profile.maritalStatus}</span>}
-          {profile.politicalStatus && <span className="bg-white/10 px-1.5 py-0.5 rounded">{profile.politicalStatus}</span>}
-          {profile.nativePlace && <span className="bg-white/10 px-1.5 py-0.5 rounded">籍贯: {profile.nativePlace}</span>}
+          {profile.gender && <span className="bg-white/10 px-1.5 py-0.5 rounded whitespace-nowrap break-keep shrink-0">{profile.gender}</span>}
+          {profile.age && <span className="bg-white/10 px-1.5 py-0.5 rounded whitespace-nowrap break-keep shrink-0">{profile.age}</span>}
+          {profile.birthDate && !profile.age && <span className="bg-white/10 px-1.5 py-0.5 rounded whitespace-nowrap break-keep shrink-0">{profile.birthDate}</span>}
+          {profile.workYears && <span className="bg-white/10 px-1.5 py-0.5 rounded whitespace-nowrap break-keep shrink-0">{profile.workYears}</span>}
+          {profile.highestDegree && <span className="bg-white/10 px-1.5 py-0.5 rounded whitespace-nowrap break-keep shrink-0">{profile.highestDegree}</span>}
+          {profile.maritalStatus && <span className="bg-white/10 px-1.5 py-0.5 rounded whitespace-nowrap break-keep shrink-0">{profile.maritalStatus}</span>}
+          {profile.politicalStatus && <span className="bg-white/10 px-1.5 py-0.5 rounded whitespace-nowrap break-keep shrink-0">{profile.politicalStatus}</span>}
+          {profile.nativePlace && <span className="bg-white/10 px-1.5 py-0.5 rounded whitespace-nowrap break-keep shrink-0">籍贯: {profile.nativePlace}</span>}
+          {profile.status && <span className="bg-white/10 px-1.5 py-0.5 rounded whitespace-nowrap break-keep shrink-0">{profile.status}</span>}
         </div>
 
         {/* Contact Info */}
         <div className="space-y-2 text-xs text-white/85 border-t border-white/20 pt-3">
-          {profile.phone && <div className="flex items-center gap-2"><Phone className="w-3.5 h-3.5 text-white/70" /> <span>{profile.phone}</span></div>}
-          {profile.email && <div className="flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-white/70" /> <span className="break-all">{profile.email}</span></div>}
-          {profile.location && <div className="flex items-center gap-2"><MapPin className="w-3.5 h-3.5 text-white/70" /> <span>{profile.location}</span></div>}
-          {profile.website && <div className="flex items-center gap-2"><Globe className="w-3.5 h-3.5 text-white/70" /> <span className="break-all">{profile.website}</span></div>}
-          {profile.github && <div className="flex items-center gap-2"><Github className="w-3.5 h-3.5 text-white/70" /> <span className="break-all">{profile.github}</span></div>}
+          {profile.phone && <div className="flex items-center gap-2 whitespace-nowrap break-keep shrink-0"><Phone className="w-3.5 h-3.5 text-white/70 shrink-0" /> <span>{profile.phone}</span></div>}
+          {profile.email && <div className="flex items-center gap-2 whitespace-nowrap break-keep shrink-0"><Mail className="w-3.5 h-3.5 text-white/70 shrink-0" /> <span className="break-all">{profile.email}</span></div>}
+          {profile.wechat && <div className="flex items-center gap-2 whitespace-nowrap break-keep shrink-0"><span className="text-[11px] font-bold text-white/70 shrink-0">微信:</span> <span>{profile.wechat}</span></div>}
+          {profile.location && <div className="flex items-center gap-2 whitespace-nowrap break-keep shrink-0"><MapPin className="w-3.5 h-3.5 text-white/70 shrink-0" /> <span>{profile.location}</span></div>}
+          {profile.website && <div className="flex items-center gap-2 whitespace-nowrap break-keep shrink-0"><Globe className="w-3.5 h-3.5 text-white/70 shrink-0" /> <span className="break-all">{profile.website}</span></div>}
+          {profile.github && <div className="flex items-center gap-2 whitespace-nowrap break-keep shrink-0"><Github className="w-3.5 h-3.5 text-white/70 shrink-0" /> <span className="break-all">{profile.github}</span></div>}
         </div>
 
         {/* Education in Sidebar */}

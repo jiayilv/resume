@@ -247,34 +247,36 @@ export const NordicMinimalTemplate: React.FC<TemplateProps> = ({ data, theme }) 
       {/* Minimal Header */}
       <header className="border-b border-slate-200 pb-5 mb-5">
         <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-3xl font-light tracking-widest text-slate-900 mb-1">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-3xl font-light tracking-wider text-slate-900 mb-1 whitespace-nowrap break-keep">
               {profile.name || '求职者姓名'}
             </h1>
             {profile.title && (
-              <p className="text-xs font-medium text-slate-600 tracking-wider uppercase mb-1">
+              <p className="text-xs font-medium text-slate-600 tracking-wider uppercase mb-1 whitespace-nowrap break-keep">
                 {profile.title}
               </p>
             )}
 
             {/* Quick Personal Tags */}
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600 font-light mb-2">
-              {profile.gender && <span>{profile.gender}</span>}
-              {profile.age && <span>{profile.age}</span>}
-              {profile.birthDate && !profile.age && <span>{profile.birthDate}</span>}
-              {profile.workYears && <span>{profile.workYears}</span>}
-              {profile.highestDegree && <span>{profile.highestDegree}</span>}
-              {profile.maritalStatus && <span>{profile.maritalStatus}</span>}
-              {profile.politicalStatus && <span>{profile.politicalStatus}</span>}
-              {profile.nativePlace && <span>籍贯: {profile.nativePlace}</span>}
+              {profile.gender && <span className="whitespace-nowrap break-keep shrink-0">{profile.gender}</span>}
+              {profile.age && <span className="whitespace-nowrap break-keep shrink-0">{profile.age}</span>}
+              {profile.birthDate && !profile.age && <span className="whitespace-nowrap break-keep shrink-0">{profile.birthDate}</span>}
+              {profile.workYears && <span className="whitespace-nowrap break-keep shrink-0">{profile.workYears}</span>}
+              {profile.highestDegree && <span className="whitespace-nowrap break-keep shrink-0">{profile.highestDegree}</span>}
+              {profile.maritalStatus && <span className="whitespace-nowrap break-keep shrink-0">{profile.maritalStatus}</span>}
+              {profile.politicalStatus && <span className="whitespace-nowrap break-keep shrink-0">{profile.politicalStatus}</span>}
+              {profile.nativePlace && <span className="whitespace-nowrap break-keep shrink-0">籍贯: {profile.nativePlace}</span>}
+              {profile.status && <span className="text-emerald-700 font-medium whitespace-nowrap break-keep shrink-0">{profile.status}</span>}
             </div>
             
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 font-light">
-              {profile.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {profile.phone}</span>}
-              {profile.email && <span className="flex items-center gap-1"><Mail className="w-3 h-3" /> {profile.email}</span>}
-              {profile.location && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {profile.location}</span>}
-              {profile.website && <span className="flex items-center gap-1"><Globe className="w-3 h-3" /> {profile.website}</span>}
-              {profile.github && <span className="flex items-center gap-1"><Github className="w-3 h-3" /> {profile.github}</span>}
+              {profile.phone && <span className="flex items-center gap-1 whitespace-nowrap break-keep shrink-0"><Phone className="w-3 h-3 shrink-0" /> {profile.phone}</span>}
+              {profile.email && <span className="flex items-center gap-1 whitespace-nowrap break-keep shrink-0"><Mail className="w-3 h-3 shrink-0" /> {profile.email}</span>}
+              {profile.wechat && <span className="flex items-center gap-1 whitespace-nowrap break-keep shrink-0"><span className="font-medium shrink-0">微信:</span> {profile.wechat}</span>}
+              {profile.location && <span className="flex items-center gap-1 whitespace-nowrap break-keep shrink-0"><MapPin className="w-3 h-3 shrink-0" /> {profile.location}</span>}
+              {profile.website && <span className="flex items-center gap-1 whitespace-nowrap break-keep shrink-0"><Globe className="w-3 h-3 shrink-0" /> {profile.website}</span>}
+              {profile.github && <span className="flex items-center gap-1 whitespace-nowrap break-keep shrink-0"><Github className="w-3 h-3 shrink-0" /> {profile.github}</span>}
             </div>
           </div>
 

@@ -228,7 +228,7 @@ export function App() {
       await printResumeCanvas('resume-canvas', docTitle);
     } catch (error) {
       console.error('打印执行异常:', error);
-      window.print();
+      alert('唤起打印遇到问题，请点击右上角“打印/另存为PDF”按钮打开预览打印窗口');
     } finally {
       setIsPrinting(false);
     }

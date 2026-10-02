@@ -270,26 +270,32 @@ export const ExecutiveTemplate: React.FC<TemplateProps> = ({ data, theme }) => {
     >
       {/* Top Header with Solid Accent Bar */}
       <header className="border-b-4 pb-5 mb-5 flex justify-between items-center gap-6" style={{ borderColor: primaryColor }}>
-        <div className="flex-1">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-950 mb-1">
-            {profile.name || '求职者姓名'}
-          </h1>
-          <p className="text-xs font-semibold tracking-wide uppercase mb-2" style={{ color: primaryColor }}>
-            {profile.title || '高级管理 / 行业专家'}
-          </p>
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-baseline gap-3 mb-1">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-950 whitespace-nowrap break-keep shrink-0">
+              {profile.name || '求职者姓名'}
+            </h1>
+            {profile.title && (
+              <span className="text-xs font-semibold tracking-wide uppercase px-2.5 py-0.5 rounded text-white whitespace-nowrap break-keep shrink-0" style={{ backgroundColor: primaryColor }}>
+                {profile.title}
+              </span>
+            )}
+          </div>
 
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600">
-            {profile.gender && <span>{profile.gender}</span>}
-            {profile.age && <span>{profile.age}</span>}
-            {profile.birthDate && !profile.age && <span>{profile.birthDate}</span>}
-            {profile.workYears && <span>工作年限: {profile.workYears}</span>}
-            {profile.highestDegree && <span>最高学历: {profile.highestDegree}</span>}
-            {profile.maritalStatus && <span>{profile.maritalStatus}</span>}
-            {profile.politicalStatus && <span>{profile.politicalStatus}</span>}
-            {profile.nativePlace && <span>籍贯: {profile.nativePlace}</span>}
-            {profile.phone && <span className="flex items-center gap-1 font-medium"><Phone className="w-3.5 h-3.5" style={{ color: primaryColor }} /> {profile.phone}</span>}
-            {profile.email && <span className="flex items-center gap-1 font-medium"><Mail className="w-3.5 h-3.5" style={{ color: primaryColor }} /> {profile.email}</span>}
-            {profile.location && <span className="flex items-center gap-1 font-medium"><MapPin className="w-3.5 h-3.5" style={{ color: primaryColor }} /> {profile.location}</span>}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-600 mt-2">
+            {profile.gender && <span className="whitespace-nowrap break-keep shrink-0">{profile.gender}</span>}
+            {profile.age && <span className="whitespace-nowrap break-keep shrink-0">{profile.age}</span>}
+            {profile.birthDate && !profile.age && <span className="whitespace-nowrap break-keep shrink-0">{profile.birthDate}</span>}
+            {profile.workYears && <span className="whitespace-nowrap break-keep shrink-0">工作年限: {profile.workYears}</span>}
+            {profile.highestDegree && <span className="whitespace-nowrap break-keep shrink-0">最高学历: {profile.highestDegree}</span>}
+            {profile.maritalStatus && <span className="whitespace-nowrap break-keep shrink-0">{profile.maritalStatus}</span>}
+            {profile.politicalStatus && <span className="whitespace-nowrap break-keep shrink-0">{profile.politicalStatus}</span>}
+            {profile.nativePlace && <span className="whitespace-nowrap break-keep shrink-0">籍贯: {profile.nativePlace}</span>}
+            {profile.status && <span className="text-emerald-700 font-medium whitespace-nowrap break-keep shrink-0">{profile.status}</span>}
+            {profile.phone && <span className="flex items-center gap-1 font-medium whitespace-nowrap break-keep shrink-0"><Phone className="w-3.5 h-3.5 shrink-0" style={{ color: primaryColor }} /> {profile.phone}</span>}
+            {profile.email && <span className="flex items-center gap-1 font-medium whitespace-nowrap break-keep shrink-0"><Mail className="w-3.5 h-3.5 shrink-0" style={{ color: primaryColor }} /> {profile.email}</span>}
+            {profile.wechat && <span className="flex items-center gap-1 font-medium whitespace-nowrap break-keep shrink-0"><span className="font-bold shrink-0" style={{ color: primaryColor }}>微信:</span> {profile.wechat}</span>}
+            {profile.location && <span className="flex items-center gap-1 font-medium whitespace-nowrap break-keep shrink-0"><MapPin className="w-3.5 h-3.5 shrink-0" style={{ color: primaryColor }} /> {profile.location}</span>}
           </div>
         </div>
 
